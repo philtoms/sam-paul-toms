@@ -3,5 +3,8 @@ dist/
 .astro/
 .env
 .DS_Store
+# Dev audio samples (large binary files, local only)
+public/audio-samples/
+
 .worktrees
 .kb/
