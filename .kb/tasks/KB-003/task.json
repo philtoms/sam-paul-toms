@@ -1,0 +1,31 @@
+{
+  "id": "KB-003",
+  "description": "## Goal\nBuild a persistent sticky-bottom audio player bar that continues playing across Astro page navigations using View Transitions.\n\n## Tech Details from Research\n- **Waveform:** wavesurfer.js v7 for waveform visualization\n- **Audio engine:** howler.js as cross-browser audio engine (format fallback MP3/OGG, Web Audio API)\n- **Playlist support:** play/pause, next/prev, progress bar, volume, track title + artist display\n- **Persistence:** Astro island (client-side JS component) that persists via View Transitions `transition:persist`\n- **Audio hosting:** Files served from Cloudflare R2 (URLs configured via env variable `R2_PUBLIC_URL`)\n\n## Deliverables\n- `src/components/AudioPlayer/` directory containing:\n  - Player component (Astro island with client-side JS)\n  - Playlist store (track list, current track, playback state)\n  - Waveform renderer (wavesurfer.js integration)\n  - Howler wrapper (audio engine abstraction)\n- CSS for sticky bottom bar styling\n- Player-reactive state that survives page transitions\n- `.env.example` entry for `R2_PUBLIC_URL`\n\n## Dependencies\nKB-002 (project scaffolding must exist)\n\n## Size\nL",
+  "column": "todo",
+  "dependencies": [
+    "KB-002"
+  ],
+  "steps": [],
+  "currentStep": 0,
+  "log": [
+    {
+      "timestamp": "2026-05-19T09:57:32.143Z",
+      "action": "Task created"
+    },
+    {
+      "timestamp": "2026-05-19T10:07:12.995Z",
+      "action": "Spec review requested"
+    },
+    {
+      "timestamp": "2026-05-19T10:10:17.427Z",
+      "action": "Spec review: APPROVE",
+      "outcome": "This is an exceptionally detailed, well-structured specification for a complex integration task. The mission is clear, steps have concrete verifiable outcomes, the file scope is nearly complete, and testing requirements are strong. There are a few technical inaccuracies (incorrect dependency claim, deprecated API usage, invalid CSS value, missing test file from scope) but all are easily caught at build/test time and none represent architectural risks."
+    }
+  ],
+  "columnMovedAt": "2026-05-19T10:10:27.366Z",
+  "createdAt": "2026-05-19T09:57:32.143Z",
+  "updatedAt": "2026-05-19T10:31:48.437Z",
+  "size": "L",
+  "reviewLevel": 3,
+  "status": "queued"
+}

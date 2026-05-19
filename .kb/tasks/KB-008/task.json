@@ -1,0 +1,33 @@
+{
+  "id": "KB-008",
+  "description": "## Goal\nSet up deployment pipeline: Cloudflare Pages for the Astro site, Cloudflare R2 bucket for audio files, and CI/CD configuration.\n\n## Tech Details from Research\n- **Astro adapter:** `@astrojs/cloudflare` for server-side rendering support\n- **Config:** `wrangler.toml` for Cloudflare Pages configuration\n- **Audio hosting:** R2 bucket (free tier: 10 GB storage, free egress) — enough for ~100-200 MP3s\n- **Build:** `npm run build`, output to `dist/`\n- **Environment variables:** R2 public URL for audio file references\n- **DNS:** Custom domain setup (documented, not automated)\n\n## Deliverables\n- `wrangler.toml` — Cloudflare Pages configuration\n- Updated `astro.config.mjs` with Cloudflare adapter\n- `docs/deployment.md` — step-by-step setup guide covering:\n  - R2 bucket creation and public access configuration\n  - Pages project linking and build settings\n  - DNS configuration (CNAME to Pages)\n  - Environment variables setup\n- `.env.example` updated with deployment-related vars\n\n## Dependencies\nKB-002 (scaffolding), KB-003 (audio player — needs R2 URL config), KB-006 (SEO — needs production URL for canonical tags)\n\n## Size\nM",
+  "column": "todo",
+  "dependencies": [
+    "KB-002",
+    "KB-003",
+    "KB-006"
+  ],
+  "steps": [],
+  "currentStep": 0,
+  "log": [
+    {
+      "timestamp": "2026-05-19T09:58:25.460Z",
+      "action": "Task created"
+    },
+    {
+      "timestamp": "2026-05-19T10:24:34.599Z",
+      "action": "Spec review requested"
+    },
+    {
+      "timestamp": "2026-05-19T10:27:26.032Z",
+      "action": "Spec review: APPROVE",
+      "outcome": "This is a thorough, well-structured specification for a configuration and documentation task. The mission is clear, steps have concrete verifiable outcomes, file scope is nearly complete, and the deployment guide outline is comprehensive. The spec correctly identifies all dependencies and references real patterns established by KB-002, KB-003, and KB-006. There are a few minor issues but none that would cause the agent to produce incorrect output."
+    }
+  ],
+  "columnMovedAt": "2026-05-19T10:27:38.061Z",
+  "createdAt": "2026-05-19T09:58:25.460Z",
+  "updatedAt": "2026-05-19T10:31:48.446Z",
+  "size": "M",
+  "reviewLevel": 1,
+  "status": "queued"
+}

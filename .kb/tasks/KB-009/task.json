@@ -1,0 +1,31 @@
+{
+  "id": "KB-009",
+  "description": "## Goal\nIntegrate Umami analytics tracking into the site.\n\n## Tech Details from Research\n- **Umami:** Self-hosted, free, open-source, privacy-friendly analytics (per Section 2 Nice-to-Have #13)\n- **Integration:** Add Umami tracking script to the base layout, conditional on environment variables\n- **Configuration:** Via env vars `UMAMI_WEBSITE_ID` and `UMAMI_SRC`\n- **Self-hosting:** Docker Compose setup on the user's Linux server (documented separately)\n\n## Deliverables\n- Umami script integration in base layout (`src/layouts/BaseLayout.astro`) — only renders if env vars are set\n- `docs/analytics-setup.md` — Umami Docker self-hosting instructions (docker-compose.yml, config, database setup)\n- `.env.example` updated with `UMAMI_WEBSITE_ID` and `UMAMI_SRC`\n\n## Dependencies\nKB-002 (scaffolding)\n\n## Size\nS",
+  "column": "todo",
+  "dependencies": [
+    "KB-002"
+  ],
+  "steps": [],
+  "currentStep": 0,
+  "log": [
+    {
+      "timestamp": "2026-05-19T09:58:35.912Z",
+      "action": "Task created"
+    },
+    {
+      "timestamp": "2026-05-19T10:25:51.525Z",
+      "action": "Spec review requested"
+    },
+    {
+      "timestamp": "2026-05-19T10:27:32.691Z",
+      "action": "Spec review: APPROVE",
+      "outcome": "This is a well-crafted specification for a small, well-scoped integration task. The mission is clear, steps have concrete verifiable outcomes, file scope is accurate, and the dependency on KB-002 is correct. The spec correctly identifies the need for `PUBLIC_` prefixed env vars (fixing the task.json which uses unprefixed names) and provides a complete Astro code snippet with the right conditional rendering pattern."
+    }
+  ],
+  "columnMovedAt": "2026-05-19T10:27:45.930Z",
+  "createdAt": "2026-05-19T09:58:35.912Z",
+  "updatedAt": "2026-05-19T10:31:48.448Z",
+  "size": "S",
+  "reviewLevel": 1,
+  "status": "queued"
+}

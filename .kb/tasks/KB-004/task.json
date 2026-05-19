@@ -1,0 +1,31 @@
+{
+  "id": "KB-004",
+  "description": "## Goal\nCreate pages that list all releases (albums, EPs, singles) with album art grid, grouped by release type, with streaming platform links per track.\n\n## Tech Details from Research\n- **Content collections:** Astro content collections (`src/content/releases/`) using Markdown frontmatter for metadata\n- **Frontmatter schema fields:** title, artist, release date, type (album/EP/single), tracks list, album art path, streaming links (Spotify, Apple Music, YouTube Music, Bandcamp)\n- **Design:** Grid layout with large album art thumbnails (per Section 3 design trends)\n- **Individual release pages:** `/releases/[slug]` with track listing and \"Listen on Spotify / Apple Music / YouTube Music / Bandcamp\" links\n- **Responsive grid:** 1 col mobile, 2 col tablet, 3-4 col desktop\n\n## Deliverables\n- `src/content/config.ts` — release collection schema definition\n- Sample release content files in `src/content/releases/`\n- `src/pages/releases/index.astro` — release listing page\n- `src/pages/releases/[slug].astro` — individual release detail page\n- `src/components/ReleaseCard.astro` — album art card component\n- `src/components/StreamingLinks.astro` — \"Listen on\" platform links\n- `src/components/TrackList.astro` — track listing with durations\n\n## Dependencies\nKB-002 (project scaffolding)\n\n## Size\nM",
+  "column": "todo",
+  "dependencies": [
+    "KB-002"
+  ],
+  "steps": [],
+  "currentStep": 0,
+  "log": [
+    {
+      "timestamp": "2026-05-19T09:57:43.212Z",
+      "action": "Task created"
+    },
+    {
+      "timestamp": "2026-05-19T10:05:01.418Z",
+      "action": "Spec review requested"
+    },
+    {
+      "timestamp": "2026-05-19T10:07:51.033Z",
+      "action": "Spec review: APPROVE",
+      "outcome": "This is a thorough, well-structured specification for building release listing and detail pages. The schema is precise, the component props are well-defined, the file scope is mostly complete, and each step has concrete, verifiable checkboxes. The testing strategy is reasonable. A few minor gaps exist but none would cause the implementation to fail."
+    }
+  ],
+  "columnMovedAt": "2026-05-19T10:08:04.752Z",
+  "createdAt": "2026-05-19T09:57:43.212Z",
+  "updatedAt": "2026-05-19T10:31:48.438Z",
+  "size": "M",
+  "reviewLevel": 1,
+  "status": "queued"
+}

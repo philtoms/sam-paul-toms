@@ -1,0 +1,29 @@
+{
+  "name": "sam",
+  "version": "1.0.0",
+  "description": "Sam — Music Portfolio",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.6.13",
+    "@tailwindcss/vite": "^4.3.0",
+    "astro": "^5.18.1",
+    "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.59.4",
+    "@typescript-eslint/parser": "^8.59.4",
+    "eslint": "^10.4.0",
+    "prettier": "^3.8.3",
+    "prettier-plugin-astro": "^0.14.1"
+  }
+}

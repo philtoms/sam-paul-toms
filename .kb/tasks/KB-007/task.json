@@ -1,0 +1,31 @@
+{
+  "id": "KB-007",
+  "description": "## Goal\nEstablish the visual design system: dark mode default, responsive breakpoints, typography scale, spacing, and micro-animations.\n\n## Tech Details from Research\n- **Dark mode by default:** Matches music aesthetic, reduces eye strain (per Section 3 trends)\n- **Typography:** Minimal — one display font + one body font (variable fonts)\n- **Visual anchor:** Large album art as the primary visual element\n- **Micro-animations:** Hover effects — play button morphs, album art slight zoom\n- **Color palette:** Near-black backgrounds, off-white text, one accent color\n- **Mobile-first breakpoints:** Touch-friendly player controls (per Section 2, Must-Have #4)\n- **Styling:** Tailwind CSS utilities for spacing and responsive design\n\n## Deliverables\n- `tailwind.config.ts` — theme customization (colors, fonts, spacing, animations)\n- `src/styles/global.css` — base styles, dark mode implementation, animation keyframes\n- Updated base layout applying design tokens\n- CSS custom properties for the color palette and typography scale\n\n## Dependencies\nKB-002 (scaffolding)\n\n## Size\nM",
+  "column": "todo",
+  "dependencies": [
+    "KB-002"
+  ],
+  "steps": [],
+  "currentStep": 0,
+  "log": [
+    {
+      "timestamp": "2026-05-19T09:58:13.852Z",
+      "action": "Task created"
+    },
+    {
+      "timestamp": "2026-05-19T10:21:09.536Z",
+      "action": "Spec review requested"
+    },
+    {
+      "timestamp": "2026-05-19T10:24:21.709Z",
+      "action": "Spec review: APPROVE",
+      "outcome": "A thorough, well-structured specification for a CSS-first design system built on Tailwind v4's `@theme` block. Steps are concrete with exact CSS to add, completion criteria are exhaustive and verifiable, and the spec correctly identifies all downstream consumers (KB-003 through KB-006). A few potential naming conflicts with built-in Tailwind utilities should be addressed, but nothing that blocks implementation."
+    }
+  ],
+  "columnMovedAt": "2026-05-19T10:24:32.816Z",
+  "createdAt": "2026-05-19T09:58:13.852Z",
+  "updatedAt": "2026-05-19T10:31:48.444Z",
+  "size": "M",
+  "reviewLevel": 1,
+  "status": "queued"
+}
