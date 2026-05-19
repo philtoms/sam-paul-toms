@@ -1,0 +1,20 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'Sam — Releases' } = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <nav class="mb-8 text-sm text-text/50">
+      <a href="/" class="hover:text-accent transition-colors">Sam</a>
+      <span class="mx-2">/</span>
+      <span class="text-text/80">Releases</span>
+    </nav>
+    <slot />
+  </div>
+</BaseLayout>

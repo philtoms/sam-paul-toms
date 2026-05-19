@@ -9,13 +9,26 @@ const releases = defineCollection({
     releaseDate: z.date(),
     type: z.enum(['album', 'ep', 'single']),
     artwork: z.string(),
+    description: z.string().optional(),
     tracks: z.array(
       z.object({
         title: z.string(),
         duration: z.string(),
+        spotifyUrl: z.string().url().optional(),
+        appleMusicUrl: z.string().url().optional(),
+        youtubeMusicUrl: z.string().url().optional(),
+        bandcampUrl: z.string().url().optional(),
+        audioFile: z.string().optional(),
       }),
     ),
-    streamingLinks: z.record(z.string()),
+    streamingLinks: z
+      .object({
+        spotify: z.string().url().optional(),
+        appleMusic: z.string().url().optional(),
+        youtubeMusic: z.string().url().optional(),
+        bandcamp: z.string().url().optional(),
+      })
+      .optional(),
   }),
 });
 

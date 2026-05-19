@@ -135,6 +135,52 @@ Edit `src/content/about/bio.md` to update any content:
 
 The contact form (`src/components/ContactForm.astro`) is currently **frontend-only** — it has client-side validation but no backend submission handler. Actual email delivery (via Cloudflare Worker, Formspree, Resend, etc.) will be wired up in a future task.
 
+## Content Collections
+
+### Releases Collection (`src/content/releases/`)
+
+The `releases` collection stores all music releases (albums, EPs, singles) as Markdown files. Each file's frontmatter defines the release metadata, track listing, and streaming links.
+
+#### File Naming Convention
+
+File names become URL slugs: `midnight-sessions.md` → `/releases/midnight-sessions`. Use lowercase letters and hyphens only (no spaces or special characters).
+
+#### Frontmatter Schema
+
+```yaml
+---
+title: "Release Title"          # Required — release name
+artist: "Sam"                   # Required — artist name
+releaseDate: 2025-11-15         # Required — YYYY-MM-DD format
+type: album                     # Required — album | ep | single
+artwork: /images/releases/foo.svg  # Required — path to artwork image
+description: "Short blurb"      # Optional — release description
+tracks:                         # Required — at least one track
+  - title: "Track Name"
+    duration: "3:42"            # M:SS format
+    spotifyUrl: https://...     # Optional per-track streaming URL
+    appleMusicUrl: https://...  # Optional
+    youtubeMusicUrl: https://... # Optional
+    bandcampUrl: https://...    # Optional
+    audioFile: "path/in/r2"     # Optional — R2 audio path (for player)
+streamingLinks:                 # Optional — release-level streaming links
+  spotify: https://open.spotify.com/album/...
+  appleMusic: https://music.apple.com/album/...
+  youtubeMusic: https://music.youtube.com/...
+  bandcamp: https://sam.bandcamp.com/album/...
+---
+```
+
+The Markdown body (below the frontmatter) can contain an extended description or liner notes, rendered on the release detail page.
+
+#### Adding a New Release
+
+1. Create a new `.md` file in `src/content/releases/` with a URL-safe slug name
+2. Fill in all required frontmatter fields (see schema above)
+3. Add a placeholder or real artwork image to `public/images/releases/`
+4. Run `npx astro check` to validate against the schema
+5. Verify the release appears on `/releases` and `/releases/{slug}`
+
 ## Design System
 
 The visual design system is defined in `src/styles/global.css` using Tailwind v4's CSS-first `@theme` block. All components consume these design tokens for consistent visual output.
