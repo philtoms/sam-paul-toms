@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import ReleasesLayout from '../../layouts/ReleasesLayout.astro';
 import StreamingLinks from '../../components/StreamingLinks.astro';
 import TrackList from '../../components/TrackList.astro';
+import { generateMusicAlbumSchema } from '../../scripts/structured-data';
 
 const { slug } = Astro.params;
 
@@ -29,9 +30,21 @@ const typeBadge: Record<string, string> = {
 };
 
 const { Content } = await render(release);
+
+const siteUrl = Astro.site?.href || 'https://sam.music/';
+const albumSchema = generateMusicAlbumSchema(release.data, siteUrl);
+
+const ogType = type === 'single' ? 'music.song' : 'music.album';
+const metaDescription = description || `Listen to ${title} by Sam.`;
 ---
 
-<ReleasesLayout title={`Sam — ${title}`}>
+<ReleasesLayout
+  title={`Sam — ${title}`}
+  description={metaDescription}
+  image={artwork}
+  type={ogType}
+  structuredData={albumSchema}
+>
   <nav class="mb-8 text-sm text-text/50">
     <a href="/" class="hover:text-accent transition-colors">Sam</a>
     <span class="mx-2">/</span>

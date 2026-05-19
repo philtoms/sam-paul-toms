@@ -1,18 +1,27 @@
 ---
 import '../styles/global.css';
-import '../components/AudioPlayer/Player.css';
-import { ViewTransitions } from 'astro:transitions';
+import SEOHead from '../components/SEOHead.astro';
 import Player from '../components/AudioPlayer/Player';
 
 interface Props {
   title?: string;
+  description?: string;
+  image?: string;
+  canonicalUrl?: string;
+  type?: 'website' | 'music.song' | 'music.album' | 'music.playlist';
+  structuredData?: object | object[];
+  noindex?: boolean;
 }
 
-const { title = 'Sam — Music' } = Astro.props;
-
-const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
-const umamiSrc = import.meta.env.PUBLIC_UMAMI_SRC;
-const umamiEnabled = umamiWebsiteId && umamiSrc;
+const {
+  title = 'Sam — Music',
+  description = 'Official music portfolio of Sam — listen to tracks, albums, and EPs.',
+  image,
+  canonicalUrl,
+  type = 'website',
+  structuredData,
+  noindex,
+} = Astro.props;
 ---
 
 <html lang="en">
@@ -21,19 +30,15 @@ const umamiEnabled = umamiWebsiteId && umamiSrc;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
-    <title>{title}</title>
-    <ViewTransitions />
-    {umamiEnabled && (
-      <script
-        is:inline
-        async
-        src={umamiSrc}
-        data-website-id={umamiWebsiteId}
-      ></script>
-    )}
+    <SEOHead
+      title={title}
+      description={description}
+      image={image}
+      canonicalUrl={canonicalUrl}
+      type={type}
+      structuredData={structuredData}
+      noindex={noindex}
+    />
   </head>
   <body class="bg-bg text-text antialiased min-h-screen">
     <slot />

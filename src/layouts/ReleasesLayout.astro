@@ -3,12 +3,34 @@ import BaseLayout from './BaseLayout.astro';
 
 interface Props {
   title?: string;
+  description?: string;
+  image?: string;
+  canonicalUrl?: string;
+  type?: 'website' | 'music.song' | 'music.album' | 'music.playlist';
+  structuredData?: object | object[];
+  noindex?: boolean;
 }
 
-const { title = 'Sam — Releases' } = Astro.props;
+const {
+  title = 'Sam — Releases',
+  description,
+  image,
+  canonicalUrl,
+  type,
+  structuredData,
+  noindex,
+} = Astro.props;
 ---
 
-<BaseLayout title={title}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={image}
+  canonicalUrl={canonicalUrl}
+  type={type}
+  structuredData={structuredData}
+  noindex={noindex}
+>
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <nav class="mb-8 text-sm text-text/50">
       <a href="/" class="hover:text-accent transition-colors">Sam</a>

@@ -23,15 +23,14 @@ The dev server starts at `http://localhost:4321`.
 
 ## Scripts
 
-| Command             | Description                        |
-| ------------------- | ---------------------------------- |
-| `npm run dev`       | Start Astro dev server             |
-| `npm run build`     | Build for production               |
-| `npm run preview`   | Preview production build locally   |
-| `npm run lint`      | Run ESLint on source files         |
-| `npm run format`    | Format all files with Prettier     |
-| `npm run test`      | Run tests with Vitest              |
-| `npm run test:watch`| Run tests in watch mode            |
+| Command           | Description                      |
+| ----------------- | -------------------------------- |
+| `npm run test`    | Run Vitest test suite            |
+| `npm run dev`     | Start Astro dev server           |
+| `npm run build`   | Build for production             |
+| `npm run preview` | Preview production build locally |
+| `npm run lint`    | Run ESLint on source files       |
+| `npm run format`  | Format all files with Prettier   |
 
 ## Directory Structure
 
@@ -101,40 +100,6 @@ Copy `.env.example` to `.env` and configure:
 
 - `R2_PUBLIC_URL` — Base URL for Cloudflare R2 object storage (audio files, artwork)
 
-## About Page
-
-The `/about` page showcases Sam's artist identity with a bio section, genre tags, press quotes, and a contact form. Content is managed through the `about` Astro content collection.
-
-### Content Collection: `about`
-
-The about collection is defined in `src/content/config.ts` and uses Markdown files in `src/content/about/`.
-
-**Frontmatter fields:**
-
-| Field         | Type                                       | Description                                |
-| ------------- | ------------------------------------------ | ------------------------------------------ |
-| `title`       | `string`                                   | Page heading (e.g. "About Sam")            |
-| `photo`       | `string`                                   | Path to bio photo (e.g. `/images/bio/...`) |
-| `photoAlt`    | `string`                                   | Alt text for the photo                     |
-| `genreTags`   | `string[]`                                 | Genre badge labels                         |
-| `pressQuotes` | `Array<{ text, source, url? }>`            | Press/review quotes with attribution       |
-| `contactEmail`| `string?` (optional)                       | Reference only; not used in frontend       |
-
-The Markdown body contains the bio text (rendered as HTML).
-
-### Editing the Bio
-
-Edit `src/content/about/bio.md` to update any content:
-
-- **Bio text:** Edit the Markdown body below the frontmatter
-- **Genre tags:** Add/remove entries in the `genreTags` array
-- **Press quotes:** Add/remove entries in the `pressQuotes` array (each needs `text` and `source`; `url` is optional)
-- **Photo:** Update the `photo` path and place the image in `public/images/bio/`
-
-### Contact Form
-
-The contact form (`src/components/ContactForm.astro`) is currently **frontend-only** — it has client-side validation but no backend submission handler. Actual email delivery (via Cloudflare Worker, Formspree, Resend, etc.) will be wired up in a future task.
-
 ## Content Collections
 
 ### Releases Collection (`src/content/releases/`)
@@ -181,94 +146,61 @@ The Markdown body (below the frontmatter) can contain an extended description or
 4. Run `npx astro check` to validate against the schema
 5. Verify the release appears on `/releases` and `/releases/{slug}`
 
-## Design System
+## SEO
 
-The visual design system is defined in `src/styles/global.css` using Tailwind v4's CSS-first `@theme` block. All components consume these design tokens for consistent visual output.
+### SEOHead Component (`src/components/SEOHead.astro`)
 
-### Color Palette
+A reusable component that renders all per-page SEO tags inside `<head>`. It is included by `BaseLayout.astro` and accepts these props:
 
-**Background layers** (near-black with subtle warmth):
-| Token                  | Value                     | Purpose                            |
-| ---------------------- | ------------------------- | ---------------------------------- |
-| `--color-bg`           | `#0a0a0a`                 | Page background                    |
-| `--color-bg-elevated`  | `#141414`                 | Cards, panels, elevated surfaces   |
-| `--color-bg-overlay`   | `#1a1a1a`                 | Overlays, modals, dropdowns        |
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | `"Sam — Music"` | Page `<title>` and OG/Twitter title |
+| `description` | `string` | `"Official music portfolio of Sam — listen to tracks, albums, and EPs."` | Meta description, OG/Twitter description |
+| `image` | `string?` | — | OG/Twitter image (relative path or absolute URL) |
+| `canonicalUrl` | `string?` | `Astro.url.href` | Canonical URL override |
+| `type` | `'website' \| 'music.song' \| 'music.album' \| 'music.playlist'` | `'website'` | `og:type` value |
+| `structuredData` | `object \| object[]?` | — | JSON-LD object(s) to inject as `<script type="application/ld+json">` |
+| `noindex` | `boolean?` | `false` | If true, adds `<meta name="robots" content="noindex, nofollow">` |
 
-**Text hierarchy:**
-| Token                    | Value     | Purpose              |
-| ------------------------ | --------- | -------------------- |
-| `--color-text`           | `#f5f5f5` | Primary text         |
-| `--color-text-secondary` | `#a3a3a3` | Muted/secondary text |
-| `--color-text-tertiary`  | `#737373` | Disabled/hint text   |
+Pages pass SEO props through their layout, which forwards them to `BaseLayout` → `SEOHead`.
 
-**Accent (purple-violet, music-forward):**
-| Token                | Value     | Purpose              |
-| -------------------- | --------- | -------------------- |
-| `--color-accent`     | `#8b5cf6` | Primary accent       |
-| `--color-accent-hover` | `#a78bfa` | Hover state accent  |
+### Structured Data Helpers (`src/scripts/structured-data.ts`)
 
-**Semantic colors:** `--color-success` (#22c55e), `--color-error` (#ef4444), `--color-warning` (#f59e0b)
+Pure TypeScript functions that generate Schema.org JSON-LD objects:
 
-**Borders:** `--color-border` (#262626), `--color-border-subtle` (#1f1f1f)
+- **`generateMusicAlbumSchema(release, siteUrl)`** — Produces a `MusicAlbum` schema with nested `MusicRecording` entries per track, release date, artwork, and album release type.
+- **`generateMusicRecordingSchema(track, release, siteUrl, slug)`** — Produces a `MusicRecording` schema for individual tracks with `inAlbum` reference.
+- **`durationToISO8601(duration)`** — Converts `"3:42"` → `"PT3M42S"` (ISO 8601 duration).
+- **`resolveAbsoluteUrl(path, siteUrl)`** — Resolves relative paths to absolute URLs using the site's base URL.
 
-### Typography
+### Adding SEO to New Pages
 
-**Font:** Inter variable font (weights 100–900) loaded via Google Fonts CDN. Serves both display and body roles.
+1. Pass SEO props (`title`, `description`, `image`, `type`) through the page's layout
+2. For structured data, import helpers from `src/scripts/structured-data.ts` and pass the result as `structuredData`
+3. `Astro.site.href` provides the base URL (set by `site` in `astro.config.mjs`)
 
-**Heading classes:**
-- `.heading-1` — 4xl (36px) / 5xl (48px) on md+, weight 800, tight leading
-- `.heading-2` — 2xl (24px), weight 700
-- `.heading-3` — xl (20px), weight 600
+### Sitemap
 
-**Font size scale:** `--text-xs` (12px) through `--text-6xl` (60px) in rem-based steps.
+The `@astrojs/sitemap` integration automatically generates `sitemap-index.xml` and `sitemap-0.xml` during build. The `site` property in `astro.config.mjs` determines the canonical base URL:
 
-### Spacing
-
-Explicit `--space-*` scale: `--space-1` (0.25rem) through `--space-24` (6rem). Use Tailwind's default spacing utilities (`p-4`, `gap-6`) in templates; the CSS variables are available for custom components.
-
-### Animations
-
-Five keyframe animations with corresponding `--animate-*` tokens:
-
-| Keyframe       | Token                   | Usage                          |
-| --------------- | ----------------------- | ------------------------------ |
-| `artwork-zoom`  | `--animate-artwork-zoom` | Album art hover zoom (0.3s)   |
-| `play-pulse`    | `--animate-play-pulse`  | Play button pulse (1.5s loop) |
-| `fade-in-up`    | `--animate-fade-in-up`  | Page section entrance (0.5s)  |
-| `shimmer`       | `--animate-shimmer`     | Loading placeholder (2s loop) |
-| `spin`          | `--animate-spin`        | Loading spinner (1s loop)      |
-
-### Reusable CSS Classes
-
-| Class                | Purpose                                        |
-| -------------------- | ---------------------------------------------- |
-| `.card`              | Elevated card with border, hover scale + shadow |
-| `.artwork-container` | Square aspect-ratio container with hover zoom  |
-| `.pill`              | Badge/tag with hover accent effect             |
-| `.section`           | Consistent vertical padding (py-16 equivalent) |
-| `.container`         | Max-width 1280px with responsive horizontal padding |
-
-### How to Use Design Tokens
-
-**In CSS / Astro styles:**
-```css
-background-color: var(--color-bg-elevated);
-border: 1px solid var(--color-border);
+```js
+// astro.config.mjs
+export default defineConfig({
+  site: 'https://sam.music', // update for production domain
+  integrations: [sitemap()],
+});
 ```
 
-**In templates (Tailwind utilities):**
-```html
-<div class="bg-bg text-text border border-border">
-  <span class="text-text-secondary">Muted text</span>
-</div>
+### robots.txt
+
+Located at `public/robots.txt`. Allows all crawlers and references the sitemap:
+
 ```
+User-agent: *
+Allow: /
 
-### Responsive Approach
-
-Mobile-first. Use Tailwind's built-in breakpoints:
-- `sm:` (640px), `md:` (768px), `lg:` (1024px), `xl:` (1280px), `2xl:` (1536px)
-
-No light mode theme or toggle in v1 — dark-mode-only.
+Sitemap: https://sam.music/sitemap-index.xml
+```
 
 ## Background
 
