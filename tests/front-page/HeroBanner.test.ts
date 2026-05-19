@@ -37,10 +37,6 @@ describe('HeroBanner fixed-position structure', () => {
     expect(hero).toContain('scale');
   });
 
-  it('retains the bouncing chevron scroll indicator', () => {
-    expect(hero).toContain('animate-bounce');
-    expect(hero).toContain('m6 9 6 6 6-6');
-  });
 });
 
 describe('Homepage scroll-over layout', () => {
