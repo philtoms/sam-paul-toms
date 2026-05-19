@@ -57,17 +57,17 @@ describe('SocialLinksBar component structure', () => {
     }
   });
 
-  it('spans have transition/hiding classes and hover-reveal classes', () => {
-    // Check that spans are hidden by default (opacity-0, max-w-0)
-    expect(component).toContain('max-w-0');
+  it('spans have opacity transition and bordered-pill hover-reveal classes', () => {
+    // Check that spans are hidden by default (opacity-0)
     expect(component).toContain('opacity-0');
     // Check that spans transition to visible on hover
     expect(component).toContain('group-hover:opacity-100');
-    expect(component).toContain('group-hover:max-w-[100px]');
-    // Check transition properties
-    expect(component).toContain('transition-all duration-200');
-    expect(component).toContain('whitespace-nowrap');
-    expect(component).toContain('overflow-hidden');
+    // Check transition properties (opacity-only, 200ms)
+    expect(component).toContain('transition-opacity duration-200');
+    // Check bordered pill styling
+    expect(component).toContain('border-white/30');
+    expect(component).toContain('rounded-sm');
+    expect(component).toContain('text-xs');
   });
 
   it('social links have group class for hover state propagation', () => {
