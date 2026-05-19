@@ -1,5 +1,59 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroBanner from '../components/HeroBanner.astro';
+import CompactBio from '../components/CompactBio.astro';
+import SocialLinksBar from '../components/SocialLinksBar.astro';
+import PlaylistAccordion from '../components/PlaylistAccordion';
+import YouTubeEmbed from '../components/YouTubeEmbed.astro';
+import { getCollection } from 'astro:content';
+import { buildTrackFromContent } from '../scripts/audio-helpers';
+import type { Track } from '../components/AudioPlayer/types';
+
+// Fetch bio data
+const aboutEntries = await getCollection('about');
+const bio = aboutEntries[0]?.data;
+
+// Fetch works sections in display order
+const sectionOrder = ['documentary', 'film', 'library', 'trailers-themes-idents'];
+const worksEntries = await getCollection('works');
+const sortedWorks = worksEntries.sort(
+  (a, b) => sectionOrder.indexOf(a.data.slug) - sectionOrder.indexOf(b.data.slug)
+);
+
+// Build section data for the accordion (display-only track info)
+const sections = sortedWorks.map(entry => ({
+  title: entry.data.title,
+  slug: entry.data.slug,
+  description: entry.data.description,
+  tracks: entry.data.tracks.map(t => ({
+    title: t.title,
+    subtitle: t.subtitle,
+    duration: t.duration,
+    icon: t.icon ?? 'music',
+  })),
+}));
+
+// Build playable tracks map: section slug → Track[] for audio dispatch
+const playableTracksMap: Record<string, Track[]> = {};
+for (const entry of sortedWorks) {
+  playableTracksMap[entry.data.slug] = entry.data.tracks.map((track, i) =>
+    buildTrackFromContent(track, entry.data.slug, i, 'Sam', '/favicon.svg')
+  );
+}
+
+// Build ALL playable tracks for "Play All" button (concatenated across sections in order)
+const allTracks: Track[] = sortedWorks.flatMap(entry =>
+  entry.data.tracks.map((track, i) =>
+    buildTrackFromContent(track, entry.data.slug, i, 'Sam', '/favicon.svg')
+  )
+);
+const allTracksJson = JSON.stringify(allTracks);
+
+// YouTube video
+const youtubeUrl = "https://www.youtube.com/watch?v=xlt63O1YvSM";
+
+// Bio summary
+const bioSummary = "Sam is a multidisciplinary artist and producer based in the spaces between genres. Drawing from a deep well of influences, Sam crafts sound worlds that are at once intimate and expansive.";
 ---
 
 <BaseLayout
@@ -8,8 +62,46 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   image="/favicon.svg"
   type="website"
 >
-  <main class="flex min-h-screen flex-col items-center justify-center">
-    <h1 class="text-5xl font-bold tracking-tight text-accent">Sam</h1>
-    <p class="mt-4 text-lg text-text/70">Music portfolio — coming soon.</p>
+  <HeroBanner />
+
+  <main>
+    {/* Bio Section */}
+    <section class="section">
+      <div class="container">
+        <CompactBio
+          title="Sam"
+          photo={bio?.photo ?? '/images/bio/sam-portrait.svg'}
+          photoAlt={bio?.photoAlt ?? 'Sam'}
+          summary={bioSummary}
+          aboutUrl="/about"
+        />
+      </div>
+    </section>
+
+    {/* Social Links Bar */}
+    <section class="section pt-0">
+      <div class="container">
+        <SocialLinksBar allTracksJson={allTracksJson} />
+      </div>
+    </section>
+
+    {/* Playlist Accordion */}
+    <section class="section">
+      <div class="container max-w-3xl">
+        <h2 class="heading-2 mb-8">Listen</h2>
+        <PlaylistAccordion
+          client:load
+          sections={sections}
+          playableTracksMap={playableTracksMap}
+        />
+      </div>
+    </section>
+
+    {/* YouTube Embed */}
+    <section class="section">
+      <div class="container max-w-3xl">
+        <YouTubeEmbed url={youtubeUrl} title="Sam — Featured Video" />
+      </div>
+    </section>
   </main>
 </BaseLayout>

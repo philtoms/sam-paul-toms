@@ -1,0 +1,89 @@
+---
+/**
+ * YouTubeEmbed — Lazy-loaded YouTube video embed.
+ *
+ * Shows a thumbnail placeholder with a play button overlay.
+ * Only loads the actual iframe when the user clicks, saving bandwidth.
+ *
+ * Props:
+ * - url: YouTube video URL (supports youtube.com/watch, youtu.be, youtube.com/embed)
+ * - title: Accessible title for the iframe (default: "YouTube video")
+ */
+
+interface Props {
+  url: string;
+  title?: string;
+}
+
+const { url, title = 'YouTube video' } = Astro.props;
+
+function extractYouTubeId(url: string): string {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+    /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return '';
+}
+
+const videoId = extractYouTubeId(url);
+const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+---
+
+{videoId && (
+  <div
+    class="youtube-embed relative w-full overflow-hidden rounded-lg shadow-xl"
+    style="padding-bottom: 56.25%"
+    data-video-id={videoId}
+    data-title={title}
+  >
+    <!-- Thumbnail placeholder -->
+    <div
+      id={`yt-placeholder-${videoId}`}
+      class="absolute inset-0 cursor-pointer group"
+    >
+      <img
+        src={thumbnailUrl}
+        alt={title}
+        loading="lazy"
+        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+      <!-- Play button overlay -->
+      <div class="absolute inset-0 flex items-center justify-center bg-black/30 transition-colors group-hover:bg-black/40">
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0a0a0a" class="w-8 h-8 ml-1">
+            <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+<script>
+  /**
+   * Lazy YouTube embed: replaces thumbnail with iframe on click.
+   */
+  document.querySelectorAll('.youtube-embed').forEach(embed => {
+    const videoId = embed.getAttribute('data-video-id');
+    const videoTitle = embed.getAttribute('data-title') || 'YouTube video';
+    if (!videoId) return;
+
+    embed.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+      iframe.title = videoTitle;
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.setAttribute('loading', 'lazy');
+      iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
+
+      embed.innerHTML = '';
+      embed.appendChild(iframe);
+    }, { once: true });
+  });
+</script>

@@ -1,0 +1,52 @@
+---
+/**
+ * HeroBanner — Full-width hero section with scroll-driven fade effect.
+ *
+ * Features:
+ * - Large artist name + tagline
+ * - Subtle gradient background with accent color hint
+ * - Scroll-driven opacity fade and slight scale-down
+ * - Bouncing chevron scroll indicator
+ * - Responsive: 40dvh on mobile, 60dvh on desktop
+ */
+---
+
+<div id="hero-banner" class="relative flex min-h-[40dvh] items-center justify-center md:min-h-[60dvh] bg-gradient-to-b from-accent/10 to-bg">
+  <div class="text-center">
+    <h1 class="text-6xl font-bold tracking-tight text-text md:text-7xl">Sam</h1>
+    <p class="mt-4 text-lg text-text/70">Composer & Producer</p>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-text/30">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </div>
+</div>
+
+<script>
+  /**
+   * Scroll-driven hero fade effect.
+   * As the user scrolls, the banner fades out (opacity 1→0) and
+   * slightly shrinks (scale 1→0.95) over ~300px of scroll distance.
+   */
+  const hero = document.getElementById('hero-banner');
+  if (hero) {
+    let ticking = false;
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        const fraction = Math.min(window.scrollY / 300, 1);
+        hero.style.opacity = String(1 - fraction);
+        hero.style.transform = `scale(${1 - fraction * 0.05})`;
+        ticking = false;
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>

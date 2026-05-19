@@ -70,7 +70,8 @@ sam/
 │   │   └── AudioPlayer/ # Persistent audio player (Preact island)
 │   ├── content/        # Astro content collections
 │   │   ├── about/      # About/bio page content
-│   │   └── releases/   # Release markdown files
+│   │   ├── releases/   # Release markdown files
+│   │   └── works/      # Works/portfolio playlist sections
 │   ├── layouts/        # Page layouts
 │   ├── pages/          # File-based routing
 │   ├── scripts/        # Utility scripts (custom events, helpers)

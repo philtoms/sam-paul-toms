@@ -50,4 +50,22 @@ const about = defineCollection({
   }),
 });
 
-export const collections = { releases, about };
+const works = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/works' }),
+  schema: z.object({
+    title: z.string(),
+    slug: z.string(),
+    description: z.string().optional(),
+    tracks: z.array(
+      z.object({
+        title: z.string(),
+        duration: z.string(),
+        audioFile: z.string().optional(),
+        icon: z.string().default('music'),
+        subtitle: z.string().optional(),
+      }),
+    ),
+  }),
+});
+
+export const collections = { releases, about, works };

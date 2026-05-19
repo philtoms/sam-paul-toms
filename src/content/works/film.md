@@ -1,0 +1,32 @@
+---
+title: "Film"
+slug: "film"
+description: "Scores and sound design for feature films."
+tracks:
+  - title: "The Crossing"
+    duration: "4:35"
+    icon: "film"
+    subtitle: "Dir. Léa Dupont"
+    audioFile: "works/film/01-the-crossing.mp3"
+  - title: "Paper Towns"
+    duration: "3:28"
+    icon: "film"
+    subtitle: "Dir. Marcus Chen"
+    audioFile: "works/film/02-paper-towns.mp3"
+  - title: "Between Worlds"
+    duration: "5:12"
+    icon: "film"
+    subtitle: "Dir. Sarah Okafor"
+    audioFile: "works/film/03-between-worlds.mp3"
+  - title: "The Return"
+    duration: "4:05"
+    icon: "film"
+    subtitle: "Dir. Kim Soo-jin"
+    audioFile: "works/film/04-the-return.mp3"
+  - title: "Silent Hours"
+    duration: "3:47"
+    icon: "music"
+    audioFile: "works/film/05-silent-hours.mp3"
+---
+
+Scores and sound design for feature films.

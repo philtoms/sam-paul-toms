@@ -1,0 +1,53 @@
+/* PlaylistAccordion styles */
+
+.playlist-accordion {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-color: var(--color-bg-elevated);
+}
+
+.accordion-section {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.accordion-section:last-child {
+  border-bottom: none;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-family: inherit;
+  transition: background-color 200ms ease;
+}
+
+.accordion-header:hover {
+  background-color: color-mix(in srgb, #fff 5%, transparent);
+}
+
+.accordion-chevron {
+  transition: transform 200ms ease;
+}
+
+.accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease;
+}
+
+.accordion-content > * {
+  overflow: hidden;
+}
+
+.accordion-content--open {
+  grid-template-rows: 1fr;
+}
