@@ -163,4 +163,19 @@ describe('PlaylistAccordion', () => {
     // Now Film should be the only open section
     expect(screen.getByText('The Crossing')).toBeTruthy();
   });
+
+  it('playlist-accordion has no background, border, or border-radius inline styles', () => {
+    const { container } = render(
+      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />,
+    );
+
+    const accordion = container.querySelector('.playlist-accordion') as HTMLElement;
+    expect(accordion).toBeTruthy();
+
+    const style = accordion.style;
+    // These CSS properties should NOT be set as inline styles on the element
+    expect(style.backgroundColor).toBe('');
+    expect(style.border).toBe('');
+    expect(style.borderRadius).toBe('');
+  });
 });
