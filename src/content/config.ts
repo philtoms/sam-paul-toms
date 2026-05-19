@@ -13,7 +13,7 @@ const releases = defineCollection({
       z.object({
         title: z.string(),
         duration: z.string(),
-      })
+      }),
     ),
     streamingLinks: z.record(z.string()),
   }),
