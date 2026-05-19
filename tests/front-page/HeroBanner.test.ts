@@ -48,8 +48,8 @@ describe('Homepage scroll-over layout', () => {
     expect(index).toMatch(/<main[^>]*z-10/);
   });
 
-  it('main element has solid bg-bg background to cover the hero', () => {
-    expect(index).toMatch(/<main[^>]*bg-bg/);
+  it('main element has transparent background so hero shows through during scroll', () => {
+    expect(index).not.toMatch(/<main[^>]*bg-bg/);
   });
 
   it('main element has margin-top matching hero height for scroll-over effect', () => {
