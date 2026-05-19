@@ -37,6 +37,20 @@ describe('HeroBanner fixed-position structure', () => {
     expect(hero).toContain('scale');
   });
 
+  it('contains the banner cover image', () => {
+    expect(hero).toContain('src="/images/banner/spt_low_res.png"');
+    expect(hero).toContain('object-cover');
+  });
+
+  it('no longer uses the old gradient background', () => {
+    expect(hero).not.toContain('from-accent/10');
+    expect(hero).not.toContain('to-bg');
+  });
+
+  it('has a dark overlay for text readability', () => {
+    expect(hero).toContain('bg-black/40');
+  });
+
 });
 
 describe('Homepage scroll-over layout', () => {
