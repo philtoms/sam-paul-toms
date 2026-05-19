@@ -135,6 +135,95 @@ Edit `src/content/about/bio.md` to update any content:
 
 The contact form (`src/components/ContactForm.astro`) is currently **frontend-only** — it has client-side validation but no backend submission handler. Actual email delivery (via Cloudflare Worker, Formspree, Resend, etc.) will be wired up in a future task.
 
+## Design System
+
+The visual design system is defined in `src/styles/global.css` using Tailwind v4's CSS-first `@theme` block. All components consume these design tokens for consistent visual output.
+
+### Color Palette
+
+**Background layers** (near-black with subtle warmth):
+| Token                  | Value                     | Purpose                            |
+| ---------------------- | ------------------------- | ---------------------------------- |
+| `--color-bg`           | `#0a0a0a`                 | Page background                    |
+| `--color-bg-elevated`  | `#141414`                 | Cards, panels, elevated surfaces   |
+| `--color-bg-overlay`   | `#1a1a1a`                 | Overlays, modals, dropdowns        |
+
+**Text hierarchy:**
+| Token                    | Value     | Purpose              |
+| ------------------------ | --------- | -------------------- |
+| `--color-text`           | `#f5f5f5` | Primary text         |
+| `--color-text-secondary` | `#a3a3a3` | Muted/secondary text |
+| `--color-text-tertiary`  | `#737373` | Disabled/hint text   |
+
+**Accent (purple-violet, music-forward):**
+| Token                | Value     | Purpose              |
+| -------------------- | --------- | -------------------- |
+| `--color-accent`     | `#8b5cf6` | Primary accent       |
+| `--color-accent-hover` | `#a78bfa` | Hover state accent  |
+
+**Semantic colors:** `--color-success` (#22c55e), `--color-error` (#ef4444), `--color-warning` (#f59e0b)
+
+**Borders:** `--color-border` (#262626), `--color-border-subtle` (#1f1f1f)
+
+### Typography
+
+**Font:** Inter variable font (weights 100–900) loaded via Google Fonts CDN. Serves both display and body roles.
+
+**Heading classes:**
+- `.heading-1` — 4xl (36px) / 5xl (48px) on md+, weight 800, tight leading
+- `.heading-2` — 2xl (24px), weight 700
+- `.heading-3` — xl (20px), weight 600
+
+**Font size scale:** `--text-xs` (12px) through `--text-6xl` (60px) in rem-based steps.
+
+### Spacing
+
+Explicit `--space-*` scale: `--space-1` (0.25rem) through `--space-24` (6rem). Use Tailwind's default spacing utilities (`p-4`, `gap-6`) in templates; the CSS variables are available for custom components.
+
+### Animations
+
+Five keyframe animations with corresponding `--animate-*` tokens:
+
+| Keyframe       | Token                   | Usage                          |
+| --------------- | ----------------------- | ------------------------------ |
+| `artwork-zoom`  | `--animate-artwork-zoom` | Album art hover zoom (0.3s)   |
+| `play-pulse`    | `--animate-play-pulse`  | Play button pulse (1.5s loop) |
+| `fade-in-up`    | `--animate-fade-in-up`  | Page section entrance (0.5s)  |
+| `shimmer`       | `--animate-shimmer`     | Loading placeholder (2s loop) |
+| `spin`          | `--animate-spin`        | Loading spinner (1s loop)      |
+
+### Reusable CSS Classes
+
+| Class                | Purpose                                        |
+| -------------------- | ---------------------------------------------- |
+| `.card`              | Elevated card with border, hover scale + shadow |
+| `.artwork-container` | Square aspect-ratio container with hover zoom  |
+| `.pill`              | Badge/tag with hover accent effect             |
+| `.section`           | Consistent vertical padding (py-16 equivalent) |
+| `.container`         | Max-width 1280px with responsive horizontal padding |
+
+### How to Use Design Tokens
+
+**In CSS / Astro styles:**
+```css
+background-color: var(--color-bg-elevated);
+border: 1px solid var(--color-border);
+```
+
+**In templates (Tailwind utilities):**
+```html
+<div class="bg-bg text-text border border-border">
+  <span class="text-text-secondary">Muted text</span>
+</div>
+```
+
+### Responsive Approach
+
+Mobile-first. Use Tailwind's built-in breakpoints:
+- `sm:` (640px), `md:` (768px), `lg:` (1024px), `xl:` (1280px), `2xl:` (1536px)
+
+No light mode theme or toggle in v1 — dark-mode-only.
+
 ## Background
 
 See [`docs/initial-research.md`](docs/initial-research.md) for the full research report on platform comparison, design trends, and technology choices.
