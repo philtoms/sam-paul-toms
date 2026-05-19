@@ -1,8 +1,8 @@
 /**
  * YouTubeEmbed component tests.
  *
- * Validates the YouTubeEmbed component's structure, click handler behavior,
- * and the fix for the autoplay bug (no loading="lazy" on dynamically created iframe).
+ * Validates the YouTubeEmbed component renders a direct iframe embed
+ * with proper attributes and responsive 16:9 wrapper.
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -16,37 +16,23 @@ describe('YouTubeEmbed component structure', () => {
     expect(component).toContain('class="youtube-embed');
   });
 
-  it('renders data-video-id attribute with the extracted YouTube ID', () => {
-    expect(component).toContain('data-video-id={videoId}');
+  it('renders an iframe element', () => {
+    expect(component).toContain('<iframe');
   });
 
-  it('renders data-title attribute', () => {
-    expect(component).toContain('data-title={title}');
+  it('iframe src includes youtube.com/embed/', () => {
+    expect(component).toContain('youtube.com/embed/');
   });
 
-  it('contains the thumbnail img with object-cover class', () => {
-    expect(component).toContain('object-cover');
+  it('iframe has a title attribute', () => {
+    expect(component).toContain('title={title}');
   });
 
-  it('contains a play button SVG overlay', () => {
-    expect(component).toContain('<svg');
-    expect(component).toContain('viewBox="0 0 24 24"');
-  });
-});
-
-describe('YouTubeEmbed click handler', () => {
-  it('does NOT set loading="lazy" on the iframe (fixes autoplay bug)', () => {
-    expect(component).not.toContain('"loading"');
-    expect(component).not.toContain("'loading'");
-    expect(component).not.toMatch(/setAttribute\(['"]loading['"],\s*['"]lazy['"]\)/);
+  it('iframe has allowfullscreen attribute', () => {
+    expect(component).toContain('allowfullscreen');
   });
 
-  it('sets ?autoplay=1 on the iframe src', () => {
-    expect(component).toContain('?autoplay=1');
-  });
-
-  it('uses replaceChildren instead of innerHTML', () => {
-    expect(component).toContain('replaceChildren');
-    expect(component).not.toContain('innerHTML');
+  it('uses browser-level lazy loading on the iframe', () => {
+    expect(component).toContain('loading="lazy"');
   });
 });
