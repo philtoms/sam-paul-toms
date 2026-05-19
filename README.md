@@ -42,6 +42,7 @@ sam/
 │   ├── components/     # Reusable UI components
 │   │   └── AudioPlayer/ # Persistent audio player (Preact island)
 │   ├── content/        # Astro content collections
+│   │   ├── about/      # About/bio page content
 │   │   └── releases/   # Release markdown files
 │   ├── layouts/        # Page layouts
 │   ├── pages/          # File-based routing
@@ -99,6 +100,40 @@ addToQueue({ id: '3', title: 'Song C', artist: 'Sam', audioUrl: '/audio/song-c.m
 Copy `.env.example` to `.env` and configure:
 
 - `R2_PUBLIC_URL` — Base URL for Cloudflare R2 object storage (audio files, artwork)
+
+## About Page
+
+The `/about` page showcases Sam's artist identity with a bio section, genre tags, press quotes, and a contact form. Content is managed through the `about` Astro content collection.
+
+### Content Collection: `about`
+
+The about collection is defined in `src/content/config.ts` and uses Markdown files in `src/content/about/`.
+
+**Frontmatter fields:**
+
+| Field         | Type                                       | Description                                |
+| ------------- | ------------------------------------------ | ------------------------------------------ |
+| `title`       | `string`                                   | Page heading (e.g. "About Sam")            |
+| `photo`       | `string`                                   | Path to bio photo (e.g. `/images/bio/...`) |
+| `photoAlt`    | `string`                                   | Alt text for the photo                     |
+| `genreTags`   | `string[]`                                 | Genre badge labels                         |
+| `pressQuotes` | `Array<{ text, source, url? }>`            | Press/review quotes with attribution       |
+| `contactEmail`| `string?` (optional)                       | Reference only; not used in frontend       |
+
+The Markdown body contains the bio text (rendered as HTML).
+
+### Editing the Bio
+
+Edit `src/content/about/bio.md` to update any content:
+
+- **Bio text:** Edit the Markdown body below the frontmatter
+- **Genre tags:** Add/remove entries in the `genreTags` array
+- **Press quotes:** Add/remove entries in the `pressQuotes` array (each needs `text` and `source`; `url` is optional)
+- **Photo:** Update the `photo` path and place the image in `public/images/bio/`
+
+### Contact Form
+
+The contact form (`src/components/ContactForm.astro`) is currently **frontend-only** — it has client-side validation but no backend submission handler. Actual email delivery (via Cloudflare Worker, Formspree, Resend, etc.) will be wired up in a future task.
 
 ## Background
 

@@ -44,7 +44,7 @@
     },
     {
       "name": "Documentation & Delivery",
-      "status": "pending"
+      "status": "in-progress"
     }
   ],
   "currentStep": 9,
@@ -239,11 +239,15 @@
     {
       "timestamp": "2026-05-19T12:28:34.325Z",
       "action": "Step 8 (Testing & Verification) → done"
+    },
+    {
+      "timestamp": "2026-05-19T12:28:47.026Z",
+      "action": "Step 9 (Documentation & Delivery) → in-progress"
     }
   ],
   "columnMovedAt": "2026-05-19T12:10:19.104Z",
   "createdAt": "2026-05-19T09:57:54.226Z",
-  "updatedAt": "2026-05-19T12:28:34.325Z",
+  "updatedAt": "2026-05-19T12:28:47.026Z",
   "size": "M",
   "reviewLevel": 1,
   "worktree": "/Users/phil/dev/sam/.worktrees/early-iris"
