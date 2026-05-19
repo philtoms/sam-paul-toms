@@ -9,10 +9,6 @@ import { getCollection } from 'astro:content';
 import { buildTrackFromContent } from '../scripts/audio-helpers';
 import type { Track } from '../components/AudioPlayer/types';
 
-// Fetch bio data
-const aboutEntries = await getCollection('about');
-const bio = aboutEntries[0]?.data;
-
 // Fetch works sections in display order
 const sectionOrder = ['documentary', 'film', 'library', 'trailers-themes-idents'];
 const worksEntries = await getCollection('works');
@@ -69,9 +65,6 @@ const bioSummary = "Sam is a multidisciplinary artist and producer based in the 
     <section class="section">
       <div class="container">
         <CompactBio
-          title="Sam"
-          photo={bio?.photo ?? '/images/bio/sam-portrait.svg'}
-          photoAlt={bio?.photoAlt ?? 'Sam'}
           summary={bioSummary}
           aboutUrl="/about"
         />

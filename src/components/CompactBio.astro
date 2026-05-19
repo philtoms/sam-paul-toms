@@ -1,44 +1,26 @@
 ---
 /**
- * CompactBio — A condensed bio section with circular photo, summary, and "Read more" link.
+ * CompactBio — A condensed bio section with summary and "Read more" link.
  *
  * Props:
- * - title:    Artist name or section heading
- * - photo:    URL to the profile photo
- * - photoAlt: Alt text for the photo
  * - summary:  Short 2–3 sentence bio summary
  * - aboutUrl: URL to the full about page
  */
 
 interface Props {
-  title: string;
-  photo: string;
-  photoAlt: string;
   summary: string;
   aboutUrl: string;
 }
 
-const { title, photo, photoAlt, summary, aboutUrl } = Astro.props;
+const { summary, aboutUrl } = Astro.props;
 ---
 
-<div class="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
-  <!-- Circular photo -->
-  <img
-    src={photo}
-    alt={photoAlt}
-    loading="lazy"
-    class="h-12 w-12 shrink-0 rounded-full object-cover md:h-16 md:w-16"
-  />
-
-  <!-- Bio text -->
-  <div class="text-center sm:text-left">
-    <h2 class="heading-2 mb-2">{title}</h2>
-    <p class="text-sm leading-relaxed text-text/70">{summary}</p>
-    <a
-      href={aboutUrl}
-      class="mt-3 inline-block text-sm font-medium text-accent transition-colors hover:text-accent-hover"
-    >
-      Read more &rarr;
-    </a>
-  </div>
+<div>
+  <p class="text-sm leading-relaxed text-text/70">{summary}</p>
+  <a
+    href={aboutUrl}
+    class="mt-3 inline-block text-sm font-medium text-accent transition-colors hover:text-accent-hover"
+  >
+    Read more &rarr;
+  </a>
 </div>

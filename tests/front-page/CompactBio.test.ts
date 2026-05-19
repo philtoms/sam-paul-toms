@@ -13,15 +13,10 @@ const componentPath = resolve(process.cwd(), 'src/components/CompactBio.astro');
 const component = readFileSync(componentPath, 'utf-8');
 
 describe('CompactBio component structure', () => {
-  it('accepts required props: title, photo, photoAlt, summary, aboutUrl', () => {
-    for (const prop of ['title', 'photo', 'photoAlt', 'summary', 'aboutUrl']) {
+  it('accepts required props: summary, aboutUrl', () => {
+    for (const prop of ['summary', 'aboutUrl']) {
       expect(component).toContain(prop);
     }
-  });
-
-  it('renders photo with src and alt from props', () => {
-    expect(component).toContain('src={photo}');
-    expect(component).toContain('alt={photoAlt}');
   });
 
   it('renders summary text from prop', () => {
@@ -31,11 +26,5 @@ describe('CompactBio component structure', () => {
   it('renders "Read more" link pointing to aboutUrl', () => {
     expect(component).toContain('href={aboutUrl}');
     expect(component).toContain('Read more');
-  });
-
-  it('uses circular photo crop with responsive sizes', () => {
-    expect(component).toContain('rounded-full');
-    expect(component).toContain('w-12');
-    expect(component).toContain('w-16');
   });
 });
