@@ -1,45 +1,12 @@
 {
   "id": "KB-004",
   "description": "## Goal\nCreate pages that list all releases (albums, EPs, singles) with album art grid, grouped by release type, with streaming platform links per track.\n\n## Tech Details from Research\n- **Content collections:** Astro content collections (`src/content/releases/`) using Markdown frontmatter for metadata\n- **Frontmatter schema fields:** title, artist, release date, type (album/EP/single), tracks list, album art path, streaming links (Spotify, Apple Music, YouTube Music, Bandcamp)\n- **Design:** Grid layout with large album art thumbnails (per Section 3 design trends)\n- **Individual release pages:** `/releases/[slug]` with track listing and \"Listen on Spotify / Apple Music / YouTube Music / Bandcamp\" links\n- **Responsive grid:** 1 col mobile, 2 col tablet, 3-4 col desktop\n\n## Deliverables\n- `src/content/config.ts` — release collection schema definition\n- Sample release content files in `src/content/releases/`\n- `src/pages/releases/index.astro` — release listing page\n- `src/pages/releases/[slug].astro` — individual release detail page\n- `src/components/ReleaseCard.astro` — album art card component\n- `src/components/StreamingLinks.astro` — \"Listen on\" platform links\n- `src/components/TrackList.astro` — track listing with durations\n\n## Dependencies\nKB-002 (project scaffolding)\n\n## Size\nM",
-  "column": "in-progress",
+  "column": "todo",
   "dependencies": [
     "KB-002"
   ],
-  "steps": [
-    {
-      "name": "Preflight",
-      "status": "done"
-    },
-    {
-      "name": "Expand Content Collection Schema",
-      "status": "done"
-    },
-    {
-      "name": "Create Sample Release Content",
-      "status": "done"
-    },
-    {
-      "name": "Build Components",
-      "status": "in-progress"
-    },
-    {
-      "name": "Release Listing Page",
-      "status": "pending"
-    },
-    {
-      "name": "Release Detail Page",
-      "status": "pending"
-    },
-    {
-      "name": "Testing & Verification",
-      "status": "pending"
-    },
-    {
-      "name": "Documentation & Delivery",
-      "status": "pending"
-    }
-  ],
-  "currentStep": 3,
+  "steps": [],
+  "currentStep": 0,
   "log": [
     {
       "timestamp": "2026-05-19T09:57:43.212Z",
@@ -53,75 +20,12 @@
       "timestamp": "2026-05-19T10:07:51.033Z",
       "action": "Spec review: APPROVE",
       "outcome": "This is a thorough, well-structured specification for building release listing and detail pages. The schema is precise, the component props are well-defined, the file scope is mostly complete, and each step has concrete, verifiable checkboxes. The testing strategy is reasonable. A few minor gaps exist but none would cause the implementation to fail."
-    },
-    {
-      "timestamp": "2026-05-19T11:01:18.748Z",
-      "action": "Worktree created at /Users/phil/dev/sam/.worktrees/deft-moss"
-    },
-    {
-      "timestamp": "2026-05-19T11:01:18.754Z",
-      "action": "Step 0 (Preflight) → pending"
-    },
-    {
-      "timestamp": "2026-05-19T11:01:25.582Z",
-      "action": "Step 0 (Preflight) → in-progress"
-    },
-    {
-      "timestamp": "2026-05-19T11:01:57.276Z",
-      "action": "Step 0 (Preflight) → done"
-    },
-    {
-      "timestamp": "2026-05-19T11:02:00.974Z",
-      "action": "Step 1 (Expand Content Collection Schema) → in-progress"
-    },
-    {
-      "timestamp": "2026-05-19T11:02:05.017Z",
-      "action": "plan review requested for Step 1 (Expand Content Collection Schema)"
-    },
-    {
-      "timestamp": "2026-05-19T11:02:46.975Z",
-      "action": "plan review Step 1: APPROVE",
-      "outcome": "The plan is straightforward and well-scoped. The current `src/content/config.ts` already has the `releases` collection scaffolded with the `glob()` loader and basic schema fields. Step 1 correctly identifies the gaps — expanding `tracks` items with per-track streaming URLs and `audioFile`, adding the `description` field, and replacing the loosely-typed `streamingLinks: z.record(z.string())` with a properly structured object. The verification via `npx astro check` is appropriate."
-    },
-    {
-      "timestamp": "2026-05-19T11:03:29.824Z",
-      "action": "Step 1 (Expand Content Collection Schema) → done"
-    },
-    {
-      "timestamp": "2026-05-19T11:03:34.250Z",
-      "action": "Step 2 (Create Sample Release Content) → in-progress"
-    },
-    {
-      "timestamp": "2026-05-19T11:03:37.577Z",
-      "action": "plan review requested for Step 2 (Create Sample Release Content)"
-    },
-    {
-      "timestamp": "2026-05-19T11:04:14.646Z",
-      "action": "plan review Step 2: APPROVE",
-      "outcome": "The step is well-specified and will achieve its outcomes. The schema from Step 1 is already in place in `src/content/config.ts` and the 4 sample release files, SVG placeholder images, and validation checklist are all clearly defined. The plan is straightforward content creation with no architectural complexity."
-    },
-    {
-      "timestamp": "2026-05-19T11:05:35.523Z",
-      "action": "Step 2 (Create Sample Release Content) → done"
-    },
-    {
-      "timestamp": "2026-05-19T11:05:40.577Z",
-      "action": "Step 3 (Build Components) → in-progress"
-    },
-    {
-      "timestamp": "2026-05-19T11:05:44.921Z",
-      "action": "plan review requested for Step 3 (Build Components)"
-    },
-    {
-      "timestamp": "2026-05-19T11:06:19.664Z",
-      "action": "plan review Step 3: APPROVE",
-      "outcome": "The plan is well-structured and detailed enough to implement three Astro components (`ReleaseCard`, `StreamingLinks`, `TrackList`) that will correctly render the release content collection data. The schema and sample content are already in place from Steps 1–2, and all props interfaces are clearly specified. The step will achieve its outcomes."
     }
   ],
-  "columnMovedAt": "2026-05-19T11:01:18.627Z",
+  "columnMovedAt": "2026-05-19T10:08:04.752Z",
   "createdAt": "2026-05-19T09:57:43.212Z",
-  "updatedAt": "2026-05-19T11:06:19.664Z",
+  "updatedAt": "2026-05-19T10:59:48.607Z",
   "size": "M",
   "reviewLevel": 1,
-  "worktree": "/Users/phil/dev/sam/.worktrees/deft-moss"
+  "status": "queued"
 }

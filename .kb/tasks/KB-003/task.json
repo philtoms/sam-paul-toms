@@ -1,53 +1,12 @@
 {
   "id": "KB-003",
   "description": "## Goal\nBuild a persistent sticky-bottom audio player bar that continues playing across Astro page navigations using View Transitions.\n\n## Tech Details from Research\n- **Waveform:** wavesurfer.js v7 for waveform visualization\n- **Audio engine:** howler.js as cross-browser audio engine (format fallback MP3/OGG, Web Audio API)\n- **Playlist support:** play/pause, next/prev, progress bar, volume, track title + artist display\n- **Persistence:** Astro island (client-side JS component) that persists via View Transitions `transition:persist`\n- **Audio hosting:** Files served from Cloudflare R2 (URLs configured via env variable `R2_PUBLIC_URL`)\n\n## Deliverables\n- `src/components/AudioPlayer/` directory containing:\n  - Player component (Astro island with client-side JS)\n  - Playlist store (track list, current track, playback state)\n  - Waveform renderer (wavesurfer.js integration)\n  - Howler wrapper (audio engine abstraction)\n- CSS for sticky bottom bar styling\n- Player-reactive state that survives page transitions\n- `.env.example` entry for `R2_PUBLIC_URL`\n\n## Dependencies\nKB-002 (project scaffolding must exist)\n\n## Size\nL",
-  "column": "in-progress",
+  "column": "todo",
   "dependencies": [
     "KB-002"
   ],
-  "steps": [
-    {
-      "name": "Preflight",
-      "status": "done"
-    },
-    {
-      "name": "Install Dependencies and Configure Integrations",
-      "status": "in-progress"
-    },
-    {
-      "name": "Core Types and Playlist Store",
-      "status": "pending"
-    },
-    {
-      "name": "Audio Engine (howler.js Wrapper)",
-      "status": "pending"
-    },
-    {
-      "name": "Waveform Renderer (wavesurfer.js Wrapper)",
-      "status": "pending"
-    },
-    {
-      "name": "Player UI Component (Preact)",
-      "status": "pending"
-    },
-    {
-      "name": "Custom Event System for Page→Player Communication",
-      "status": "pending"
-    },
-    {
-      "name": "Astro Integration — ViewTransitions and Layout Mount",
-      "status": "pending"
-    },
-    {
-      "name": "Testing & Verification",
-      "status": "pending"
-    },
-    {
-      "name": "Documentation & Delivery",
-      "status": "pending"
-    }
-  ],
-  "currentStep": 1,
+  "steps": [],
+  "currentStep": 0,
   "log": [
     {
       "timestamp": "2026-05-19T09:57:32.143Z",
@@ -61,41 +20,12 @@
       "timestamp": "2026-05-19T10:10:17.427Z",
       "action": "Spec review: APPROVE",
       "outcome": "This is an exceptionally detailed, well-structured specification for a complex integration task. The mission is clear, steps have concrete verifiable outcomes, the file scope is nearly complete, and testing requirements are strong. There are a few technical inaccuracies (incorrect dependency claim, deprecated API usage, invalid CSS value, missing test file from scope) but all are easily caught at build/test time and none represent architectural risks."
-    },
-    {
-      "timestamp": "2026-05-19T11:01:18.690Z",
-      "action": "Worktree created at /Users/phil/dev/sam/.worktrees/proud-daisy"
-    },
-    {
-      "timestamp": "2026-05-19T11:01:18.749Z",
-      "action": "Step 0 (Preflight) → pending"
-    },
-    {
-      "timestamp": "2026-05-19T11:01:22.978Z",
-      "action": "Step 0 (Preflight) → in-progress"
-    },
-    {
-      "timestamp": "2026-05-19T11:01:45.211Z",
-      "action": "Step 0 (Preflight) → done"
-    },
-    {
-      "timestamp": "2026-05-19T11:01:48.708Z",
-      "action": "Step 1 (Install Dependencies and Configure Integrations) → in-progress"
-    },
-    {
-      "timestamp": "2026-05-19T11:01:57.598Z",
-      "action": "plan review requested for Step 1 (Install Dependencies and Configure Integrations)"
-    },
-    {
-      "timestamp": "2026-05-19T11:03:28.325Z",
-      "action": "plan review Step 1: REVISE",
-      "outcome": "The step covers the essential configuration changes (Preact integration, vitest setup, test scripts), but there is one dependency gap that will cause Step 2 to fail. The PROMPT.md incorrectly states that `@preact/signals` is \"included with `preact`\", but it is a **separate npm package** that must be explicitly installed."
     }
   ],
-  "columnMovedAt": "2026-05-19T11:01:18.623Z",
+  "columnMovedAt": "2026-05-19T10:10:27.366Z",
   "createdAt": "2026-05-19T09:57:32.143Z",
-  "updatedAt": "2026-05-19T11:03:28.325Z",
+  "updatedAt": "2026-05-19T10:59:48.606Z",
   "size": "L",
   "reviewLevel": 3,
-  "worktree": "/Users/phil/dev/sam/.worktrees/proud-daisy"
+  "status": "queued"
 }
