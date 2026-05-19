@@ -1,5 +1,8 @@
 ---
 import '../styles/global.css';
+import '../components/AudioPlayer/Player.css';
+import { ViewTransitions } from 'astro:transitions';
+import Player from '../components/AudioPlayer/Player';
 
 interface Props {
   title?: string;
@@ -15,8 +18,12 @@ const { title = 'Sam — Music' } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <ViewTransitions />
   </head>
   <body>
     <slot />
+    <div transition:persist="audio-player">
+      <Player client:load />
+    </div>
   </body>
 </html>
