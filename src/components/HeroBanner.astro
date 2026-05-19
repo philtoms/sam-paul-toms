@@ -1,17 +1,21 @@
 ---
 /**
- * HeroBanner — Full-width hero section with scroll-driven fade effect.
+ * HeroBanner — Fixed-position hero with scroll-over parallax effect.
+ *
+ * The hero is pinned to the top of the viewport as a fixed background layer.
+ * Main page content scrolls over it with a solid background, covering the hero
+ * while it simultaneously fades out and shrinks via scroll-driven JS.
  *
  * Features:
+ * - Fixed positioning (40dvh mobile / 60dvh desktop)
  * - Large artist name + tagline
  * - Subtle gradient background with accent color hint
  * - Scroll-driven opacity fade and slight scale-down
  * - Bouncing chevron scroll indicator
- * - Responsive: 40dvh on mobile, 60dvh on desktop
  */
 ---
 
-<div id="hero-banner" class="relative flex min-h-[40dvh] items-center justify-center md:min-h-[60dvh] bg-gradient-to-b from-accent/10 to-bg">
+<div id="hero-banner" class="fixed top-0 left-0 right-0 z-0 flex h-[40dvh] items-center justify-center md:h-[60dvh] bg-gradient-to-b from-accent/10 to-bg">
   <div class="text-center">
     <h1 class="text-6xl font-bold tracking-tight text-text md:text-7xl">Sam</h1>
     <p class="mt-4 text-lg text-text/70">Composer & Producer</p>
