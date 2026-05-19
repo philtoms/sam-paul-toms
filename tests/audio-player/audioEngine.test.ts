@@ -44,6 +44,11 @@ describe('audioEngine', () => {
     vi.clearAllMocks();
     vi.resetModules();
 
+    // Mock requestAnimationFrame / cancelAnimationFrame (not available in Node)
+    // Return immediately without invoking callback to avoid infinite recursion
+    globalThis.requestAnimationFrame = vi.fn(() => 1);
+    globalThis.cancelAnimationFrame = vi.fn();
+
     vi.doMock('howler', () => {
       MockHowl = vi.fn(function (this: any) {
         return mockHowlInstance;
