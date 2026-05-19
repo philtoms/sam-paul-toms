@@ -40,14 +40,14 @@
     },
     {
       "name": "Testing & Verification",
-      "status": "pending"
+      "status": "done"
     },
     {
       "name": "Documentation & Delivery",
       "status": "pending"
     }
   ],
-  "currentStep": 8,
+  "currentStep": 9,
   "log": [
     {
       "timestamp": "2026-05-19T09:57:54.226Z",
@@ -218,11 +218,32 @@
     {
       "timestamp": "2026-05-19T12:22:18.501Z",
       "action": "Step 7 (Assemble About Page) → done"
+    },
+    {
+      "timestamp": "2026-05-19T12:22:27.386Z",
+      "action": "Step 8 (Testing & Verification) → in-progress"
+    },
+    {
+      "timestamp": "2026-05-19T12:22:32.634Z",
+      "action": "plan review requested for Step 8 (Testing & Verification)"
+    },
+    {
+      "timestamp": "2026-05-19T12:25:51.109Z",
+      "action": "plan review Step 8: APPROVE",
+      "outcome": "The plan is well-structured and will achieve its stated outcomes. It correctly identifies that Astro components cannot be directly unit-tested in JSDOM and proposes page-level integration tests against the built HTML output (`dist/about/index.html`). The two-test-file approach (content schema validation + page render assertions) covers the right surface area. The main risk is the implicit build dependency in `page-render.test.ts`, but the sequential checkbox ordering mitigates this during manual"
+    },
+    {
+      "timestamp": "2026-05-19T12:28:25.917Z",
+      "action": "All about-page tests (12) pass. Pre-existing KB-004 release test failures are out of scope (release content files don't exist in this worktree)."
+    },
+    {
+      "timestamp": "2026-05-19T12:28:34.325Z",
+      "action": "Step 8 (Testing & Verification) → done"
     }
   ],
   "columnMovedAt": "2026-05-19T12:10:19.104Z",
   "createdAt": "2026-05-19T09:57:54.226Z",
-  "updatedAt": "2026-05-19T12:22:18.501Z",
+  "updatedAt": "2026-05-19T12:28:34.325Z",
   "size": "M",
   "reviewLevel": 1,
   "worktree": "/Users/phil/dev/sam/.worktrees/early-iris"
