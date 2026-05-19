@@ -10,6 +10,7 @@ description: >
 tracks:
   - title: Neon Lights
     duration: "3:42"
+    audioFile: releases/neon-lights/01-neon-lights.mp3
     spotifyUrl: https://open.spotify.com/track/example-neon-lights
     appleMusicUrl: https://music.apple.com/track/example-neon-lights
     youtubeMusicUrl: https://music.youtube.com/watch?v=example-neon-lights

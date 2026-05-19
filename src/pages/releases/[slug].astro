@@ -4,6 +4,8 @@ import ReleasesLayout from '../../layouts/ReleasesLayout.astro';
 import StreamingLinks from '../../components/StreamingLinks.astro';
 import TrackList from '../../components/TrackList.astro';
 import { generateMusicAlbumSchema } from '../../scripts/structured-data';
+import { buildTrackFromContent } from '../../scripts/audio-helpers';
+import type { Track } from '../../components/AudioPlayer/types';
 
 const { slug } = Astro.params;
 
@@ -16,6 +18,10 @@ if (!release) {
 
 const { title, artist, releaseDate, type, artwork, description, tracks, streamingLinks } =
   release.data;
+
+const playableTracks: Track[] = tracks.map((track, i) =>
+  buildTrackFromContent(track, slug!, i, artist, artwork),
+);
 
 const formattedDate = releaseDate.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -97,6 +103,6 @@ const metaDescription = description || `Listen to ${title} by Sam.`;
     <h2 class="text-lg font-semibold mb-4">
       {type === 'single' ? 'Track' : 'Tracks'}
     </h2>
-    <TrackList tracks={tracks} />
+    <TrackList tracks={tracks} playableTracks={playableTracks} />
   </section>
 </ReleasesLayout>

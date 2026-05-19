@@ -10,6 +10,7 @@ description: >
 tracks:
   - title: Gravity
     duration: "6:14"
+    audioFile: releases/gravity/01-gravity.mp3
     spotifyUrl: https://open.spotify.com/track/example-gravity
     bandcampUrl: https://sam.bandcamp.com/track/gravity
 streamingLinks:
