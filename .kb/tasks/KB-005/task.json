@@ -1,12 +1,53 @@
 {
   "id": "KB-005",
   "description": "## Goal\nBuild an about/bio page with photo, bio text, genre tags, press quotes, and a contact form.\n\n## Tech Details from Research\n- **Content-driven:** Astro content collections or single Markdown file (`src/content/about.md`) with frontmatter for genre tags and press quotes\n- **Responsive layout:** Hero photo + bio text side-by-side on larger screens, stacked on mobile\n- **Contact form:** Submits to a Cloudflare Worker or third-party service (e.g., Formspree, Resend)\n- **Genre tags:** Styled as badges/pills\n- **Press quotes:** Blockquote carousel or grid layout\n\n## Deliverables\n- `src/pages/about.astro` — main about page\n- `src/components/BioSection.astro` — photo + bio text layout\n- `src/components/GenreTags.astro` — genre badge components\n- `src/components/PressQuotes.astro` — press quote display\n- `src/components/ContactForm.astro` — contact form with validation\n- Sample about content in `src/content/`\n\n## Dependencies\nKB-002 (project scaffolding)\n\n## Size\nM",
-  "column": "todo",
+  "column": "in-progress",
   "dependencies": [
     "KB-002"
   ],
-  "steps": [],
-  "currentStep": 0,
+  "steps": [
+    {
+      "name": "Preflight",
+      "status": "done"
+    },
+    {
+      "name": "Add About Content Collection Schema",
+      "status": "done"
+    },
+    {
+      "name": "Create Sample Bio Content and Placeholder Assets",
+      "status": "pending"
+    },
+    {
+      "name": "Build GenreTags Component",
+      "status": "pending"
+    },
+    {
+      "name": "Build PressQuotes Component",
+      "status": "pending"
+    },
+    {
+      "name": "Build BioSection Component",
+      "status": "pending"
+    },
+    {
+      "name": "Build ContactForm Component",
+      "status": "pending"
+    },
+    {
+      "name": "Assemble About Page",
+      "status": "pending"
+    },
+    {
+      "name": "Testing & Verification",
+      "status": "pending"
+    },
+    {
+      "name": "Documentation & Delivery",
+      "status": "pending"
+    }
+  ],
+  "currentStep": 2,
   "log": [
     {
       "timestamp": "2026-05-19T09:57:54.226Z",
@@ -38,12 +79,49 @@
       "timestamp": "2026-05-19T10:22:26.422Z",
       "action": "Spec review: APPROVE",
       "outcome": "This is a thoroughly refined specification that has successfully addressed all issues from two prior review cycles. The testing approach now correctly uses `export const prerender = true` to produce testable static HTML output, Tailwind v4 syntax is correct throughout (using `bg-accent/20` rather than `bg-[var(--color-accent)]/20`), and the \"Do NOT\" section properly allows test-related packages. Steps are specific with verifiable checkboxes, the file scope is complete, and dependencies are accur"
+    },
+    {
+      "timestamp": "2026-05-19T12:10:19.168Z",
+      "action": "Worktree created at /Users/phil/dev/sam/.worktrees/early-iris"
+    },
+    {
+      "timestamp": "2026-05-19T12:10:19.169Z",
+      "action": "Step 0 (Preflight) → pending"
+    },
+    {
+      "timestamp": "2026-05-19T12:10:23.993Z",
+      "action": "Step 0 (Preflight) → in-progress"
+    },
+    {
+      "timestamp": "2026-05-19T12:11:28.740Z",
+      "action": "Step 0 (Preflight) → done"
+    },
+    {
+      "timestamp": "2026-05-19T12:11:33.915Z",
+      "action": "Preflight passed: KB-002 complete, all required files exist, dev server starts, vitest already configured."
+    },
+    {
+      "timestamp": "2026-05-19T12:11:37.394Z",
+      "action": "Step 1 (Add About Content Collection Schema) → in-progress"
+    },
+    {
+      "timestamp": "2026-05-19T12:11:40.692Z",
+      "action": "plan review requested for Step 1 (Add About Content Collection Schema)"
+    },
+    {
+      "timestamp": "2026-05-19T12:12:09.203Z",
+      "action": "plan review Step 1: APPROVE",
+      "outcome": "The step is well-defined and will achieve its stated outcomes. The `src/content/config.ts` file exists with a `releases` collection that already demonstrates the Astro 5 `glob()` loader pattern. The plan correctly identifies the need to add an `about` collection alongside it with the specified schema fields, and the schema design is sensible for the about page's needs."
+    },
+    {
+      "timestamp": "2026-05-19T12:13:30.662Z",
+      "action": "Step 1 (Add About Content Collection Schema) → done"
     }
   ],
-  "columnMovedAt": "2026-05-19T10:22:37.566Z",
+  "columnMovedAt": "2026-05-19T12:10:19.104Z",
   "createdAt": "2026-05-19T09:57:54.226Z",
-  "updatedAt": "2026-05-19T10:59:48.608Z",
+  "updatedAt": "2026-05-19T12:13:30.662Z",
   "size": "M",
   "reviewLevel": 1,
-  "status": "queued"
+  "worktree": "/Users/phil/dev/sam/.worktrees/early-iris"
 }

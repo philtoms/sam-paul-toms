@@ -19,4 +19,22 @@ const releases = defineCollection({
   }),
 });
 
-export const collections = { releases };
+const about = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/about' }),
+  schema: z.object({
+    title: z.string(),
+    photo: z.string(),
+    photoAlt: z.string(),
+    genreTags: z.array(z.string()),
+    pressQuotes: z.array(
+      z.object({
+        text: z.string(),
+        source: z.string(),
+        url: z.string().url().optional(),
+      }),
+    ),
+    contactEmail: z.string().optional(),
+  }),
+});
+
+export const collections = { releases, about };
