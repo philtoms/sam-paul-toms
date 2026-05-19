@@ -6,8 +6,8 @@ const siteUrl = 'https://sam.music';
 
 describe('generateSEOTags', () => {
   const baseProps: SEOProps = {
-    title: 'Sam — Music',
-    description: 'Official music portfolio of Sam.',
+    title: 'Sam Paul Toms — Music',
+    description: 'Official music portfolio of Sam Paul Toms.',
     canonicalUrl: 'https://sam.music/',
     siteUrl,
   };
@@ -16,7 +16,7 @@ describe('generateSEOTags', () => {
     const tags = generateSEOTags(baseProps);
     const titleTag = tags.find((t) => t.type === 'title');
     expect(titleTag).toBeDefined();
-    expect(titleTag!.content).toBe('Sam — Music');
+    expect(titleTag!.content).toBe('Sam Paul Toms — Music');
   });
 
   it('produces <meta name="description"> with correct content', () => {
@@ -25,7 +25,7 @@ describe('generateSEOTags', () => {
       (t) => t.type === 'meta' && t.attrs?.name === 'description',
     );
     expect(meta).toBeDefined();
-    expect(meta!.attrs!.content).toBe('Official music portfolio of Sam.');
+    expect(meta!.attrs!.content).toBe('Official music portfolio of Sam Paul Toms.');
   });
 
   it('produces <link rel="canonical"> with correct href', () => {
@@ -44,10 +44,10 @@ describe('generateSEOTags', () => {
     const ogType = tags.find((t) => t.attrs?.property === 'og:type');
     const ogSiteName = tags.find((t) => t.attrs?.property === 'og:site_name');
 
-    expect(ogTitle!.attrs!.content).toBe('Sam — Music');
-    expect(ogDesc!.attrs!.content).toBe('Official music portfolio of Sam.');
+    expect(ogTitle!.attrs!.content).toBe('Sam Paul Toms — Music');
+    expect(ogDesc!.attrs!.content).toBe('Official music portfolio of Sam Paul Toms.');
     expect(ogType!.attrs!.content).toBe('website');
-    expect(ogSiteName!.attrs!.content).toBe('Sam');
+    expect(ogSiteName!.attrs!.content).toBe('Sam Paul Toms');
   });
 
   it('renders Twitter Card tags with summary_large_image', () => {
@@ -57,8 +57,8 @@ describe('generateSEOTags', () => {
     const twitterDesc = tags.find((t) => t.attrs?.name === 'twitter:description');
 
     expect(twitterCard!.attrs!.content).toBe('summary_large_image');
-    expect(twitterTitle!.attrs!.content).toBe('Sam — Music');
-    expect(twitterDesc!.attrs!.content).toBe('Official music portfolio of Sam.');
+    expect(twitterTitle!.attrs!.content).toBe('Sam Paul Toms — Music');
+    expect(twitterDesc!.attrs!.content).toBe('Official music portfolio of Sam Paul Toms.');
   });
 
   it('renders structured data as a JSON-LD script tag', () => {

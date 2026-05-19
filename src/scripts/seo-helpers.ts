@@ -61,7 +61,7 @@ export function generateSEOTags(props: SEOProps): Array<{
     tags.push({ type: 'meta', attrs: { property: 'og:url', content: canonical } });
   }
   tags.push({ type: 'meta', attrs: { property: 'og:type', content: type } });
-  tags.push({ type: 'meta', attrs: { property: 'og:site_name', content: 'Sam' } });
+  tags.push({ type: 'meta', attrs: { property: 'og:site_name', content: 'Sam Paul Toms' } });
 
   if (image) {
     const absoluteImage = siteUrl ? resolveAbsoluteUrl(image, siteUrl) : image;

@@ -41,18 +41,18 @@ const siteUrl = Astro.site?.href || 'https://sam.music/';
 const albumSchema = generateMusicAlbumSchema(release.data, siteUrl);
 
 const ogType = type === 'single' ? 'music.song' : 'music.album';
-const metaDescription = description || `Listen to ${title} by Sam.`;
+const metaDescription = description || `Listen to ${title} by Sam Paul Toms.`;
 ---
 
 <ReleasesLayout
-  title={`Sam — ${title}`}
+  title={`Sam Paul Toms — ${title}`}
   description={metaDescription}
   image={artwork}
   type={ogType}
   structuredData={albumSchema}
 >
   <nav class="mb-8 text-sm text-text/50">
-    <a href="/" class="hover:text-accent transition-colors">Sam</a>
+    <a href="/" class="hover:text-accent transition-colors">Sam Paul Toms</a>
     <span class="mx-2">/</span>
     <a href="/releases" class="hover:text-accent transition-colors">Releases</a>
     <span class="mx-2">/</span>
