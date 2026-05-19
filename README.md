@@ -21,6 +21,34 @@ npm run dev
 
 The dev server starts at `http://localhost:4321`.
 
+## Local Development Audio
+
+By default, the app resolves audio URLs using `R2_PUBLIC_URL` (defaults to the Wrangler R2 proxy at `http://localhost:8788/r2`). To hear audio in local dev without R2 access, you can generate placeholder MP3 files:
+
+### Prerequisites
+
+- **ffmpeg** — Install with `brew install ffmpeg` (macOS) or `apt install ffmpeg` (Ubuntu/Debian).
+
+### Setup
+
+1. Run the setup script to generate short silent MP3 placeholders for every track:
+
+   ```bash
+   bash scripts/setup-dev-audio.sh
+   ```
+
+   The script auto-discovers all `audioFile` entries in `src/content/releases/*.md` and generates ~3-second silent MP3 files under `public/audio-samples/`. It is idempotent — re-running overwrites existing files without error.
+
+2. Add the following to your `.env` (or `.env.local`) to point the audio player at the generated placeholders:
+
+   ```
+   R2_PUBLIC_URL=http://localhost:4321/audio-samples
+   ```
+
+   This overrides the default Wrangler R2 proxy URL so that audio URLs resolve to the local placeholder files served by Astro's static file server.
+
+> **Note:** Generated files under `public/audio-samples/` are gitignored and should never be committed.
+
 ## Scripts
 
 | Command           | Description                      |
