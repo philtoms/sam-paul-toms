@@ -36,7 +36,7 @@
     },
     {
       "name": "Assemble About Page",
-      "status": "pending"
+      "status": "done"
     },
     {
       "name": "Testing & Verification",
@@ -47,7 +47,7 @@
       "status": "pending"
     }
   ],
-  "currentStep": 7,
+  "currentStep": 8,
   "log": [
     {
       "timestamp": "2026-05-19T09:57:54.226Z",
@@ -201,11 +201,28 @@
     {
       "timestamp": "2026-05-19T12:19:45.783Z",
       "action": "Step 6 (Build ContactForm Component) → done"
+    },
+    {
+      "timestamp": "2026-05-19T12:19:54.124Z",
+      "action": "Step 7 (Assemble About Page) → in-progress"
+    },
+    {
+      "timestamp": "2026-05-19T12:20:02.977Z",
+      "action": "plan review requested for Step 7 (Assemble About Page)"
+    },
+    {
+      "timestamp": "2026-05-19T12:21:29.026Z",
+      "action": "plan review Step 7: APPROVE",
+      "outcome": "The step plan is well-structured and will correctly produce the about page. All four components are wired with the right data from the content collection, page sections are ordered logically, and the `prerender = true` export is correctly identified as necessary for the static HTML output that Step 8 tests depend on. The plan will achieve its stated outcomes."
+    },
+    {
+      "timestamp": "2026-05-19T12:22:18.501Z",
+      "action": "Step 7 (Assemble About Page) → done"
     }
   ],
   "columnMovedAt": "2026-05-19T12:10:19.104Z",
   "createdAt": "2026-05-19T09:57:54.226Z",
-  "updatedAt": "2026-05-19T12:19:45.783Z",
+  "updatedAt": "2026-05-19T12:22:18.501Z",
   "size": "M",
   "reviewLevel": 1,
   "worktree": "/Users/phil/dev/sam/.worktrees/early-iris"
