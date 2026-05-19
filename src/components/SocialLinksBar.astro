@@ -25,7 +25,7 @@ const { allTracksJson } = Astro.props;
   {/* Play All button */}
   <button
     id="play-all-btn"
-    class="flex items-center justify-center w-10 h-10 bg-yellow-500 rounded-full text-white transition-colors hover:bg-yellow-400"
+    class="flex items-center justify-center w-10 h-10 bg-yellow-500 rounded-full text-black transition-colors hover:bg-yellow-400"
     aria-label="Play all tracks"
   >
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
@@ -34,51 +34,51 @@ const { allTracksJson } = Astro.props;
   </button>
 
   {/* Social/streaming icon links */}
-  <a href="#" aria-label="IMDB" class="group flex flex-col items-center w-10 text-text/50 transition-colors hover:text-accent">
+  <a href="#" aria-label="IMDB" class="group flex items-center justify-center w-10 h-10 text-text/50 transition-colors hover:text-accent relative">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
       <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
       <path d="M7 2v20" />
       <path d="M17 8l-4 4 4 4" />
     </svg>
-    <span class="opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/30 rounded-sm px-2 py-0.5 text-xs text-text/70">IMDB</span>
+    <span class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap">IMDB</span>
   </a>
 
-  <a href="#" aria-label="Tidal" class="group flex flex-col items-center w-10 text-text/50 transition-colors hover:text-accent">
+  <a href="#" aria-label="Tidal" class="group flex items-center justify-center w-10 h-10 text-text/50 transition-colors hover:text-accent relative">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
       <path d="M12 2L6.5 7.5 12 13l5.5-5.5L12 2zm0 11L6.5 18.5 12 24l5.5-5.5L12 13z" />
     </svg>
-    <span class="opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/30 rounded-sm px-2 py-0.5 text-xs text-text/70">Tidal</span>
+    <span class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap">Tidal</span>
   </a>
 
-  <a href="#" aria-label="Spotify" class="group flex flex-col items-center w-10 text-text/50 transition-colors hover:text-accent">
+  <a href="#" aria-label="Spotify" class="group flex items-center justify-center w-10 h-10 text-text/50 transition-colors hover:text-accent relative">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
       <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.64 5.801 15.6 6.06 19.8 8.82c.5.3.66 1.02.36 1.56-.3.42-1.02.6-1.56.3z" />
     </svg>
-    <span class="opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/30 rounded-sm px-2 py-0.5 text-xs text-text/70">Spotify</span>
+    <span class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap">Spotify</span>
   </a>
 
-  <a href="#" aria-label="Instagram" class="group flex flex-col items-center w-10 text-text/50 transition-colors hover:text-accent">
+  <a href="#" aria-label="Instagram" class="group flex items-center justify-center w-10 h-10 text-text/50 transition-colors hover:text-accent relative">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
       <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
       <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
     </svg>
-    <span class="opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/30 rounded-sm px-2 py-0.5 text-xs text-text/70">Instagram</span>
+    <span class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap">Instagram</span>
   </a>
 
-  <a href="#" aria-label="Apple Music" class="group flex flex-col items-center w-10 text-text/50 transition-colors hover:text-accent">
+  <a href="#" aria-label="Apple Music" class="group flex items-center justify-center w-10 h-10 text-text/50 transition-colors hover:text-accent relative">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
       <path d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043A5.022 5.022 0 0019.7.165a10.16 10.16 0 00-1.564-.073C17.342.03 16.547.01 15.753 0H8.247c-.794.01-1.59.03-2.383.092-.532.04-1.058.12-1.564.273A5.022 5.022 0 002.426.89C1.308 1.624.563 2.624.246 3.934A9.23 9.23 0 00.007 6.124C-.04 7.223-.017 8.324 0 9.424v5.153c-.017 1.1-.04 2.199.007 3.299a9.23 9.23 0 00.24 2.19c.316 1.31 1.061 2.31 2.18 3.043a5.022 5.022 0 001.874.697c.506.153 1.032.232 1.564.273.793.062 1.59.082 2.383.092h7.506c.794-.01 1.59-.03 2.383-.092.532-.04 1.058-.12 1.564-.273a5.022 5.022 0 001.874-.697c1.118-.733 1.863-1.733 2.18-3.043.149-.706.217-1.432.24-2.19.047-1.1.024-2.199.007-3.299V9.424c.017-1.1.04-2.201-.007-3.3zM17.452 9.04v6.577c0 .468-.104.904-.328 1.303-.31.55-.768.914-1.343 1.133a4.09 4.09 0 01-.98.248c-.277.032-.556.047-.834.035a3.005 3.005 0 01-1.245-.336 2.478 2.478 0 01-1.088-1.136 2.32 2.32 0 01-.218-1.356c.083-.556.336-1.023.726-1.413.377-.377.833-.623 1.347-.776a5.693 5.693 0 011.462-.224c.36-.016.72-.007 1.08.003.177.005.355.017.532.033.12.01.17-.043.17-.163V9.04c0-.222.085-.358.296-.42.354-.104.707-.213 1.062-.316.228-.066.377.036.377.276v.46z" />
     </svg>
-    <span class="opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/30 rounded-sm px-2 py-0.5 text-xs text-text/70">Apple Music</span>
+    <span class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap">Apple Music</span>
   </a>
 
-  <a href="/about" aria-label="Contact" class="group flex flex-col items-center w-10 text-text/50 transition-colors hover:text-accent">
+  <a href="/about" aria-label="Contact" class="group flex items-center justify-center w-10 h-10 text-text/50 transition-colors hover:text-accent relative">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
       <polyline points="22,6 12,13 2,6" />
     </svg>
-    <span class="opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/30 rounded-sm px-2 py-0.5 text-xs text-text/70">Contact</span>
+    <span class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap">Contact</span>
   </a>
 </div>
 

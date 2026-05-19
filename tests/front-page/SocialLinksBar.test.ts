@@ -65,9 +65,10 @@ describe('SocialLinksBar component structure', () => {
     // Check transition properties (opacity-only, 200ms)
     expect(component).toContain('transition-opacity duration-200');
     // Check bordered pill styling
-    expect(component).toContain('border-white/30');
+    expect(component).toContain('border-white/50');
     expect(component).toContain('rounded-sm');
     expect(component).toContain('text-xs');
+    expect(component).toContain('font-bold');
   });
 
   it('social links have group class for hover state propagation', () => {
