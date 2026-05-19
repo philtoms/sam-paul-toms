@@ -1,0 +1,13 @@
+name = "sam-music"
+compatibility_date = "2026-05-19"
+pages_build_output_dir = "./dist"
+
+# R2 bucket binding for server-side access (optional, for future use)
+# Audio files are served via R2 public URL (client-side), not through bindings
+# [[r2_buckets]]
+# binding = "AUDIO_BUCKET"
+# bucket_name = "sam-audio"
+
+[vars]
+# Environment variables set here are available in Cloudflare Pages Functions
+# R2_PUBLIC_URL should be set via Cloudflare dashboard (not committed)

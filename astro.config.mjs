@@ -7,7 +7,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   output: 'server',
   adapter: cloudflare(),
-  site: 'https://sam.music',
+  site: process.env.SITE_URL || 'https://sam.music',
   srcDir: './src',
   vite: {
     plugins: [tailwindCss()],

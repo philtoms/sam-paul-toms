@@ -99,6 +99,14 @@ addToQueue({ id: '3', title: 'Song C', artist: 'Sam', audioUrl: '/audio/song-c.m
 Copy `.env.example` to `.env` and configure:
 
 - `R2_PUBLIC_URL` — Base URL for Cloudflare R2 object storage (audio files, artwork)
+- `SITE_URL` — Production site URL for canonical tags, sitemap, and structured data (defaults to `https://sam.music`)
+- `PUBLIC_UMAMI_WEBSITE_ID` / `PUBLIC_UMAMI_SRC` — Umami analytics (leave blank to disable)
+
+## Deployment
+
+The site deploys to **Cloudflare Pages** with audio served from **Cloudflare R2**. Configuration is in `wrangler.toml` and `astro.config.mjs` uses the `SITE_URL` env var for production URLs.
+
+See **[`docs/deployment.md`](docs/deployment.md)** for the complete step-by-step guide covering R2 setup, Pages deployment, DNS configuration, and local development with R2 emulation.
 
 ## Content Collections
 
