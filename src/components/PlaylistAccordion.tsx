@@ -69,10 +69,6 @@ export default function PlaylistAccordion({ sections, playableTracksMap }: Playl
               onClick={() => toggleSection(section.slug)}
               aria-expanded={isOpen}
             >
-              <span class="flex items-center gap-3">
-                <span class="text-lg font-semibold">{section.title}</span>
-                <span class="text-xs text-text/40">{trackCount} {trackCount === 1 ? 'track' : 'tracks'}</span>
-              </span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -81,10 +77,14 @@ export default function PlaylistAccordion({ sections, playableTracksMap }: Playl
                 stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                class={`accordion-chevron w-5 h-5 text-text/40 ${isOpen ? 'rotate-180' : ''}`}
+                class={`accordion-chevron w-5 h-5 text-text/40 ${isOpen ? 'rotate-90' : ''}`}
               >
-                <path d="m6 9 6 6 6-6" />
+                <path d="m9 5 7 7 -7 7" />
               </svg>
+              <span class="flex items-center gap-3">
+                <span class="text-lg font-semibold">{section.title}</span>
+                <span class="text-xs text-text/40">{trackCount} {trackCount === 1 ? 'track' : 'tracks'}</span>
+              </span>
             </button>
 
             <div class={`accordion-content ${isOpen ? 'accordion-content--open' : ''}`}>

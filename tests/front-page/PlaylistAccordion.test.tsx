@@ -178,4 +178,42 @@ describe('PlaylistAccordion', () => {
     expect(style.border).toBe('');
     expect(style.borderRadius).toBe('');
   });
+
+  it('renders chevron SVG before the title text in DOM order', () => {
+    const { container } = render(
+      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />,
+    );
+
+    const header = container.querySelector('.accordion-header')!;
+    const firstChild = header.firstElementChild;
+    expect(firstChild?.tagName).toBe('svg');
+    expect(firstChild?.classList.contains('accordion-chevron')).toBe(true);
+  });
+
+  it('applies rotate-90 class to chevron when section is open and no rotation when closed', () => {
+    const { container } = render(
+      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />,
+    );
+
+    const headers = container.querySelectorAll('.accordion-header');
+
+    // First section (Documentary) is open by default — chevron should have rotate-90
+    const firstChevron = headers[0].querySelector('.accordion-chevron')!;
+    expect(firstChevron.classList.contains('rotate-90')).toBe(true);
+
+    // Second section (Film) is closed — chevron should NOT have rotate-90
+    const secondChevron = headers[1].querySelector('.accordion-chevron')!;
+    expect(secondChevron.classList.contains('rotate-90')).toBe(false);
+
+    // Click Film section to open it
+    fireEvent.click(headers[1]);
+
+    // Now Film chevron should have rotate-90
+    const updatedSecondChevron = container.querySelectorAll('.accordion-header')[1].querySelector('.accordion-chevron')!;
+    expect(updatedSecondChevron.classList.contains('rotate-90')).toBe(true);
+
+    // Documentary chevron should no longer have rotate-90
+    const updatedFirstChevron = container.querySelectorAll('.accordion-header')[0].querySelector('.accordion-chevron')!;
+    expect(updatedFirstChevron.classList.contains('rotate-90')).toBe(false);
+  });
 });
