@@ -51,6 +51,12 @@ describe('HeroBanner fixed-position structure', () => {
     expect(hero).toContain('bg-black/40');
   });
 
+  it('has a bottom fade gradient overlay blending into the page background', () => {
+    expect(hero).toContain('hero-bottom-fade');
+    expect(hero).toContain('linear-gradient');
+    expect(hero).toContain('var(--color-bg)');
+  });
+
 });
 
 describe('Homepage scroll-over layout', () => {
