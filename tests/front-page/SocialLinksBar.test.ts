@@ -45,4 +45,35 @@ describe('SocialLinksBar component structure', () => {
     expect(component).toContain('w-8 h-8');
     expect(component).toContain('hover:text-accent');
   });
+
+  it('each social link contains a span with the correct platform name', () => {
+    const platformNames = ['IMDB', 'Tidal', 'Spotify', 'Instagram', 'Apple Music', 'Contact'];
+    for (const name of platformNames) {
+      // Find the span containing the platform name (after an SVG inside a link)
+      const spanPattern = new RegExp(
+        `aria-label="${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*>[\\s\\S]*?<\\/svg>\\s*<span[^>]*>${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/span>`,
+      );
+      expect(component).toMatch(spanPattern);
+    }
+  });
+
+  it('spans have transition/hiding classes and hover-reveal classes', () => {
+    // Check that spans are hidden by default (opacity-0, max-w-0)
+    expect(component).toContain('max-w-0');
+    expect(component).toContain('opacity-0');
+    // Check that spans transition to visible on hover
+    expect(component).toContain('group-hover:opacity-100');
+    expect(component).toContain('group-hover:max-w-[100px]');
+    // Check transition properties
+    expect(component).toContain('transition-all duration-200');
+    expect(component).toContain('whitespace-nowrap');
+    expect(component).toContain('overflow-hidden');
+  });
+
+  it('social links have group class for hover state propagation', () => {
+    const groupLinks = component.match(/<a[^>]*class="[^"]*group[^"]*"[^>]*>/g);
+    expect(groupLinks).not.toBeNull();
+    // 6 social links, all should have the group class
+    expect(groupLinks!.length).toBe(6);
+  });
 });
