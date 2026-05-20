@@ -60,6 +60,19 @@ describe('HeroBanner fixed-position structure', () => {
     expect(hero).toContain('linear-gradient(to bottom, transparent, var(--color-bg))');
   });
 
+  it('clips children to the banner bounds with overflow-hidden', () => {
+    expect(hero).toContain('overflow-hidden');
+  });
+
+  it('the hero image fills the container with h-full w-full object-cover', () => {
+    const imgMatch = hero.match(/<img[^>]+>/);
+    expect(imgMatch).not.toBeNull();
+    const imgTag = imgMatch![0];
+    expect(imgTag).toContain('h-full');
+    expect(imgTag).toContain('w-full');
+    expect(imgTag).toContain('object-cover');
+  });
+
 });
 
 describe('Homepage scroll-over layout', () => {
