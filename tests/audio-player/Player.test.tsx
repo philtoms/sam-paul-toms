@@ -59,6 +59,7 @@ vi.mock('../../src/components/AudioPlayer/playlistStore', () => ({
 }));
 
 import * as audioEngine from '../../src/components/AudioPlayer/audioEngine';
+import * as waveformRenderer from '../../src/components/AudioPlayer/waveformRenderer';
 import * as playlistStore from '../../src/components/AudioPlayer/playlistStore';
 
 const mockTrack = {
@@ -232,4 +233,14 @@ describe('Player', () => {
     expect(audioEngine.setVolume).toHaveBeenCalledWith(0.8);
   });
 
+  it('calls waveformRenderer.loadAudio with track audioUrl when a track is loaded', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = mockTrack;
+
+    render(<Player />);
+
+    expect(waveformRenderer.loadAudio).toHaveBeenCalledWith(
+      mockTrack.audioUrl,
+    );
+  });
 });

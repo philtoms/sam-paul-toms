@@ -55,6 +55,7 @@ export default function Player() {
   useEffect(() => {
     if (waveformContainerRef.current && currentTrack.value) {
       waveformRenderer.init(waveformContainerRef.current);
+      waveformRenderer.loadAudio(currentTrack.value.audioUrl);
     }
   }, [currentTrack.value?.id]);
 
