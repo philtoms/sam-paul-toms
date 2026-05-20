@@ -10,18 +10,24 @@ import { buildTrackFromContent } from '../scripts/audio-helpers';
 import type { Track } from '../components/AudioPlayer/types';
 
 // Fetch works sections in display order
-const sectionOrder = ['documentary', 'film', 'library', 'trailers-themes-idents'];
+const sectionOrder = [
+  'documentary',
+  'film',
+  'library',
+  'trailers-themes-idents',
+];
 const worksEntries = await getCollection('works');
 const sortedWorks = worksEntries.sort(
-  (a, b) => sectionOrder.indexOf(a.data.slug) - sectionOrder.indexOf(b.data.slug)
+  (a, b) =>
+    sectionOrder.indexOf(a.data.slug) - sectionOrder.indexOf(b.data.slug),
 );
 
 // Build section data for the accordion (display-only track info)
-const sections = sortedWorks.map(entry => ({
+const sections = sortedWorks.map((entry) => ({
   title: entry.data.title,
   slug: entry.data.slug,
   description: entry.data.description,
-  tracks: entry.data.tracks.map(t => ({
+  tracks: entry.data.tracks.map((t) => ({
     title: t.title,
     subtitle: t.subtitle,
     duration: t.duration,
@@ -33,27 +39,28 @@ const sections = sortedWorks.map(entry => ({
 const playableTracksMap: Record<string, Track[]> = {};
 for (const entry of sortedWorks) {
   playableTracksMap[entry.data.slug] = entry.data.tracks.map((track, i) =>
-    buildTrackFromContent(track, entry.data.slug, i, 'Sam', '/favicon.svg')
+    buildTrackFromContent(track, entry.data.slug, i, 'Sam', '/favicon.svg'),
   );
 }
 
 // Build ALL playable tracks for "Play All" button (concatenated across sections in order)
-const allTracks: Track[] = sortedWorks.flatMap(entry =>
+const allTracks: Track[] = sortedWorks.flatMap((entry) =>
   entry.data.tracks.map((track, i) =>
-    buildTrackFromContent(track, entry.data.slug, i, 'Sam', '/favicon.svg')
-  )
+    buildTrackFromContent(track, entry.data.slug, i, 'Sam', '/favicon.svg'),
+  ),
 );
 const allTracksJson = JSON.stringify(allTracks);
 
 // YouTube video
-const youtubeUrl = "https://www.youtube.com/watch?v=xlt63O1YvSM";
+const youtubeUrl = 'https://www.youtube.com/watch?v=xlt63O1YvSM';
 
 // Bio summary
-const bioSummary = "Sam is a multidisciplinary artist and producer based in the spaces between genres. Drawing from a deep well of influences, Sam crafts sound worlds that are at once intimate and expansive.";
+const bioSummary =
+  'Sam is a multidisciplinary artist and producer based in the spaces between genres. Drawing from a deep well of influences, Sam crafts sound worlds that are at once intimate and expansive.';
 ---
 
 <BaseLayout
-  title="Sam Paul Toms — Music"
+  title="Sam Paul Toms — Composer & Producer"
   description="Official music portfolio of Sam Paul Toms. Listen to tracks, albums, and EPs."
   image="/favicon.svg"
   type="website"
@@ -64,10 +71,7 @@ const bioSummary = "Sam is a multidisciplinary artist and producer based in the 
     {/* Bio Section */}
     <section class="section">
       <div class="container">
-        <CompactBio
-          summary={bioSummary}
-          aboutUrl="/about"
-        >
+        <CompactBio summary={bioSummary} aboutUrl="/about">
           <div class="mt-6">
             <SocialLinksBar allTracksJson={allTracksJson} />
           </div>

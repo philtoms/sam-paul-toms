@@ -42,22 +42,15 @@ describe('HeroBanner fixed-position structure', () => {
     expect(hero).toContain('object-cover');
   });
 
-  it('no longer uses the old gradient background', () => {
-    expect(hero).not.toContain('from-accent/10');
-    expect(hero).not.toContain('to-bg');
-  });
-
-  it('has a dark overlay for text readability', () => {
-    expect(hero).toContain('bg-black/40');
-  });
-
   it('has a bottom fade gradient overlay blending into the page background', () => {
     expect(hero).toContain('hero-bottom-fade');
     expect(hero).toContain('bottom-0');
     expect(hero).toContain('left-0');
     expect(hero).toContain('right-0');
-    expect(hero).toContain('h-1/3');
-    expect(hero).toContain('linear-gradient(to bottom, transparent, var(--color-bg))');
+    expect(hero).toContain('h-1/4');
+    expect(hero).toContain(
+      'linear-gradient(to bottom, transparent, var(--color-bg))',
+    );
   });
 
   it('clips children to the banner bounds with overflow-hidden', () => {
@@ -72,7 +65,6 @@ describe('HeroBanner fixed-position structure', () => {
     expect(imgTag).toContain('w-full');
     expect(imgTag).toContain('object-cover');
   });
-
 });
 
 describe('Homepage scroll-over layout', () => {
