@@ -125,6 +125,22 @@ describe('TrackRow', () => {
     expect(mockWsInstance.destroy).toHaveBeenCalledTimes(1);
   });
 
+  it('waveform container has w-48 class (not w-24)', () => {
+    const { container } = render(
+      <TrackRow
+        track={baseTrack}
+        audioUrl="http://example.com/track.mp3"
+        onPlay={vi.fn()}
+      />,
+    );
+
+    // Find the waveform container div (rendered by MiniWaveform)
+    const waveformDiv = container.querySelector('[class*="w-48"]');
+    expect(waveformDiv).toBeTruthy();
+    expect(waveformDiv!.classList.contains('w-48')).toBe(true);
+    expect(waveformDiv!.classList.contains('w-24')).toBe(false);
+  });
+
   it('clicking the row calls the onPlay callback', () => {
     const onPlay = vi.fn();
     render(

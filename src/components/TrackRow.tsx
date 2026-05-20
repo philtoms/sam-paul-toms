@@ -96,7 +96,7 @@ function MiniWaveform({ audioUrl, height = 24 }: { audioUrl: string; height?: nu
     };
   }, [audioUrl, height]);
 
-  return <div ref={containerRef} class="w-24 h-6 hidden sm:block" />;
+  return <div ref={containerRef} class="w-48 h-6 hidden sm:block" />;
 }
 
 export default function TrackRow({ track, audioUrl, onPlay }: TrackRowProps) {
