@@ -67,15 +67,12 @@ describe('audioEngine', () => {
   });
 
   describe('load', () => {
-    it('creates Howl with OGG URL first, MP3 as fallback', () => {
+    it('creates Howl with single MP3 source from audioUrl', () => {
       audioEngine.load(mockTrack);
 
       expect(MockHowl).toHaveBeenCalledWith(
         expect.objectContaining({
-          src: [
-            'https://example.com/audio/test-song.ogg',
-            'https://example.com/audio/test-song.mp3',
-          ],
+          src: ['https://example.com/audio/test-song.mp3'],
         }),
       );
     });
@@ -101,12 +98,12 @@ describe('audioEngine', () => {
       );
     });
 
-    it('creates Howl with format array for fallback', () => {
+    it('creates Howl with MP3 format', () => {
       audioEngine.load(mockTrack);
 
       expect(MockHowl).toHaveBeenCalledWith(
         expect.objectContaining({
-          format: ['ogg', 'mp3'],
+          format: ['mp3'],
         }),
       );
     });
@@ -352,8 +349,8 @@ describe('audioEngine', () => {
     });
   });
 
-  describe('buildSources (tested via load)', () => {
-    it('handles URLs with query parameters', () => {
+  describe('source URL handling (tested via load)', () => {
+    it('passes audioUrl through unchanged', () => {
       const trackWithParams: Track = {
         id: '3',
         title: 'Test',
@@ -365,10 +362,7 @@ describe('audioEngine', () => {
 
       expect(MockHowl).toHaveBeenCalledWith(
         expect.objectContaining({
-          src: [
-            'https://example.com/audio/song.ogg?v=1',
-            'https://example.com/audio/song.mp3?v=1',
-          ],
+          src: ['https://example.com/audio/song.mp3?v=1'],
         }),
       );
     });

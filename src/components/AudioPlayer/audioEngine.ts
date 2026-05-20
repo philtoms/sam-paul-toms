@@ -14,7 +14,7 @@ import type { Track } from './types';
 
 /**
  * Audio engine wrapping howler.js for cross-browser audio playback.
- * Provides MP3/OGG format fallback and RAF-based time tracking.
+ * Uses the content-specified MP3 URL directly and RAF-based time tracking.
  *
  * Uses a Preact `effect()` to reactively subscribe to `currentTrack`
  * changes — when the playlist advances (via nextTrack/prevTrack/playTrack),
@@ -24,17 +24,6 @@ import type { Track } from './types';
 let howl: HowlType | null = null;
 let rafId: number | null = null;
 let trackEffectDispose: (() => void) | null = null;
-
-/**
- * Construct audio source URLs with format fallback.
- * OGG is preferred for better compression; MP3 is the fallback.
- * @param mp3Url - The primary MP3 audio URL
- * @returns Array of URLs with OGG first, MP3 as fallback
- */
-function buildSources(mp3Url: string): string[] {
-  const oggUrl = mp3Url.replace(/\.mp3(\?.*)?$/i, '.ogg$1');
-  return [oggUrl, mp3Url];
-}
 
 /**
  * Start the requestAnimationFrame loop to track playback position.
@@ -64,7 +53,7 @@ function stopTimeTracking(): void {
 
 /**
  * Load a track into the audio engine. Destroys any previous Howl instance.
- * Creates a new Howl with OGG/MP3 format fallback.
+ * Creates a new Howl with the track's MP3 audio URL as the single source.
  * @param track - The track to load
  */
 export function load(track: Track): void {
@@ -73,14 +62,12 @@ export function load(track: Track): void {
 
   playbackState.value = 'loading';
 
-  const sources = buildSources(track.audioUrl);
-
   howl = new Howl({
-    src: sources,
+    src: [track.audioUrl],
     html5: true, // Required for streaming large files
     volume: volume.value,
     preload: true,
-    format: ['ogg', 'mp3'],
+    format: ['mp3'],
     onload: () => {
       duration.value = (howl as HowlType).duration();
       playbackState.value = 'paused';
