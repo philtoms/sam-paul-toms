@@ -233,6 +233,32 @@ describe('Player', () => {
     expect(audioEngine.setVolume).toHaveBeenCalledWith(0.8);
   });
 
+  it('audio-player-bar has z-index 50 for correct stacking above main content', async () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = mockTrack;
+
+    // Inject the Player CSS so jsdom can resolve computed styles
+    const cssContent = await import('fs').then((fs) =>
+      fs.promises.readFile(
+        require('path').resolve(__dirname, '../../src/components/AudioPlayer/Player.css'),
+        'utf-8',
+      ),
+    );
+    const styleEl = document.createElement('style');
+    styleEl.textContent = cssContent;
+    document.head.appendChild(styleEl);
+
+    const { container } = render(<Player />);
+    const bar = container.querySelector('.audio-player-bar') as HTMLElement;
+    expect(bar).toBeInTheDocument();
+
+    const computedStyle = window.getComputedStyle(bar);
+    expect(computedStyle.zIndex).toBe('50');
+
+    // Cleanup injected style
+    document.head.removeChild(styleEl);
+  });
+
   it('calls waveformRenderer.loadAudio with track audioUrl when a track is loaded', () => {
     mockPlaybackState = 'paused';
     mockCurrentTrack = mockTrack;

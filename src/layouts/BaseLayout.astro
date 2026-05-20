@@ -42,7 +42,7 @@ const {
   </head>
   <body class="bg-bg text-text antialiased min-h-screen">
     <slot />
-    <div transition:persist="audio-player" class="fixed bottom-0">
+    <div transition:persist="audio-player" class="fixed bottom-0 z-50">
       <Player client:load />
     </div>
   </body>
