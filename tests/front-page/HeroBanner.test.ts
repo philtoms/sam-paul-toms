@@ -53,8 +53,11 @@ describe('HeroBanner fixed-position structure', () => {
 
   it('has a bottom fade gradient overlay blending into the page background', () => {
     expect(hero).toContain('hero-bottom-fade');
-    expect(hero).toContain('linear-gradient');
-    expect(hero).toContain('var(--color-bg)');
+    expect(hero).toContain('bottom-0');
+    expect(hero).toContain('left-0');
+    expect(hero).toContain('right-0');
+    expect(hero).toContain('h-1/3');
+    expect(hero).toContain('linear-gradient(to bottom, transparent, var(--color-bg))');
   });
 
 });
