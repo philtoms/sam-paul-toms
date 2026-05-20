@@ -7,6 +7,26 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/preact';
+
+// Mock wavesurfer.js — TrackRow's MiniWaveform creates WaveSurfer instances
+const { mockCreate, sharedMockInstance } = vi.hoisted(() => {
+  const instance = {
+    setVolume: vi.fn(),
+    load: vi.fn(),
+    destroy: vi.fn(),
+  };
+  return {
+    mockCreate: vi.fn(() => instance),
+    sharedMockInstance: instance,
+  };
+});
+
+vi.mock('wavesurfer.js', () => ({
+  default: {
+    create: mockCreate,
+  },
+}));
+
 import PlaylistAccordion from '../../src/components/PlaylistAccordion';
 
 const mockSections = [
@@ -215,5 +235,26 @@ describe('PlaylistAccordion', () => {
     // Documentary chevron should no longer have rotate-90
     const updatedFirstChevron = container.querySelectorAll('.accordion-header')[0].querySelector('.accordion-chevron')!;
     expect(updatedFirstChevron.classList.contains('rotate-90')).toBe(false);
+  });
+
+  it('passes correct audio URLs from playableTracksMap to track row waveforms', () => {
+    render(
+      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />,
+    );
+
+    // All tracks across all sections are rendered in the DOM (closed sections
+    // use CSS overflow:hidden), so 8 WaveSurfer instances are created total
+    expect(mockCreate).toHaveBeenCalledTimes(8);
+
+    // Verify the loaded audio URLs match the playableTracksMap order
+    expect(sharedMockInstance.load).toHaveBeenCalledTimes(8);
+    expect(sharedMockInstance.load.mock.calls[0][0]).toBe('http://example.com/doc-0.mp3');
+    expect(sharedMockInstance.load.mock.calls[1][0]).toBe('http://example.com/doc-1.mp3');
+    expect(sharedMockInstance.load.mock.calls[2][0]).toBe('http://example.com/doc-2.mp3');
+    expect(sharedMockInstance.load.mock.calls[3][0]).toBe('http://example.com/film-0.mp3');
+    expect(sharedMockInstance.load.mock.calls[4][0]).toBe('http://example.com/film-1.mp3');
+    expect(sharedMockInstance.load.mock.calls[5][0]).toBe('http://example.com/lib-0.mp3');
+    expect(sharedMockInstance.load.mock.calls[6][0]).toBe('http://example.com/trailer-0.mp3');
+    expect(sharedMockInstance.load.mock.calls[7][0]).toBe('http://example.com/trailer-1.mp3');
   });
 });

@@ -1,9 +1,19 @@
 /**
  * TrackRow — A single track row in the playlist accordion.
  *
- * Displays a track with category icon, title/subtitle, waveform placeholder,
- * and duration. Clicking the row triggers playback via the parent accordion.
+ * Displays a track with category icon, title/subtitle, live waveform
+ * rendered via wavesurfer.js, and duration. Clicking the row triggers
+ * playback via the parent accordion.
+ *
+ * MiniWaveform approach: Each track row creates its own WaveSurfer instance
+ * (not the singleton from waveformRenderer.ts). Instances are muted
+ * (setVolume(0)) and non-interactive (interact: false) since seeking is
+ * handled by the row-level click → audio-player:play event. Instances are
+ * created on mount and destroyed on unmount via useEffect cleanup.
  */
+
+import { useRef, useEffect } from 'preact/hooks';
+import WaveSurfer from 'wavesurfer.js';
 
 interface TrackRowProps {
   track: {
@@ -12,6 +22,7 @@ interface TrackRowProps {
     duration: string;
     icon: string;
   };
+  audioUrl?: string;
   onPlay: () => void;
 }
 
@@ -49,28 +60,46 @@ const icons: Record<string, JSX.Element> = {
   ),
 };
 
-/** Generate a static waveform SVG with pseudo-random bar heights */
-function WaveformPlaceholder() {
-  // Deterministic bar heights for visual consistency
-  const bars = [8, 14, 6, 18, 10, 16, 4, 12, 20, 8, 15, 7, 17, 9, 13, 5];
-  return (
-    <svg viewBox="0 0 64 24" class="w-24 h-6 hidden sm:block" preserveAspectRatio="none">
-      {bars.map((h, i) => (
-        <rect
-          key={i}
-          x={i * 4}
-          y={24 - h}
-          width="2.5"
-          height={h}
-          fill={i < bars.length * 0.3 ? 'var(--color-accent)' : 'var(--color-text-tertiary)'}
-          opacity={i < bars.length * 0.3 ? '0.6' : '0.3'}
-        />
-      ))}
-    </svg>
-  );
+/**
+ * MiniWaveform — Renders a compact, non-interactive waveform for a track row.
+ *
+ * Creates a dedicated WaveSurfer instance per row (not the player singleton).
+ * The instance is muted and non-interactive; seeking is handled by the
+ * row-level click handler that dispatches audio-player:play.
+ */
+function MiniWaveform({ audioUrl, height = 24 }: { audioUrl: string; height?: number }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const wsRef = useRef<WaveSurfer | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current || !audioUrl) return;
+
+    const ws = WaveSurfer.create({
+      container: containerRef.current,
+      height,
+      waveColor: '#6b7280',
+      progressColor: '#8b5cf6',
+      barWidth: 2,
+      barGap: 1,
+      barRadius: 1,
+      fillParent: true,
+      interact: false,
+    });
+
+    ws.setVolume(0);
+    ws.load(audioUrl);
+    wsRef.current = ws;
+
+    return () => {
+      ws.destroy();
+      wsRef.current = null;
+    };
+  }, [audioUrl, height]);
+
+  return <div ref={containerRef} class="w-24 h-6 hidden sm:block" />;
 }
 
-export default function TrackRow({ track, onPlay }: TrackRowProps) {
+export default function TrackRow({ track, audioUrl, onPlay }: TrackRowProps) {
   const icon = icons[track.icon] || icons.music;
 
   return (
@@ -92,8 +121,10 @@ export default function TrackRow({ track, onPlay }: TrackRowProps) {
         )}
       </span>
 
-      {/* Waveform placeholder */}
-      <WaveformPlaceholder />
+      {/* Live waveform (renders when audioUrl is available) */}
+      {audioUrl ? (
+        <MiniWaveform audioUrl={audioUrl} />
+      ) : null}
 
       {/* Duration */}
       <span class="shrink-0 text-xs text-text/40 tabular-nums">{track.duration}</span>
