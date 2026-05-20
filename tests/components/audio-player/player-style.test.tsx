@@ -226,4 +226,68 @@ describe('Player Style', () => {
     // The player bar element should have the audio-player-bar class which carries border-radius
     expect(bar.classList.contains('audio-player-bar')).toBe(true);
   });
+
+  it('expanded bar uses CSS Grid layout with four columns', async () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = mockTrack;
+
+    // Inject the Player CSS so jsdom can resolve computed styles
+    const cssContent = await import('fs').then((fs) =>
+      fs.promises.readFile(
+        require('path').resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
+        'utf-8',
+      ),
+    );
+    const styleEl = document.createElement('style');
+    styleEl.textContent = cssContent;
+    document.head.appendChild(styleEl);
+
+    const { container } = render(<Player />);
+    const bar = container.querySelector('.audio-player-bar--expanded') as HTMLElement;
+    expect(bar).toBeInTheDocument();
+
+    const computedStyle = window.getComputedStyle(bar);
+    expect(computedStyle.display).toBe('grid');
+    expect(computedStyle.gridTemplateColumns).toBe('200px auto 1fr auto');
+
+    // Cleanup injected style
+    document.head.removeChild(styleEl);
+  });
+
+  it('long track title is truncated with text-overflow ellipsis', async () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = {
+      ...mockTrack,
+      title: 'A'.repeat(250) + ' — The Extremely Long Title That Should Definitely Be Truncated By CSS Ellipsis Rules And Not Overflow The Container',
+    };
+
+    // Inject the Player CSS so jsdom can resolve computed styles
+    const cssContent = await import('fs').then((fs) =>
+      fs.promises.readFile(
+        require('path').resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
+        'utf-8',
+      ),
+    );
+    const styleEl = document.createElement('style');
+    styleEl.textContent = cssContent;
+    document.head.appendChild(styleEl);
+
+    const { container } = render(<Player />);
+    const titleEl = container.querySelector('.audio-player-track-info__title') as HTMLElement;
+    expect(titleEl).toBeInTheDocument();
+
+    const computedStyle = window.getComputedStyle(titleEl);
+    expect(computedStyle.textOverflow).toBe('ellipsis');
+    expect(computedStyle.overflow).toBe('hidden');
+    expect(computedStyle.whiteSpace).toBe('nowrap');
+
+    // Verify track-info container has overflow hidden and min-width 0 for grid truncation
+    const trackInfo = container.querySelector('.audio-player-track-info') as HTMLElement;
+    const trackInfoStyle = window.getComputedStyle(trackInfo);
+    expect(trackInfoStyle.overflow).toBe('hidden');
+    expect(trackInfoStyle.minWidth).toBe('0px');
+
+    // Cleanup injected style
+    document.head.removeChild(styleEl);
+  });
 });
