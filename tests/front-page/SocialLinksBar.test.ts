@@ -41,17 +41,25 @@ describe('SocialLinksBar component structure', () => {
     expect(component).toContain('play-all-btn');
   });
 
-  it('uses consistent icon sizing and hover styling', () => {
-    expect(component).toContain('w-8 h-8');
+  it('uses consistent icon sizing for social links', () => {
+    // Social/streaming icons use w-4 h-4 SVGs inside w-5 h-5 containers
+    expect(component).toContain('w-4 h-4');
     expect(component).toContain('hover:text-accent');
   });
 
+  it('Play All button retains its original size', () => {
+    // Play All button should still be w-10 h-10
+    const playAllBtn = component.match(/id="play-all-btn"[\s\S]*?class="[^"]*w-10 h-10[^"]*"/);
+    expect(playAllBtn).not.toBeNull();
+  });
+
   it('each social link contains a span with the correct platform name', () => {
-    const platformNames = ['IMDB', 'Tidal', 'Spotify', 'Instagram', 'Apple Music', 'Contact'];
+    // Only the 5 social/streaming links have hover-reveal spans (not Contact)
+    const platformNames = ['IMDB', 'Tidal', 'Spotify', 'Instagram', 'Apple Music'];
     for (const name of platformNames) {
       // Find the span containing the platform name (after an SVG inside a link)
       const spanPattern = new RegExp(
-        `aria-label="${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*>[\\s\\S]*?<\\/svg>\\s*<span[^>]*>${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/span>`,
+        `aria-label="${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[\\s\\S]*?<\\/svg>[\\s]*<span[^>]*>${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/span`,
       );
       expect(component).toMatch(spanPattern);
     }
@@ -74,7 +82,25 @@ describe('SocialLinksBar component structure', () => {
   it('social links have group class for hover state propagation', () => {
     const groupLinks = component.match(/<a[^>]*class="[^"]*group[^"]*"[^>]*>/g);
     expect(groupLinks).not.toBeNull();
-    // 6 social links, all should have the group class
-    expect(groupLinks!.length).toBe(6);
+    // 5 social/streaming links have the group class (Contact does not)
+    expect(groupLinks!.length).toBe(5);
+  });
+
+  it('Contact link contains the text "Contact"', () => {
+    // Contact link should display "Contact" as visible text content
+    const contactPattern = /aria-label="Contact"[^>]*>\s*Contact\s*<\/a>/;
+    expect(component).toMatch(contactPattern);
+  });
+
+  it('Contact link has pill-shaped outlined button styling', () => {
+    // Find the Contact link and verify its classes
+    const contactLink = component.match(
+      /<a[^>]*aria-label="Contact"[^>]*class="([^"]*)"[^>]*>/,
+    );
+    expect(contactLink).not.toBeNull();
+    const classes = contactLink![1];
+    expect(classes).toContain('rounded-full');
+    expect(classes).toContain('border-white/50');
+    expect(classes).toContain('border');
   });
 });
