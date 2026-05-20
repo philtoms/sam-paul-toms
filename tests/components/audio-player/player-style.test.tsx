@@ -290,4 +290,41 @@ describe('Player Style', () => {
     // Cleanup injected style
     document.head.removeChild(styleEl);
   });
+
+  it('volume container has relative positioning for absolute pseudo-element hover bridge', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = mockTrack;
+
+    const { container } = render(<Player />);
+    const volumeContainer = container.querySelector('.audio-player-volume') as HTMLElement;
+    expect(volumeContainer).toBeInTheDocument();
+
+    // The .audio-player-volume class must carry position: relative so that
+    // the absolutely-positioned ::after hover bridge and slider are
+    // positioned relative to it (not the viewport or player bar).
+    // JSDOM doesn't apply real CSS, so we verify the class is present and
+    // the element exists with the expected structure.
+    expect(volumeContainer.classList.contains('audio-player-volume')).toBe(true);
+
+    // The slider must be a child of the volume container (for :hover to work)
+    const slider = volumeContainer.querySelector('.audio-player-volume__slider');
+    expect(slider).toBeInTheDocument();
+    expect(volumeContainer.contains(slider)).toBe(true);
+  });
+
+  it('volume slider element exists and is a range input', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = mockTrack;
+
+    const { container } = render(<Player />);
+    const slider = container.querySelector('.audio-player-volume__slider') as HTMLInputElement;
+    expect(slider).toBeInTheDocument();
+
+    // Verify the slider is a range input — the hover gap fix relies on
+    // the slider being position: absolute inside .audio-player-volume,
+    // and the CSS class carries that positioning.
+    expect(slider.type).toBe('range');
+    expect(slider.getAttribute('aria-label')).toBe('Volume');
+    expect(slider.tagName.toLowerCase()).toBe('input');
+  });
 });

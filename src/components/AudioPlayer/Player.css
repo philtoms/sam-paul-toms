@@ -174,18 +174,33 @@
   outline: none;
   cursor: pointer;
   position: absolute;
-  bottom: 100%;
+  bottom: calc(100% + 0.25rem);
   left: 50%;
   transform: translateX(-50%);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
-  margin-bottom: 0.25rem;
+  z-index: 1;
 }
 
 .audio-player-volume:hover .audio-player-volume__slider {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* Invisible hover bridge: extends the parent's hover hit area upward
+   so the cursor can travel from the icon to the slider without losing
+   :hover. The ::after must NOT have pointer-events: none, or it won't
+   trigger hover on the parent. z-index: 1 on the slider keeps it
+   clickable above this pseudo-element. */
+.audio-player-volume::after {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: calc(80px + 0.5rem);
+  content: '';
 }
 
 .audio-player-volume__slider::-webkit-slider-thumb {
@@ -228,6 +243,10 @@
   }
 
   .audio-player-volume__slider {
+    display: none;
+  }
+
+  .audio-player-volume::after {
     display: none;
   }
 }
