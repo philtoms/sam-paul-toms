@@ -1,4 +1,4 @@
-# Sam — Music Portfolio
+# Sam Paul Toms — Portfolio
 
 A music portfolio website for Sam, built with modern web technologies. Dark-themed, responsive, and designed to showcase music releases with an integrated audio player.
 
@@ -104,19 +104,31 @@ The player uses `transition:persist` in the layout to survive Astro View Transit
 Pages and components can control the player via custom events (no framework coupling):
 
 ```typescript
-import { playTracks, pausePlayer, addToQueue } from '../scripts/audio-player-events';
+import {
+  playTracks,
+  pausePlayer,
+  addToQueue,
+} from '../scripts/audio-player-events';
 
 // Start playing a playlist
-playTracks([
-  { id: '1', title: 'Song A', artist: 'Sam', audioUrl: '/audio/song-a.mp3' },
-  { id: '2', title: 'Song B', artist: 'Sam', audioUrl: '/audio/song-b.mp3' },
-], 0); // startIndex
+playTracks(
+  [
+    { id: '1', title: 'Song A', artist: 'Sam', audioUrl: '/audio/song-a.mp3' },
+    { id: '2', title: 'Song B', artist: 'Sam', audioUrl: '/audio/song-b.mp3' },
+  ],
+  0,
+); // startIndex
 
 // Pause playback
 pausePlayer();
 
 // Add a track to the queue
-addToQueue({ id: '3', title: 'Song C', artist: 'Sam', audioUrl: '/audio/song-c.mp3' });
+addToQueue({
+  id: '3',
+  title: 'Song C',
+  artist: 'Sam',
+  audioUrl: '/audio/song-c.mp3',
+});
 ```
 
 ### Environment Variable
@@ -151,21 +163,21 @@ File names become URL slugs: `midnight-sessions.md` → `/releases/midnight-sess
 
 ```yaml
 ---
-title: "Release Title"          # Required — release name
-artist: "Sam"                   # Required — artist name
-releaseDate: 2025-11-15         # Required — YYYY-MM-DD format
-type: album                     # Required — album | ep | single
-artwork: /images/releases/foo.svg  # Required — path to artwork image
-description: "Short blurb"      # Optional — release description
-tracks:                         # Required — at least one track
-  - title: "Track Name"
-    duration: "3:42"            # M:SS format
-    spotifyUrl: https://...     # Optional per-track streaming URL
-    appleMusicUrl: https://...  # Optional
+title: 'Release Title' # Required — release name
+artist: 'Sam' # Required — artist name
+releaseDate: 2025-11-15 # Required — YYYY-MM-DD format
+type: album # Required — album | ep | single
+artwork: /images/releases/foo.svg # Required — path to artwork image
+description: 'Short blurb' # Optional — release description
+tracks: # Required — at least one track
+  - title: 'Track Name'
+    duration: '3:42' # M:SS format
+    spotifyUrl: https://... # Optional per-track streaming URL
+    appleMusicUrl: https://... # Optional
     youtubeMusicUrl: https://... # Optional
-    bandcampUrl: https://...    # Optional
-    audioFile: "path/in/r2"     # Optional — R2 audio path (for player)
-streamingLinks:                 # Optional — release-level streaming links
+    bandcampUrl: https://... # Optional
+    audioFile: 'path/in/r2' # Optional — R2 audio path (for player)
+streamingLinks: # Optional — release-level streaming links
   spotify: https://open.spotify.com/album/...
   appleMusic: https://music.apple.com/album/...
   youtubeMusic: https://music.youtube.com/...
@@ -189,15 +201,15 @@ The Markdown body (below the frontmatter) can contain an extended description or
 
 A reusable component that renders all per-page SEO tags inside `<head>`. It is included by `BaseLayout.astro` and accepts these props:
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `title` | `string` | `"Sam — Music"` | Page `<title>` and OG/Twitter title |
-| `description` | `string` | `"Official music portfolio of Sam — listen to tracks, albums, and EPs."` | Meta description, OG/Twitter description |
-| `image` | `string?` | — | OG/Twitter image (relative path or absolute URL) |
-| `canonicalUrl` | `string?` | `Astro.url.href` | Canonical URL override |
-| `type` | `'website' \| 'music.song' \| 'music.album' \| 'music.playlist'` | `'website'` | `og:type` value |
-| `structuredData` | `object \| object[]?` | — | JSON-LD object(s) to inject as `<script type="application/ld+json">` |
-| `noindex` | `boolean?` | `false` | If true, adds `<meta name="robots" content="noindex, nofollow">` |
+| Prop             | Type                                                             | Default                                                                  | Description                                                          |
+| ---------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `title`          | `string`                                                         | `"Sam Paul Toms"`                                                        | Page `<title>` and OG/Twitter title                                  |
+| `description`    | `string`                                                         | `"Official music portfolio of Sam — listen to tracks, albums, and EPs."` | Meta description, OG/Twitter description                             |
+| `image`          | `string?`                                                        | —                                                                        | OG/Twitter image (relative path or absolute URL)                     |
+| `canonicalUrl`   | `string?`                                                        | `Astro.url.href`                                                         | Canonical URL override                                               |
+| `type`           | `'website' \| 'music.song' \| 'music.album' \| 'music.playlist'` | `'website'`                                                              | `og:type` value                                                      |
+| `structuredData` | `object \| object[]?`                                            | —                                                                        | JSON-LD object(s) to inject as `<script type="application/ld+json">` |
+| `noindex`        | `boolean?`                                                       | `false`                                                                  | If true, adds `<meta name="robots" content="noindex, nofollow">`     |
 
 Pages pass SEO props through their layout, which forwards them to `BaseLayout` → `SEOHead`.
 

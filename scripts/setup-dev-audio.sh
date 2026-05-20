@@ -28,6 +28,7 @@ fi
 
 # --- Parse audioFile entries from release frontmatter ---
 RELEASES_DIR="${PROJECT_ROOT}/src/content/releases"
+RELEASES_DIR="${PROJECT_ROOT}/src/content/works"
 OUTPUT_DIR="${PROJECT_ROOT}/public/audio-samples"
 
 if [ ! -d "${RELEASES_DIR}" ]; then

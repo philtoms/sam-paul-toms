@@ -6,7 +6,7 @@ const siteUrl = 'https://sam.music';
 
 describe('generateSEOTags', () => {
   const baseProps: SEOProps = {
-    title: 'Sam Paul Toms — Music',
+    title: 'Sam Paul Toms',
     description: 'Official music portfolio of Sam Paul Toms.',
     canonicalUrl: 'https://sam.music/',
     siteUrl,
@@ -16,7 +16,7 @@ describe('generateSEOTags', () => {
     const tags = generateSEOTags(baseProps);
     const titleTag = tags.find((t) => t.type === 'title');
     expect(titleTag).toBeDefined();
-    expect(titleTag!.content).toBe('Sam Paul Toms — Music');
+    expect(titleTag!.content).toBe('Sam Paul Toms');
   });
 
   it('produces <meta name="description"> with correct content', () => {
@@ -25,7 +25,9 @@ describe('generateSEOTags', () => {
       (t) => t.type === 'meta' && t.attrs?.name === 'description',
     );
     expect(meta).toBeDefined();
-    expect(meta!.attrs!.content).toBe('Official music portfolio of Sam Paul Toms.');
+    expect(meta!.attrs!.content).toBe(
+      'Official music portfolio of Sam Paul Toms.',
+    );
   });
 
   it('produces <link rel="canonical"> with correct href', () => {
@@ -44,8 +46,10 @@ describe('generateSEOTags', () => {
     const ogType = tags.find((t) => t.attrs?.property === 'og:type');
     const ogSiteName = tags.find((t) => t.attrs?.property === 'og:site_name');
 
-    expect(ogTitle!.attrs!.content).toBe('Sam Paul Toms — Music');
-    expect(ogDesc!.attrs!.content).toBe('Official music portfolio of Sam Paul Toms.');
+    expect(ogTitle!.attrs!.content).toBe('Sam Paul Toms');
+    expect(ogDesc!.attrs!.content).toBe(
+      'Official music portfolio of Sam Paul Toms.',
+    );
     expect(ogType!.attrs!.content).toBe('website');
     expect(ogSiteName!.attrs!.content).toBe('Sam Paul Toms');
   });
@@ -54,11 +58,15 @@ describe('generateSEOTags', () => {
     const tags = generateSEOTags(baseProps);
     const twitterCard = tags.find((t) => t.attrs?.name === 'twitter:card');
     const twitterTitle = tags.find((t) => t.attrs?.name === 'twitter:title');
-    const twitterDesc = tags.find((t) => t.attrs?.name === 'twitter:description');
+    const twitterDesc = tags.find(
+      (t) => t.attrs?.name === 'twitter:description',
+    );
 
     expect(twitterCard!.attrs!.content).toBe('summary_large_image');
-    expect(twitterTitle!.attrs!.content).toBe('Sam Paul Toms — Music');
-    expect(twitterDesc!.attrs!.content).toBe('Official music portfolio of Sam Paul Toms.');
+    expect(twitterTitle!.attrs!.content).toBe('Sam Paul Toms');
+    expect(twitterDesc!.attrs!.content).toBe(
+      'Official music portfolio of Sam Paul Toms.',
+    );
   });
 
   it('renders structured data as a JSON-LD script tag', () => {
@@ -68,8 +76,7 @@ describe('generateSEOTags', () => {
       structuredData: schema,
     });
     const script = tags.find(
-      (t) =>
-        t.type === 'script' && t.attrs?.type === 'application/ld+json',
+      (t) => t.type === 'script' && t.attrs?.type === 'application/ld+json',
     );
     expect(script).toBeDefined();
     expect(script!.content).toBe(JSON.stringify(schema));
@@ -85,8 +92,7 @@ describe('generateSEOTags', () => {
       structuredData: schemas,
     });
     const scripts = tags.filter(
-      (t) =>
-        t.type === 'script' && t.attrs?.type === 'application/ld+json',
+      (t) => t.type === 'script' && t.attrs?.type === 'application/ld+json',
     );
     expect(scripts).toHaveLength(2);
   });
@@ -116,7 +122,9 @@ describe('generateSEOTags', () => {
     const ogImage = tags.find((t) => t.attrs?.property === 'og:image');
     const twitterImage = tags.find((t) => t.attrs?.name === 'twitter:image');
     expect(ogImage!.attrs!.content).toBe('https://sam.music/images/art.svg');
-    expect(twitterImage!.attrs!.content).toBe('https://sam.music/images/art.svg');
+    expect(twitterImage!.attrs!.content).toBe(
+      'https://sam.music/images/art.svg',
+    );
   });
 
   it('leaves absolute image URLs unchanged', () => {

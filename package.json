@@ -1,7 +1,7 @@
 {
   "name": "sam",
   "version": "1.0.0",
-  "description": "Sam — Music Portfolio",
+  "description": "Sam Paul Toms — Portfolio",
   "type": "module",
   "scripts": {
     "dev": "astro dev",
