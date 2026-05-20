@@ -27,4 +27,8 @@ describe('CompactBio component structure', () => {
     expect(component).toContain('href={aboutUrl}');
     expect(component).toContain('Read more');
   });
+
+  it('accepts child content via default slot', () => {
+    expect(component).toContain('<slot />');
+  });
 });

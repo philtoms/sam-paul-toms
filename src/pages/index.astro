@@ -67,14 +67,11 @@ const bioSummary = "Sam is a multidisciplinary artist and producer based in the 
         <CompactBio
           summary={bioSummary}
           aboutUrl="/about"
-        />
-      </div>
-    </section>
-
-    {/* Social Links Bar */}
-    <section class="section pt-0">
-      <div class="container">
-        <SocialLinksBar allTracksJson={allTracksJson} />
+        >
+          <div class="mt-6">
+            <SocialLinksBar allTracksJson={allTracksJson} />
+          </div>
+        </CompactBio>
       </div>
     </section>
 
