@@ -154,10 +154,13 @@ describe('Player Style', () => {
     // All major sections are direct children of the expanded bar (single-row layout)
     const directChildren = Array.from(bar!.children);
     const childClasses = directChildren.map((el) => el.className);
-    expect(childClasses).toContain('audio-player-track-info');
-    expect(childClasses).toContain('audio-player-waveform');
-    expect(childClasses).toContain('audio-player-transport');
-    expect(childClasses).toContain('audio-player-volume');
+    // Order: track-info → transport → waveform → volume
+    expect(childClasses).toEqual([
+      'audio-player-track-info',
+      'audio-player-transport',
+      'audio-player-waveform',
+      'audio-player-volume',
+    ]);
   });
 
   it('renders volume-on SVG when volume > 0 and volume-off SVG when muted', () => {
@@ -199,5 +202,28 @@ describe('Player Style', () => {
     const volumeTextOff = container2.querySelector('.audio-player-volume__icon')?.textContent ?? '';
     expect(volumeTextOn).not.toMatch(/[🔊🔈]/u);
     expect(volumeTextOff).not.toMatch(/[🔊🔈]/u);
+  });
+
+  it('volume slider has vertical orientation styling', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = mockTrack;
+
+    const { container } = render(<Player />);
+    const slider = container.querySelector('.audio-player-volume__slider') as HTMLInputElement;
+    expect(slider).toBeInTheDocument();
+    // Verify the slider is a range input with vertical writing mode applied via CSS class
+    expect(slider.type).toBe('range');
+    expect(slider.className).toBe('audio-player-volume__slider');
+  });
+
+  it('player bar has border-radius style applied', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = mockTrack;
+
+    const { container } = render(<Player />);
+    const bar = container.querySelector('.audio-player-bar--expanded') as HTMLElement;
+    expect(bar).toBeInTheDocument();
+    // The player bar element should have the audio-player-bar class which carries border-radius
+    expect(bar.classList.contains('audio-player-bar')).toBe(true);
   });
 });

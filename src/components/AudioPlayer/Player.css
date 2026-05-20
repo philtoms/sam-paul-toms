@@ -1,20 +1,21 @@
 .audio-player-bar {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
   z-index: 50;
-  background: rgba(10, 10, 10, 0.95);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-player-bg);
+  border: 1px solid var(--color-player-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   padding: 0 1rem;
   transition: height 0.3s ease, opacity 0.3s ease;
-  overflow: hidden;
 }
 
 .audio-player-bar--collapsed {
   height: 8px;
   opacity: 0.5;
+  overflow: hidden;
 }
 
 .audio-player-bar--expanded {
@@ -23,6 +24,7 @@
   height: 64px;
   gap: 1rem;
   opacity: 1;
+  overflow: visible;
 }
 
 /* Waveform container — flexible, fills remaining horizontal space */
@@ -140,12 +142,13 @@
 
 /* Volume (right) */
 .audio-player-volume {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  min-width: 120px;
-  justify-content: flex-end;
+  justify-content: center;
   flex: 0 0 auto;
+  padding: 0.5rem;
 }
 
 .audio-player-volume__icon {
@@ -166,12 +169,27 @@
 .audio-player-volume__slider {
   -webkit-appearance: none;
   appearance: none;
-  width: 80px;
-  height: 4px;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 4px;
+  height: 80px;
   border-radius: 2px;
   background: #374151;
   outline: none;
   cursor: pointer;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  margin-bottom: 0.25rem;
+}
+
+.audio-player-volume:hover .audio-player-volume__slider {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .audio-player-volume__slider::-webkit-slider-thumb {
@@ -200,7 +218,7 @@
 
 /* Body padding to prevent content behind fixed bar */
 .audio-player-body-padding {
-  padding-bottom: 72px;
+  padding-bottom: 5rem;
 }
 
 /* Responsive: mobile */
@@ -211,10 +229,6 @@
 
   .audio-player-waveform {
     display: none;
-  }
-
-  .audio-player-volume {
-    min-width: auto;
   }
 
   .audio-player-volume__slider {

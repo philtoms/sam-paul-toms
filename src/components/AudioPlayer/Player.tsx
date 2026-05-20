@@ -196,9 +196,6 @@ export default function Player() {
         </div>
       </div>
 
-      {/* Waveform area (flexible center) */}
-      <div ref={waveformContainerRef} class="audio-player-waveform" />
-
       {/* Transport controls (center) */}
       <div class="audio-player-transport">
         <button
@@ -277,8 +274,21 @@ export default function Player() {
         </button>
       </div>
 
+      {/* Waveform area (flexible center) */}
+      <div ref={waveformContainerRef} class="audio-player-waveform" />
+
       {/* Volume (right) */}
       <div class="audio-player-volume">
+        <input
+          type="range"
+          class="audio-player-volume__slider"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume.value}
+          onInput={handleVolumeChange}
+          aria-label="Volume"
+        />
         <span
           class="audio-player-volume__icon"
           onClick={handleVolumeIconClick}
@@ -326,16 +336,6 @@ export default function Player() {
             </svg>
           )}
         </span>
-        <input
-          type="range"
-          class="audio-player-volume__slider"
-          min="0"
-          max="1"
-          step="0.01"
-          value={volume.value}
-          onInput={handleVolumeChange}
-          aria-label="Volume"
-        />
       </div>
     </div>
   );
