@@ -309,6 +309,28 @@ describe('audioEngine', () => {
 
       expect(mockHowlInstance.play).toHaveBeenCalled();
     });
+
+    it('does not reload track when volume changes', async () => {
+      audioEngine.initReactiveSubscription();
+
+      // Set a playlist to trigger the initial effect (load + play)
+      playlistStore.setPlaylist([mockTrack, mockTrack2], 0);
+
+      await vi.waitFor(() => {
+        expect(MockHowl).toHaveBeenCalled();
+      });
+
+      const howlCallCount = MockHowl.mock.calls.length;
+      const playCallCount = mockHowlInstance.play.mock.calls.length;
+
+      // Change volume — this should NOT cause a track reload
+      playlistStore.volume.value = 0.3;
+
+      // Assert Howl was NOT constructed again
+      expect(MockHowl.mock.calls.length).toBe(howlCallCount);
+      // Assert play was NOT called again
+      expect(mockHowlInstance.play.mock.calls.length).toBe(playCallCount);
+    });
   });
 
   describe('destroy', () => {

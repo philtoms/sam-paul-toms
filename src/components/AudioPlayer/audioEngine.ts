@@ -65,7 +65,7 @@ export function load(track: Track): void {
   howl = new Howl({
     src: [track.audioUrl],
     html5: true, // Required for streaming large files
-    volume: volume.value,
+    volume: volume.peek(),
     preload: true,
     format: ['mp3'],
     onload: () => {
