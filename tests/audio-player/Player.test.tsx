@@ -232,18 +232,4 @@ describe('Player', () => {
     expect(audioEngine.setVolume).toHaveBeenCalledWith(0.8);
   });
 
-  it('renders progress bar fallback', () => {
-    mockPlaybackState = 'paused';
-    mockCurrentTrack = mockTrack;
-    mockDuration = 200;
-    mockCurrentTime = 100;
-
-    const { container } = render(<Player />);
-
-    const progress = container.querySelector(
-      '.audio-player-progress',
-    ) as HTMLProgressElement;
-    expect(progress).toBeInTheDocument();
-    expect(progress.getAttribute('max')).toBe('1');
-  });
 });

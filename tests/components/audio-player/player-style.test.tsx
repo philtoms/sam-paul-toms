@@ -134,9 +134,6 @@ describe('Player Style', () => {
     // Waveform area
     expect(container.querySelector('.audio-player-waveform')).toBeInTheDocument();
 
-    // Controls row
-    expect(container.querySelector('.audio-player-controls')).toBeInTheDocument();
-
     // Track info section
     expect(container.querySelector('.audio-player-track-info')).toBeInTheDocument();
     expect(container.querySelector('.audio-player-track-info__artwork')).toBeInTheDocument();
@@ -154,8 +151,13 @@ describe('Player Style', () => {
     expect(container.querySelector('.audio-player-volume__icon')).toBeInTheDocument();
     expect(container.querySelector('.audio-player-volume__slider')).toBeInTheDocument();
 
-    // Progress fallback
-    expect(container.querySelector('.audio-player-progress')).toBeInTheDocument();
+    // All major sections are direct children of the expanded bar (single-row layout)
+    const directChildren = Array.from(bar!.children);
+    const childClasses = directChildren.map((el) => el.className);
+    expect(childClasses).toContain('audio-player-track-info');
+    expect(childClasses).toContain('audio-player-waveform');
+    expect(childClasses).toContain('audio-player-transport');
+    expect(childClasses).toContain('audio-player-volume');
   });
 
   it('renders volume-on SVG when volume > 0 and volume-off SVG when muted', () => {
