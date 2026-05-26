@@ -154,18 +154,20 @@ export default function TrackRow({ track, audioUrl, onPlay }: TrackRowProps) {
         {icon}
       </span>
 
-      {/* Track info */}
-      <span class="min-w-0 flex-1">
-        <span class="block truncate text-sm font-medium">{track.title}</span>
-        {track.subtitle && (
-          <span class="block truncate text-xs text-text/50">
-            {track.subtitle}
-          </span>
-        )}
-      </span>
+      {/* Centered title + waveform group */}
+      <span class="flex flex-1 items-center justify-center gap-2">
+        <span class="min-w-0">
+          <span class="block truncate text-sm font-medium">{track.title}</span>
+          {track.subtitle && (
+            <span class="block truncate text-xs text-text/50">
+              {track.subtitle}
+            </span>
+          )}
+        </span>
 
-      {/* Live waveform (renders when audioUrl is available) */}
-      {audioUrl ? <MiniWaveform audioUrl={audioUrl} /> : null}
+        {/* Live waveform (renders when audioUrl is available) */}
+        {audioUrl ? <MiniWaveform audioUrl={audioUrl} /> : null}
+      </span>
 
       {/* Duration */}
       <span class="shrink-0 text-xs text-text/40 tabular-nums">
