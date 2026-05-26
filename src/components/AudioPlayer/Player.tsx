@@ -156,14 +156,23 @@ export default function Player() {
       }
     };
 
+    const handleSeek = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { trackId: string; fraction: number };
+      if (detail?.trackId && currentTrack.value?.id === detail.trackId) {
+        audioEngine.seek(detail.fraction);
+      }
+    };
+
     document.addEventListener('audio-player:play', handlePlay);
     document.addEventListener('audio-player:pause', handlePause);
     document.addEventListener('audio-player:add', handleAdd);
+    document.addEventListener('audio-player:seek', handleSeek);
 
     return () => {
       document.removeEventListener('audio-player:play', handlePlay);
       document.removeEventListener('audio-player:pause', handlePause);
       document.removeEventListener('audio-player:add', handleAdd);
+      document.removeEventListener('audio-player:seek', handleSeek);
     };
   }, []);
 

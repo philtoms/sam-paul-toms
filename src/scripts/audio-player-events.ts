@@ -12,6 +12,7 @@ import type { Track } from '../components/AudioPlayer/types';
 export const AUDIO_PLAYER_PLAY = 'audio-player:play';
 export const AUDIO_PLAYER_PAUSE = 'audio-player:pause';
 export const AUDIO_PLAYER_ADD = 'audio-player:add';
+export const AUDIO_PLAYER_SEEK = 'audio-player:seek';
 
 /** Event detail interfaces */
 export interface PlayEventDetail {
@@ -21,6 +22,17 @@ export interface PlayEventDetail {
 
 export interface AddEventDetail {
   track: Track;
+}
+
+/**
+ * Detail for the seek event. Instructs the player to seek to a fractional
+ * position within a specific track.
+ */
+export interface SeekEventDetail {
+  /** The id of the track to seek within */
+  trackId: string;
+  /** Seek position as a fraction of total duration (0–1) */
+  fraction: number;
 }
 
 /**
@@ -55,6 +67,22 @@ export function addToQueue(track: Track): void {
   document.dispatchEvent(
     new CustomEvent<AddEventDetail>(AUDIO_PLAYER_ADD, {
       detail: { track },
+    }),
+  );
+}
+
+/**
+ * Dispatch a seek event to move playback to a specific position in a track.
+ * The Player component handles this by calling audioEngine.seek(fraction)
+ * only if the trackId matches the currently loaded track.
+ *
+ * @param trackId - The id of the track to seek within
+ * @param fraction - Seek position as a fraction of total duration (0–1)
+ */
+export function seekPlayer(trackId: string, fraction: number): void {
+  document.dispatchEvent(
+    new CustomEvent<SeekEventDetail>(AUDIO_PLAYER_SEEK, {
+      detail: { trackId, fraction },
     }),
   );
 }

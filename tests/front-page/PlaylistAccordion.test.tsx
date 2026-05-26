@@ -14,6 +14,9 @@ const { mockCreate, sharedMockInstance } = vi.hoisted(() => {
     setVolume: vi.fn(),
     load: vi.fn(),
     destroy: vi.fn(),
+    getDuration: vi.fn(() => 200),
+    seekTo: vi.fn(),
+    on: vi.fn(() => vi.fn()),
   };
   return {
     mockCreate: vi.fn(() => instance),
@@ -34,6 +37,13 @@ vi.mock('wavesurfer.js', () => ({
 
 vi.mock('../../src/components/AudioPlayer/playlistStore', () => ({
   isTrackCurrentlyPlaying: mockIsTrackCurrentlyPlaying,
+  currentTrack: { value: null, peek: () => null },
+  currentTime: { value: 0 },
+  duration: { value: 0 },
+}));
+
+vi.mock('../../src/scripts/audio-player-events', () => ({
+  seekPlayer: vi.fn(),
 }));
 
 import PlaylistAccordion from '../../src/components/PlaylistAccordion';
@@ -324,6 +334,7 @@ describe('PlaylistAccordion', () => {
 
     dispatchSpy.mockRestore();
   });
+
 
   describe('no-op guard for currently-playing track', () => {
     it('does NOT dispatch audio-player:play when clicked track is already playing', () => {

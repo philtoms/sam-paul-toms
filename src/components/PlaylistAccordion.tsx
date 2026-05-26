@@ -119,6 +119,7 @@ export default function PlaylistAccordion({ sections, playableTracksMap, allTrac
                     key={`${section.slug}-${i}`}
                     track={track}
                     audioUrl={playableTracksMap[section.slug]?.[i]?.audioUrl}
+                    trackId={playableTracksMap[section.slug]?.[i]?.id}
                     onPlay={() => handleTrackPlay(section.slug, i)}
                   />
                 ))}

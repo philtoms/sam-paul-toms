@@ -7,13 +7,24 @@
  *
  * MiniWaveform approach: Each track row creates its own WaveSurfer instance
  * (not the singleton from waveformRenderer.ts). Instances are muted
- * (setVolume(0)) and non-interactive (interact: false) since seeking is
- * handled by the row-level click → audio-player:play event. Instances are
- * created on mount and destroyed on unmount via useEffect cleanup.
+ * (setVolume(0)) and interactive (interact: true). Clicking/dragging on the
+ * waveform dispatches audio-player:seek when the track is the currently
+ * playing track, while the row-level onClick dispatches audio-player:play
+ * via the parent accordion. Progress is synced reactively via effect()
+ * from @preact/signals, reading currentTime/duration to update the visual
+ * playhead position. Instances are created on mount and destroyed on unmount
+ * via useEffect cleanup.
  */
 
 import { useRef, useEffect } from 'preact/hooks';
+import { effect } from '@preact/signals';
 import WaveSurfer from 'wavesurfer.js';
+import {
+  currentTrack,
+  currentTime,
+  duration,
+} from './AudioPlayer/playlistStore';
+import { seekPlayer } from '../scripts/audio-player-events';
 
 interface TrackRowProps {
   track: {
@@ -23,6 +34,7 @@ interface TrackRowProps {
     icon: string;
   };
   audioUrl?: string;
+  trackId?: string;
   onPlay: () => void;
 }
 
@@ -97,17 +109,21 @@ const icons: Record<string, JSX.Element> = {
 };
 
 /**
- * MiniWaveform — Renders a compact, non-interactive waveform for a track row.
+ * MiniWaveform — Renders a compact, interactive waveform for a track row.
  *
  * Creates a dedicated WaveSurfer instance per row (not the player singleton).
- * The instance is muted and non-interactive; seeking is handled by the
- * row-level click handler that dispatches audio-player:play.
+ * The instance is muted but interactive; clicking/dragging dispatches
+ * audio-player:seek for the current track. Progress is synced reactively
+ * via effect() from @preact/signals, reading the global currentTime and
+ * duration signals to update the visual playhead position.
  */
 function MiniWaveform({
   audioUrl,
+  trackId,
   height = 24,
 }: {
   audioUrl: string;
+  trackId?: string;
   height?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -120,18 +136,52 @@ function MiniWaveform({
       container: containerRef.current,
       height,
       waveColor: '#6b7280',
+      progressColor: '#eab308',
       barWidth: 2,
       barGap: 1,
       barRadius: 1,
       fillParent: true,
-      interact: false,
+      interact: true,
     });
 
     ws.setVolume(0);
     ws.load(audioUrl);
     wsRef.current = ws;
 
+    // Register interaction handler: seek the player when the track is current
+    if (trackId) {
+      ws.on('interaction', (newTime: number) => {
+        const wsDuration = ws.getDuration();
+        if (wsDuration <= 0) return;
+        const fraction = newTime / wsDuration;
+        // Only dispatch seek if this track is the currently loaded track.
+        // For non-current tracks, the button onClick fires audio-player:play
+        // (KB-055 guards against double-play for the current track).
+        const activeTrack = currentTrack.peek();
+        if (activeTrack?.id === trackId) {
+          seekPlayer(trackId, fraction);
+        }
+      });
+    }
+
+    // Reactive progress sync: update the visual playhead when this track is playing
+    let disposeEffect: (() => void) | null = null;
+    if (trackId) {
+      disposeEffect = effect(() => {
+        const activeTrack = currentTrack.value;
+        if (activeTrack?.id !== trackId) return;
+        const time = currentTime.value;
+        const dur = duration.value;
+        if (dur > 0 && wsRef.current) {
+          wsRef.current.seekTo(Math.max(0, Math.min(1, time / dur)));
+        }
+      });
+    }
+
     return () => {
+      if (disposeEffect) {
+        disposeEffect();
+      }
       ws.destroy();
       wsRef.current = null;
     };
@@ -140,7 +190,7 @@ function MiniWaveform({
   return <div ref={containerRef} class="w-48 h-6 hidden sm:block" />;
 }
 
-export default function TrackRow({ track, audioUrl, onPlay }: TrackRowProps) {
+export default function TrackRow({ track, audioUrl, trackId, onPlay }: TrackRowProps) {
   const icon = icons[track.icon] || icons.music;
 
   return (
@@ -165,7 +215,7 @@ export default function TrackRow({ track, audioUrl, onPlay }: TrackRowProps) {
       </span>
 
       {/* Live waveform (renders when audioUrl is available) */}
-      {audioUrl ? <MiniWaveform audioUrl={audioUrl} /> : null}
+      {audioUrl ? <MiniWaveform audioUrl={audioUrl} trackId={trackId} /> : null}
 
       {/* Duration */}
       <span class="shrink-0 text-xs text-text/40 tabular-nums">

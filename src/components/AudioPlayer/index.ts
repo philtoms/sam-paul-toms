@@ -13,4 +13,5 @@ export const AUDIO_PLAYER_EVENTS = {
   PLAY: 'audio-player:play',
   PAUSE: 'audio-player:pause',
   ADD: 'audio-player:add',
+  SEEK: 'audio-player:seek',
 } as const;

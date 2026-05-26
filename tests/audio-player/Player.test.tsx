@@ -189,6 +189,38 @@ describe('Player', () => {
     expect(audioEngine.pause).toHaveBeenCalled();
   });
 
+  it('handles audio-player:seek event for the current track', () => {
+    mockPlaybackState = 'playing';
+    mockCurrentTrack = mockTrack;
+    mockIsPlaying = true;
+
+    render(<Player />);
+
+    document.dispatchEvent(
+      new CustomEvent('audio-player:seek', {
+        detail: { trackId: '1', fraction: 0.5 },
+      }),
+    );
+
+    expect(audioEngine.seek).toHaveBeenCalledWith(0.5);
+  });
+
+  it('ignores audio-player:seek event for a non-matching trackId', () => {
+    mockPlaybackState = 'playing';
+    mockCurrentTrack = mockTrack;
+    mockIsPlaying = true;
+
+    render(<Player />);
+
+    document.dispatchEvent(
+      new CustomEvent('audio-player:seek', {
+        detail: { trackId: 'other-track', fraction: 0.5 },
+      }),
+    );
+
+    expect(audioEngine.seek).not.toHaveBeenCalled();
+  });
+
   it('handles volume slider change', () => {
     mockPlaybackState = 'paused';
     mockCurrentTrack = mockTrack;
