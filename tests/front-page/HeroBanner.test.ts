@@ -37,6 +37,28 @@ describe('HeroBanner fixed-position structure', () => {
     expect(hero).toContain('scale');
   });
 
+  it('uses a starting scale greater than 1.0 so image overflows and clips cleanly', () => {
+    // Scale starts at 1.1, ensuring the image always fills the container
+    expect(hero).toContain('1.1');
+  });
+
+  it('applies a cubic ease-out function to the scroll fraction', () => {
+    // The ease-out formula 1 - (1 - t)³ is present
+    expect(hero).toMatch(/1\s*-\s*Math\.pow\s*\(\s*1\s*-\s*t\s*,\s*3\s*\)/);
+  });
+
+  it('uses lerp-based inertia for post-scroll drift', () => {
+    // Lerp factor 0.1 interpolates current towards target each frame
+    expect(hero).toContain('0.1');
+    expect(hero).toMatch(/current\s*\+=\s*\(target\s*-\s*current\)/);
+  });
+
+  it('drives animation via a requestAnimationFrame loop that self-terminates when settled', () => {
+    // The loop re-schedules itself via rAF and clears rafId when converged
+    expect(hero).toMatch(/rafId\s*=\s*requestAnimationFrame\(loop\)/);
+    expect(hero).toContain('rafId = 0');
+  });
+
   it('contains the banner cover image', () => {
     expect(hero).toContain('src="/images/banner/spt_low_res.png"');
     expect(hero).toContain('object-cover');

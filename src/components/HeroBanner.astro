@@ -10,7 +10,9 @@
  * - Fixed positioning with aspect-ratio-driven height
  * - Full-bleed banner cover image with cinematic crop
  * - Bottom-edge gradient fade aligned to image edge
- * - Scroll-driven opacity fade and slight scale-down
+ * - Scroll-driven opacity fade with cubic ease-out easing
+ * - Scale range 1.1→1.0 so image always fills container (no edge reveal)
+ * - Post-scroll inertia via lerp-based rAF loop for cinematic drift
  */
 ---
 
@@ -31,25 +33,54 @@
 
 <script>
   /**
-   * Scroll-driven hero fade effect.
+   * Scroll-driven hero fade effect with inertia.
+   *
    * As the user scrolls, the banner fades out (opacity 1→0) and
-   * slightly shrinks (scale 1→0.95) over ~300px of scroll distance.
+   * shrinks (scale 1.1→1.0) over ~300px of scroll distance.
+   *
+   * A cubic ease-out curve is applied to the raw scroll fraction for a
+   * fast-attack, slow-settle ramp. The rendered opacity/scale lerp towards
+   * the target via requestAnimationFrame, creating post-scroll inertia —
+   * the banner drifts and settles after the user stops scrolling.
    */
   const hero = document.getElementById('hero-banner');
   if (hero) {
-    let ticking = false;
+    /** Cubic ease-out: fast attack, slow settle */
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+
+    let target = 0;    // eased scroll fraction (immediate)
+    let current = 0;   // lerped value (animated)
+    let rafId = 0;
+
+    const apply = () => {
+      hero.style.opacity = String(1 - current);
+      hero.style.transform = `scale(${1.1 - current * 0.1})`;
+    };
+
+    const loop = () => {
+      current += (target - current) * 0.1;
+
+      if (Math.abs(target - current) > 0.001) {
+        apply();
+        rafId = requestAnimationFrame(loop);
+      } else {
+        current = target;
+        apply();
+        rafId = 0;
+      }
+    };
 
     const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
+      const raw = Math.min(window.scrollY / 300, 1);
+      target = easeOut(raw);
 
-      requestAnimationFrame(() => {
-        const fraction = Math.min(window.scrollY / 300, 1);
-        hero.style.opacity = String(1 - fraction);
-        hero.style.transform = `scale(${1 - fraction * 0.05})`;
-        ticking = false;
-      });
+      if (!rafId) {
+        rafId = requestAnimationFrame(loop);
+      }
     };
+
+    // Set initial state
+    apply();
 
     window.addEventListener('scroll', onScroll, { passive: true });
   }
