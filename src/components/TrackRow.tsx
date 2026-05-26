@@ -187,16 +187,21 @@ function MiniWaveform({
     };
   }, [audioUrl, height]);
 
-  return <div ref={containerRef} class="w-48 h-6 hidden sm:block" />;
+  return <div ref={containerRef} class="w-96 h-6 hidden sm:block" />;
 }
 
-export default function TrackRow({ track, audioUrl, trackId, onPlay }: TrackRowProps) {
+export default function TrackRow({
+  track,
+  audioUrl,
+  trackId,
+  onPlay,
+}: TrackRowProps) {
   const icon = icons[track.icon] || icons.music;
 
   return (
     <button
       type="button"
-      class="group flex w-full items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-white/5"
+      class="group flex w-full md:w-4/5 items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-white/5"
       onClick={onPlay}
     >
       {/* Category icon */}
