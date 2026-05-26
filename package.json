@@ -10,7 +10,8 @@
     "test": "vitest run",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "clean:worktrees": "git worktree list --porcelain | grep '^worktree ' | grep -v $(pwd) | cut -d' ' -f2 | xargs -I {} git worktree remove '{}' && git branch --list 'kb/*' | sed 's/^..//' | xargs git branch -D"
   },
   "keywords": [],
   "author": "",

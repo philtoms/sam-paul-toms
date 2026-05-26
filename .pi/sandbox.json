@@ -1,0 +1,26 @@
+{
+  "filesystem": {
+    "denyRead": [
+      "/Users",
+      "/home"
+    ],
+    "allowRead": [
+      ".",
+      "~/.config",
+      "~/.local",
+      "~/.pi",
+      "Library"
+    ],
+    "allowWrite": [
+      ".",
+      "/tmp",
+      "/private/tmp"
+    ],
+    "denyWrite": [
+      ".env",
+      ".env.*",
+      "*.pem",
+      "*.key"
+    ]
+  }
+}
