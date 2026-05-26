@@ -54,12 +54,14 @@
   overflow: hidden;
 }
 
-.audio-player-track-info__artwork {
+.audio-player-track-info__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 4px;
-  object-fit: cover;
   flex-shrink: 0;
+  color: var(--color-text-secondary, #a3a3a3);
 }
 
 .audio-player-track-info__details {
@@ -277,7 +279,7 @@
   }
 
   /* Hide elements that don't fit on mobile */
-  .audio-player-track-info__artwork {
+  .audio-player-track-info__icon {
     display: none;
   }
 

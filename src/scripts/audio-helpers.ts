@@ -48,7 +48,7 @@ export function resolveAudioUrl(audioFile: string): string {
  * @returns A Track object with resolved audioUrl
  */
 export function buildTrackFromContent(
-  trackData: { title: string; audioFile?: string },
+  trackData: { title: string; audioFile?: string; icon?: string; subtitle?: string },
   releaseSlug: string,
   trackIndex: number,
   artist: string,
@@ -60,5 +60,7 @@ export function buildTrackFromContent(
     artist,
     audioUrl: trackData.audioFile ? resolveAudioUrl(trackData.audioFile) : '',
     artworkUrl,
+    icon: trackData.icon,
+    subtitle: trackData.subtitle,
   };
 }

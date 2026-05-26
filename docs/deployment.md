@@ -99,23 +99,23 @@ Confirm the audio file loads and plays.
 
 Configure these in the Pages project setup:
 
-| Setting | Value |
-|---------|-------|
-| Framework preset | `Astro` |
-| Build command | `npm run build` |
-| Build output directory | `dist` |
-| Root directory | `/` (default) |
-| Node.js version | `18` (or `20`) |
+| Setting                | Value           |
+| ---------------------- | --------------- |
+| Framework preset       | `Astro`         |
+| Build command          | `npm run build` |
+| Build output directory | `dist`          |
+| Root directory         | `/` (default)   |
+| Node.js version        | `18` (or `20`)  |
 
 ### Environment variables
 
 Set these in **Pages** → **your project** → **Settings** → **Environment variables**:
 
-| Variable | Value | Notes |
-|----------|-------|-------|
-| `R2_PUBLIC_URL` | `https://pub-xxxx.r2.dev` | Your R2 public URL from step 2 |
-| `SITE_URL` | `https://sam.music` | Your production domain |
-| `NODE_VERSION` | `18` | Ensures correct Node.js in build |
+| Variable        | Value                     | Notes                            |
+| --------------- | ------------------------- | -------------------------------- |
+| `R2_PUBLIC_URL` | `https://pub-xxxx.r2.dev` | Your R2 public URL from step 2   |
+| `SITE_URL`      | `https://sam.music`       | Your production domain           |
+| `NODE_VERSION`  | `18`                      | Ensures correct Node.js in build |
 
 > **Important:** Set these for **both** Production and Preview environments.
 
@@ -125,7 +125,7 @@ If not using Git integration:
 
 ```bash
 npm run build
-npx wrangler pages deploy dist --project-name sam-music
+npx wrangler pages deploy dist --project-name sam-paul-toms
 ```
 
 ---
@@ -148,10 +148,10 @@ Skip this section if using the default `<project>.pages.dev` subdomain.
 
 Add DNS records at your registrar:
 
-| Type | Name | Target |
-|------|------|--------|
-| CNAME | `@` | `sam-music.pages.dev` (apex domain — requires CNAME flattening) |
-| CNAME | `www` | `sam-music.pages.dev` |
+| Type  | Name  | Target                                                          |
+| ----- | ----- | --------------------------------------------------------------- |
+| CNAME | `@`   | `sam-music.pages.dev` (apex domain — requires CNAME flattening) |
+| CNAME | `www` | `sam-music.pages.dev`                                           |
 
 - Wait for DNS propagation (< 5 minutes on Cloudflare, up to 48 hours elsewhere)
 - SSL is handled automatically by Cloudflare
@@ -255,15 +255,15 @@ Create `src/content/releases/{slug}.md` with the release metadata:
 
 ```yaml
 ---
-title: "Release Title"
-artist: "Sam"
+title: 'Release Title'
+artist: 'Sam'
 releaseDate: 2025-11-15
 type: album
 artwork: /images/releases/{slug}.svg
 tracks:
-  - title: "Track Name"
-    duration: "3:42"
-    audioFile: "releases/{slug}/01-track.mp3"
+  - title: 'Track Name'
+    duration: '3:42'
+    audioFile: 'releases/{slug}/01-track.mp3'
 ---
 Extended description or liner notes here.
 ```
@@ -282,13 +282,13 @@ git push
 
 ## 8. Costs and Limits
 
-| Service | Free Tier | Notes |
-|---------|-----------|-------|
-| **Cloudflare Pages** | Unlimited requests, 500 builds/month | Sufficient for a music portfolio |
-| **R2 Storage** | 10 GB free | Sufficient for ~100–200 MP3 files |
-| **R2 Operations** | 1M Class A, 10M Class B per month | Well within free tier |
-| **R2 Egress** | **Free** — no egress fees | Key advantage over AWS S3 |
-| **Custom domain** | ~$12/year | If not using `.pages.dev` subdomain |
+| Service              | Free Tier                            | Notes                               |
+| -------------------- | ------------------------------------ | ----------------------------------- |
+| **Cloudflare Pages** | Unlimited requests, 500 builds/month | Sufficient for a music portfolio    |
+| **R2 Storage**       | 10 GB free                           | Sufficient for ~100–200 MP3 files   |
+| **R2 Operations**    | 1M Class A, 10M Class B per month    | Well within free tier               |
+| **R2 Egress**        | **Free** — no egress fees            | Key advantage over AWS S3           |
+| **Custom domain**    | ~$12/year                            | If not using `.pages.dev` subdomain |
 
 **Total hosting cost: $0/month** (free tier) + domain registration if applicable.
 

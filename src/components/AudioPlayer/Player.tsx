@@ -16,6 +16,44 @@ import * as waveformRenderer from './waveformRenderer';
 import type { Track } from './types';
 import './Player.css';
 
+/** Icon lookup by category type */
+const categoryIcons: Record<string, JSX.Element> = {
+  music: (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="audio-player-icon">
+      <path d="M9 18V5l12-2v13" />
+      <circle cx="6" cy="18" r="3" />
+      <circle cx="18" cy="16" r="3" />
+    </svg>
+  ),
+  film: (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="audio-player-icon">
+      <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
+      <line x1="7" y1="2" x2="7" y2="22" />
+      <line x1="17" y1="2" x2="17" y2="22" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <line x1="2" y1="7" x2="7" y2="7" />
+      <line x1="2" y1="17" x2="7" y2="17" />
+      <line x1="17" y1="7" x2="22" y2="7" />
+      <line x1="17" y1="17" x2="22" y2="17" />
+    </svg>
+  ),
+  tv: (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="audio-player-icon">
+      <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+      <polyline points="17 2 12 7 7 2" />
+    </svg>
+  ),
+  trailer: (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="audio-player-icon">
+      <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+    </svg>
+  ),
+};
+
+function trackIcon(icon?: string): JSX.Element {
+  return categoryIcons[icon ?? 'music'] ?? categoryIcons.music;
+}
+
 /**
  * Persistent audio player bar component.
  *
@@ -189,21 +227,17 @@ export default function Player() {
     <div class="audio-player-bar audio-player-bar--expanded">
       {/* Track info (left) */}
       <div class="audio-player-track-info">
-        {track?.artworkUrl && (
-          <img
-            class="audio-player-track-info__artwork"
-            src={track.artworkUrl}
-            alt=""
-            width={32}
-            height={32}
-          />
-        )}
+        <span class="audio-player-track-info__icon">
+          {trackIcon(track?.icon)}
+        </span>
         <div class="audio-player-track-info__details">
           <span class="audio-player-track-info__title">
             {track?.title ?? '—'}
           </span>
           <span class="audio-player-track-info__artist">
-            {track?.artist ?? ''}
+            {track?.subtitle
+              ? `${track.artist}: ${track.subtitle}`
+              : (track?.artist ?? '')}
           </span>
         </div>
       </div>

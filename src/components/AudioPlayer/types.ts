@@ -14,6 +14,10 @@ export interface Track {
   duration?: number;
   /** URL to the album artwork thumbnail */
   artworkUrl?: string;
+  /** Category icon key (music, film, tv, trailer) */
+  icon?: string;
+  /** Track subtitle (e.g. production credit) */
+  subtitle?: string;
 }
 
 /**
