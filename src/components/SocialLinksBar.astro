@@ -156,13 +156,14 @@ const { allTracksJson } = Astro.props;
     >
   </a>
 
-  <a
-    href="/about"
+  <button
+    type="button"
+    id="contact-btn"
     aria-label="Contact"
-    class="border border-white/50 rounded-full ml-3 px-3 py-1.5 text-xs text-text transition-colors hover:bg-text hover:text-bg"
+    class="border border-white/50 rounded-full ml-3 px-3 py-1.5 text-xs text-text transition-colors hover:bg-text hover:text-bg cursor-pointer"
   >
     Contact
-  </a>
+  </button>
 </div>
 
 <script>
@@ -182,5 +183,13 @@ const { allTracksJson } = Astro.props;
         );
       });
     }
+  }
+
+  // Contact button: dispatch contact-modal:open event
+  const contactBtn = document.getElementById('contact-btn');
+  if (contactBtn) {
+    contactBtn.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('contact-modal:open'));
+    });
   }
 </script>

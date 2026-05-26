@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import SEOHead from '../components/SEOHead.astro';
 import Player from '../components/AudioPlayer/Player';
+import ContactModal from '../components/ContactModal';
 
 interface Props {
   title?: string;
@@ -45,5 +46,6 @@ const {
     <div transition:persist="audio-player" class="fixed bottom-0 z-50">
       <Player client:load />
     </div>
+    <ContactModal client:load />
   </body>
 </html>

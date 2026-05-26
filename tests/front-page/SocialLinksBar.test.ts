@@ -27,8 +27,9 @@ describe('SocialLinksBar component structure', () => {
     expect(component).toContain('aria-label="Contact"');
   });
 
-  it('renders Contact link pointing to /about', () => {
-    expect(component).toContain('href="/about"');
+  it('renders Contact button with id="contact-btn"', () => {
+    expect(component).toContain('id="contact-btn"');
+    expect(component).toContain('aria-label="Contact"');
   });
 
   it('has data-tracks attribute on wrapper element for track data', () => {
@@ -86,19 +87,19 @@ describe('SocialLinksBar component structure', () => {
     expect(groupLinks!.length).toBe(5);
   });
 
-  it('Contact link contains the text "Contact"', () => {
-    // Contact link should display "Contact" as visible text content
-    const contactPattern = /aria-label="Contact"[^>]*>\s*Contact\s*<\/a>/;
+  it('Contact button contains the text "Contact"', () => {
+    // Contact button should display "Contact" as visible text content
+    const contactPattern = /aria-label="Contact"[^>]*>\s*Contact\s*<\/button>/;
     expect(component).toMatch(contactPattern);
   });
 
-  it('Contact link has pill-shaped outlined button styling', () => {
-    // Find the Contact link and verify its classes
-    const contactLink = component.match(
-      /<a[^>]*aria-label="Contact"[^>]*class="([^"]*)"[^>]*>/,
+  it('Contact button has pill-shaped outlined button styling', () => {
+    // Find the Contact button and verify its classes
+    const contactBtn = component.match(
+      /<button[^>]*aria-label="Contact"[^>]*class="([^"]*)"[^>]*>/,
     );
-    expect(contactLink).not.toBeNull();
-    const classes = contactLink![1];
+    expect(contactBtn).not.toBeNull();
+    const classes = contactBtn![1];
     expect(classes).toContain('rounded-full');
     expect(classes).toContain('border-white/50');
     expect(classes).toContain('border');
