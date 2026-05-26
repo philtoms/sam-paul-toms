@@ -90,13 +90,21 @@ const mockPlayableTracksMap: Record<string, Array<{
   ],
 };
 
+// Full track list across all sections in order (for cross-section next/prev)
+const mockAllTracks = [
+  ...mockPlayableTracksMap.documentary,
+  ...mockPlayableTracksMap.film,
+  ...mockPlayableTracksMap.library,
+  ...mockPlayableTracksMap['trailers-themes-idents'],
+];
+
 describe('PlaylistAccordion', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('renders all 4 section titles', () => {
-    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />);
+    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
 
     expect(screen.getByText('Documentary')).toBeTruthy();
     expect(screen.getByText('Film')).toBeTruthy();
@@ -105,7 +113,7 @@ describe('PlaylistAccordion', () => {
   });
 
   it('first section is expanded by default', () => {
-    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />);
+    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
 
     // First section tracks should be visible
     expect(screen.getByText('The Weight of Water')).toBeTruthy();
@@ -114,7 +122,7 @@ describe('PlaylistAccordion', () => {
   });
 
   it('clicking a section header expands it and collapses others', () => {
-    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />);
+    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
 
     // Click Film section
     const filmHeader = screen.getByText('Film').closest('button')!;
@@ -126,26 +134,26 @@ describe('PlaylistAccordion', () => {
   });
 
   it('track rows render title, subtitle, and duration', () => {
-    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />);
+    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
 
     expect(screen.getByText('The Weight of Water')).toBeTruthy();
     expect(screen.getByText('Dir. Ana Moreno')).toBeTruthy();
     expect(screen.getByText('3:42')).toBeTruthy();
   });
 
-  it('clicking a track row dispatches audio-player:play event with correct section tracks and index', () => {
-    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />);
+  it('clicking a track row dispatches audio-player:play event with all tracks and correct global index', () => {
+    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
 
     const dispatchSpy = vi.spyOn(document, 'dispatchEvent');
 
-    // Click "Beneath the Ice" (index 1 in Documentary section)
+    // Click "Beneath the Ice" (index 1 in Documentary section → global index 1)
     const trackButton = screen.getByText('Beneath the Ice').closest('button')!;
     fireEvent.click(trackButton);
 
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
     const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
     expect(event.type).toBe('audio-player:play');
-    expect(event.detail.tracks).toEqual(mockPlayableTracksMap.documentary);
+    expect(event.detail.tracks).toEqual(mockAllTracks);
     expect(event.detail.startIndex).toBe(1);
 
     dispatchSpy.mockRestore();
@@ -153,7 +161,7 @@ describe('PlaylistAccordion', () => {
 
   it('only one section is open at a time', () => {
     const { container } = render(
-      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />,
+      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
     );
 
     // Initially, Documentary is open
@@ -170,7 +178,7 @@ describe('PlaylistAccordion', () => {
   });
 
   it('clicking an open section header collapses it', () => {
-    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />);
+    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
 
     // Documentary is open by default; click to close
     const docHeader = screen.getByText('Documentary').closest('button')!;
@@ -186,7 +194,7 @@ describe('PlaylistAccordion', () => {
 
   it('playlist-accordion has no background, border, or border-radius inline styles', () => {
     const { container } = render(
-      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />,
+      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
     );
 
     const accordion = container.querySelector('.playlist-accordion') as HTMLElement;
@@ -201,7 +209,7 @@ describe('PlaylistAccordion', () => {
 
   it('renders chevron SVG before the title text in DOM order', () => {
     const { container } = render(
-      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />,
+      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
     );
 
     const header = container.querySelector('.accordion-header')!;
@@ -212,7 +220,7 @@ describe('PlaylistAccordion', () => {
 
   it('applies rotate-90 class to chevron when section is open and no rotation when closed', () => {
     const { container } = render(
-      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />,
+      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
     );
 
     const headers = container.querySelectorAll('.accordion-header');
@@ -239,7 +247,7 @@ describe('PlaylistAccordion', () => {
 
   it('passes correct audio URLs from playableTracksMap to track row waveforms', () => {
     render(
-      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} />,
+      <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
     );
 
     // All tracks across all sections are rendered in the DOM (closed sections
@@ -256,5 +264,46 @@ describe('PlaylistAccordion', () => {
     expect(sharedMockInstance.load.mock.calls[5][0]).toBe('http://example.com/lib-0.mp3');
     expect(sharedMockInstance.load.mock.calls[6][0]).toBe('http://example.com/trailer-0.mp3');
     expect(sharedMockInstance.load.mock.calls[7][0]).toBe('http://example.com/trailer-1.mp3');
+  });
+
+  it('clicking first track of first section dispatches with startIndex 0 and all tracks', () => {
+    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
+
+    const dispatchSpy = vi.spyOn(document, 'dispatchEvent');
+
+    // Click "The Weight of Water" (index 0 in Documentary, global index 0)
+    const trackButton = screen.getByText('The Weight of Water').closest('button')!;
+    fireEvent.click(trackButton);
+
+    expect(dispatchSpy).toHaveBeenCalledTimes(1);
+    const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
+    expect(event.type).toBe('audio-player:play');
+    expect(event.detail.tracks).toEqual(mockAllTracks);
+    expect(event.detail.startIndex).toBe(0);
+
+    dispatchSpy.mockRestore();
+  });
+
+  it('clicking a track in a later section dispatches with correct global startIndex', () => {
+    // Open Trailers section first
+    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
+
+    const dispatchSpy = vi.spyOn(document, 'dispatchEvent');
+
+    // Click "Horizon" (index 0 in trailers-themes-idents, global index 6)
+    // doc(3) + film(2) + library(1) = 6 preceding tracks
+    const trailerHeader = screen.getByText('Trailers, Themes & Idents').closest('button')!;
+    fireEvent.click(trailerHeader);
+
+    const trackButton = screen.getByText('Horizon').closest('button')!;
+    fireEvent.click(trackButton);
+
+    expect(dispatchSpy).toHaveBeenCalledTimes(1);
+    const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
+    expect(event.type).toBe('audio-player:play');
+    expect(event.detail.tracks).toEqual(mockAllTracks);
+    expect(event.detail.startIndex).toBe(6);
+
+    dispatchSpy.mockRestore();
   });
 });

@@ -34,9 +34,11 @@ interface PlaylistAccordionProps {
   sections: PlaylistSection[];
   /** Map from section slug to playable tracks for audio dispatch */
   playableTracksMap: Record<string, PlayableTrack[]>;
+  /** Full track list across all sections for cross-section next/prev cycling */
+  allTracks: PlayableTrack[];
 }
 
-export default function PlaylistAccordion({ sections, playableTracksMap }: PlaylistAccordionProps) {
+export default function PlaylistAccordion({ sections, playableTracksMap, allTracks }: PlaylistAccordionProps) {
   // First section open by default
   const [openSlug, setOpenSlug] = useState<string>(sections[0]?.slug ?? '');
 
@@ -45,14 +47,23 @@ export default function PlaylistAccordion({ sections, playableTracksMap }: Playl
   };
 
   const handleTrackPlay = (sectionSlug: string, trackIndex: number) => {
-    const tracks = playableTracksMap[sectionSlug];
-    if (tracks && tracks.length > 0) {
-      document.dispatchEvent(
-        new CustomEvent('audio-player:play', {
-          detail: { tracks, startIndex: trackIndex },
-        }),
-      );
+    if (allTracks.length === 0) return;
+
+    // Compute global startIndex by summing track counts of all preceding sections
+    let globalIndex = 0;
+    for (const section of sections) {
+      if (section.slug === sectionSlug) {
+        globalIndex += trackIndex;
+        break;
+      }
+      globalIndex += section.tracks.length;
     }
+
+    document.dispatchEvent(
+      new CustomEvent('audio-player:play', {
+        detail: { tracks: allTracks, startIndex: globalIndex },
+      }),
+    );
   };
 
   return (
