@@ -137,7 +137,7 @@ function MiniWaveform({
     };
   }, [audioUrl, height]);
 
-  return <div ref={containerRef} class="w-96 h-6 hidden sm:block" />;
+  return <div ref={containerRef} class="w-48 h-6 hidden sm:block" />;
 }
 
 export default function TrackRow({ track, audioUrl, onPlay }: TrackRowProps) {
@@ -154,20 +154,18 @@ export default function TrackRow({ track, audioUrl, onPlay }: TrackRowProps) {
         {icon}
       </span>
 
-      {/* Centered title + waveform group */}
-      <span class="flex flex-1 items-center justify-center gap-2">
-        <span class="min-w-0">
-          <span class="block truncate text-sm font-medium">{track.title}</span>
-          {track.subtitle && (
-            <span class="block truncate text-xs text-text/50">
-              {track.subtitle}
-            </span>
-          )}
-        </span>
-
-        {/* Live waveform (renders when audioUrl is available) */}
-        {audioUrl ? <MiniWaveform audioUrl={audioUrl} /> : null}
+      {/* Track info */}
+      <span class="min-w-0 flex-1">
+        <span class="block truncate text-sm font-medium">{track.title}</span>
+        {track.subtitle && (
+          <span class="block truncate text-xs text-text/50">
+            {track.subtitle}
+          </span>
+        )}
       </span>
+
+      {/* Live waveform (renders when audioUrl is available) */}
+      {audioUrl ? <MiniWaveform audioUrl={audioUrl} /> : null}
 
       {/* Duration */}
       <span class="shrink-0 text-xs text-text/40 tabular-nums">

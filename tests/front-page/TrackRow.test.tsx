@@ -124,7 +124,7 @@ describe('TrackRow', () => {
     expect(mockWsInstance.destroy).toHaveBeenCalledTimes(1);
   });
 
-  it('waveform container has w-96 class (not w-24)', () => {
+  it('waveform container has w-48 class (not w-24)', () => {
     const { container } = render(
       <TrackRow
         track={baseTrack}
@@ -134,9 +134,9 @@ describe('TrackRow', () => {
     );
 
     // Find the waveform container div (rendered by MiniWaveform)
-    const waveformDiv = container.querySelector('[class*="w-96"]');
+    const waveformDiv = container.querySelector('[class*="w-48"]');
     expect(waveformDiv).toBeTruthy();
-    expect(waveformDiv!.classList.contains('w-96')).toBe(true);
+    expect(waveformDiv!.classList.contains('w-48')).toBe(true);
     expect(waveformDiv!.classList.contains('w-24')).toBe(false);
   });
 
@@ -152,36 +152,4 @@ describe('TrackRow', () => {
     expect(onPlay).toHaveBeenCalledTimes(1);
   });
 
-  it('title and waveform are siblings inside a shared parent container', () => {
-    const { container } = render(
-      <TrackRow
-        track={baseTrack}
-        audioUrl="http://example.com/track.mp3"
-        onPlay={vi.fn()}
-      />,
-    );
-
-    const titleSpan = screen.getByText('The Weight of Water').closest('span')!;
-    const waveformDiv = container.querySelector('[class*="w-96"]')!;
-    // title span → min-w-0 wrapper → group parent; waveform div → group parent
-    expect(titleSpan.parentElement!.parentElement).toBe(waveformDiv.parentElement);
-  });
-
-  it('button has flex layout and title group is centered with flex-1', () => {
-    const { container } = render(
-      <TrackRow
-        track={baseTrack}
-        audioUrl="http://example.com/track.mp3"
-        onPlay={vi.fn()}
-      />,
-    );
-
-    const button = container.querySelector('button')!;
-    expect(button.classList.contains('flex')).toBe(true);
-
-    // The centered title+waveform group span
-    const titleGroup = screen.getByText('The Weight of Water').closest('span')!.parentElement!.parentElement!;
-    expect(titleGroup.classList.contains('flex-1')).toBe(true);
-    expect(titleGroup.classList.contains('justify-center')).toBe(true);
-  });
 });
