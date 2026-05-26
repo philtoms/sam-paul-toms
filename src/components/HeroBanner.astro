@@ -7,16 +7,16 @@
  * while it simultaneously fades out and shrinks via scroll-driven JS.
  *
  * Features:
- * - Fixed positioning (40dvh mobile / 60dvh desktop)
- * - Full-bleed banner cover image with dark overlay
- * - Large artist name + tagline
+ * - Fixed positioning with aspect-ratio-driven height
+ * - Full-bleed banner cover image with cinematic crop
+ * - Bottom-edge gradient fade aligned to image edge
  * - Scroll-driven opacity fade and slight scale-down
  */
 ---
 
 <div
   id="hero-banner"
-  class="fixed top-0 left-0 right-0 z-0 flex h-[40dvh] items-center justify-center overflow-hidden md:h-[60dvh]"
+  class="fixed top-0 left-0 right-0 z-0 flex aspect-[16/9] items-center justify-center overflow-hidden md:aspect-[21/9]"
 >
   <img
     src="/images/banner/spt_low_res.png"
@@ -24,8 +24,7 @@
     class="absolute inset-0 h-full w-full object-cover"
   />
   <div
-    class="hero-bottom-fade absolute bottom-0 left-0 right-0 h-1/4"
-    style="background: linear-gradient(to bottom, transparent, var(--color-bg));"
+    class="hero-bottom-fade absolute bottom-0 left-0 right-0"
   >
   </div>
 </div>

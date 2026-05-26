@@ -154,6 +154,25 @@
   }
 }
 
+/* === Hero bottom fade === */
+.hero-bottom-fade {
+  height: 30%;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 10, 10, 0) 0%,
+    rgba(10, 10, 10, 0.3) 40%,
+    rgba(10, 10, 10, 0.7) 70%,
+    rgba(10, 10, 10, 1) 100%
+  );
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .hero-bottom-fade {
+    height: 20%;
+  }
+}
+
 /* === Base Element Styles === */
 
 html {
@@ -198,12 +217,7 @@ body {
   background: var(--color-text-tertiary);
 }
 
-/* Image defaults */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
+/* Image defaults — handled by Tailwind @layer base */
 
 /* Link defaults */
 @layer base {

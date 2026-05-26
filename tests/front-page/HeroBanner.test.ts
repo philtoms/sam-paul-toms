@@ -26,9 +26,9 @@ describe('HeroBanner fixed-position structure', () => {
     expect(hero).toContain('z-0');
   });
 
-  it('retains responsive hero heights (40dvh mobile, 60dvh desktop)', () => {
-    expect(hero).toContain('h-[40dvh]');
-    expect(hero).toContain('md:h-[60dvh]');
+  it('uses aspect-ratio for responsive hero heights (16/9 mobile, 21/9 desktop)', () => {
+    expect(hero).toContain('aspect-[16/9]');
+    expect(hero).toContain('md:aspect-[21/9]');
   });
 
   it('retains the scroll-driven opacity/transform JS', () => {
@@ -47,10 +47,8 @@ describe('HeroBanner fixed-position structure', () => {
     expect(hero).toContain('bottom-0');
     expect(hero).toContain('left-0');
     expect(hero).toContain('right-0');
-    expect(hero).toContain('h-1/4');
-    expect(hero).toContain(
-      'linear-gradient(to bottom, transparent, var(--color-bg))',
-    );
+    // Gradient is defined in global.css via .hero-bottom-fade class
+    // with explicit rgba() stops for mobile WebKit compatibility
   });
 
   it('clips children to the banner bounds with overflow-hidden', () => {
@@ -76,8 +74,8 @@ describe('Homepage scroll-over layout', () => {
     expect(index).not.toMatch(/<main[^>]*bg-bg/);
   });
 
-  it('main element has margin-top matching hero height for scroll-over effect', () => {
-    expect(index).toMatch(/<main[^>]*mt-\[40dvh\]/);
-    expect(index).toMatch(/<main[^>]*md:mt-\[60dvh\]/);
+  it('main element has margin-top matching hero aspect-ratio height minus section padding for scroll-over effect', () => {
+    expect(index).toMatch(/<main[^>]*mt-\[calc\(100vw\*9\/16-4rem\)\]/);
+    expect(index).toMatch(/<main[^>]*md:mt-\[calc\(100vw\*9\/21-4rem\)\]/);
   });
 });
