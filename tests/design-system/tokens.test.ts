@@ -29,7 +29,7 @@ describe('Design System — Color Palette', () => {
   it('preserves original KB-002 color values', () => {
     expect(css).toContain('--color-bg: #0a0a0a');
     expect(css).toContain('--color-text: #f5f5f5');
-    expect(css).toContain('--color-accent: #8b5cf6');
+    expect(css).toContain('--color-accent: #eab308');
   });
 });
 

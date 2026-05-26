@@ -57,9 +57,9 @@ describe('waveformRenderer', () => {
       expect(MockWaveSurferCreate).toHaveBeenCalledWith(
         expect.objectContaining({
           container,
-          height: 48,
+          height: 40,
           waveColor: '#6b7280',
-          progressColor: '#8b5cf6',
+          progressColor: '#eab308',
           cursorColor: '#f5f5f5',
           barWidth: 2,
           barGap: 1,

@@ -136,7 +136,7 @@ describe('Player Style', () => {
 
     // Track info section
     expect(container.querySelector('.audio-player-track-info')).toBeInTheDocument();
-    expect(container.querySelector('.audio-player-track-info__artwork')).toBeInTheDocument();
+    expect(container.querySelector('.audio-player-track-info__icon')).toBeInTheDocument();
     expect(container.querySelector('.audio-player-track-info__details')).toBeInTheDocument();
     expect(container.querySelector('.audio-player-track-info__title')).toBeInTheDocument();
     expect(container.querySelector('.audio-player-track-info__artist')).toBeInTheDocument();

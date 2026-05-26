@@ -45,7 +45,7 @@ describe('SocialLinksBar component structure', () => {
   it('uses consistent icon sizing for social links', () => {
     // Social/streaming icons use w-4 h-4 SVGs inside w-5 h-5 containers
     expect(component).toContain('w-4 h-4');
-    expect(component).toContain('hover:text-accent');
+    expect(component).toContain('hover:text-text');
   });
 
   it('Play All button retains its original size', () => {

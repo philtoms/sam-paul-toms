@@ -125,17 +125,16 @@ describe('Player', () => {
     expect(screen.getByText('Test Artist')).toBeInTheDocument();
   });
 
-  it('displays artwork thumbnail when available', () => {
+  it('displays track icon when a track is loaded', () => {
     mockPlaybackState = 'paused';
     mockCurrentTrack = mockTrack;
 
     const { container } = render(<Player />);
 
-    const img = container.querySelector(
-      '.audio-player-track-info__artwork',
-    ) as HTMLImageElement;
-    expect(img).toBeInTheDocument();
-    expect(img.src).toBe('https://example.com/artwork.jpg');
+    const icon = container.querySelector(
+      '.audio-player-track-info__icon',
+    );
+    expect(icon).toBeInTheDocument();
   });
 
   it('initializes audio engine on mount', () => {
