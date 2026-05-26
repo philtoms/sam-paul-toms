@@ -8,6 +8,7 @@
 
 import { useState } from 'preact/hooks';
 import TrackRow from './TrackRow';
+import { isTrackCurrentlyPlaying } from './AudioPlayer/playlistStore';
 import './PlaylistAccordion.css';
 
 interface PlaylistSection {
@@ -61,6 +62,12 @@ export default function PlaylistAccordion({ sections, playableTracksMap, allTrac
         break;
       }
       globalIndex += section.tracks.length;
+    }
+
+    // Guard: skip dispatch if the track is already playing
+    const track = allTracks[globalIndex];
+    if (track && isTrackCurrentlyPlaying(track.id)) {
+      return; // Already playing — no-op
     }
 
     document.dispatchEvent(

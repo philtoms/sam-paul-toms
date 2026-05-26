@@ -98,6 +98,18 @@ export function clearPlaylist(): void {
 }
 
 /**
+ * Check whether a given track is the currently active, playing track.
+ * Used as a guard to avoid restarting a track that is already playing.
+ *
+ * @param trackId - The id of the track to check
+ * @returns true if the track is loaded in currentTrack AND isPlaying is true
+ */
+export function isTrackCurrentlyPlaying(trackId: string): boolean {
+  const track = currentTrack.value;
+  return track !== null && track.id === trackId && isPlaying.value === true;
+}
+
+/**
  * Get a snapshot of the full playlist state for debugging or serialization.
  */
 export function getState(): PlaylistState {

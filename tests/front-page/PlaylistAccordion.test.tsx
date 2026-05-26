@@ -21,10 +21,19 @@ const { mockCreate, sharedMockInstance } = vi.hoisted(() => {
   };
 });
 
+// Mock isTrackCurrentlyPlaying — controlled per test
+const { mockIsTrackCurrentlyPlaying } = vi.hoisted(() => ({
+  mockIsTrackCurrentlyPlaying: vi.fn(() => false),
+}));
+
 vi.mock('wavesurfer.js', () => ({
   default: {
     create: mockCreate,
   },
+}));
+
+vi.mock('../../src/components/AudioPlayer/playlistStore', () => ({
+  isTrackCurrentlyPlaying: mockIsTrackCurrentlyPlaying,
 }));
 
 import PlaylistAccordion from '../../src/components/PlaylistAccordion';
@@ -314,5 +323,70 @@ describe('PlaylistAccordion', () => {
     expect(event.detail.startIndex).toBe(6);
 
     dispatchSpy.mockRestore();
+  });
+
+  describe('no-op guard for currently-playing track', () => {
+    it('does NOT dispatch audio-player:play when clicked track is already playing', () => {
+      // Simulate: "The Weight of Water" (doc-0) is currently playing
+      mockIsTrackCurrentlyPlaying.mockImplementation((id: string) => id === 'doc-0');
+
+      render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
+
+      const dispatchSpy = vi.spyOn(document, 'dispatchEvent');
+
+      // Click "The Weight of Water" (index 0 in Documentary section, global index 0)
+      const trackButton = screen.getByText('The Weight of Water').closest('button')!;
+      fireEvent.click(trackButton);
+
+      // No event should be dispatched — the track is already playing
+      expect(dispatchSpy).not.toHaveBeenCalled();
+      expect(mockIsTrackCurrentlyPlaying).toHaveBeenCalledWith('doc-0');
+
+      dispatchSpy.mockRestore();
+    });
+
+    it('dispatches audio-player:play when a different track is clicked', () => {
+      // Simulate: "The Weight of Water" (doc-0) is currently playing
+      mockIsTrackCurrentlyPlaying.mockImplementation((id: string) => id === 'doc-0');
+
+      render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
+
+      const dispatchSpy = vi.spyOn(document, 'dispatchEvent');
+
+      // Click "Beneath the Ice" (index 1 in Documentary section, global index 1) — different track
+      const trackButton = screen.getByText('Beneath the Ice').closest('button')!;
+      fireEvent.click(trackButton);
+
+      // Event SHOULD be dispatched — different track
+      expect(dispatchSpy).toHaveBeenCalledTimes(1);
+      const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
+      expect(event.type).toBe('audio-player:play');
+      expect(event.detail.tracks).toEqual(mockAllTracks);
+      expect(event.detail.startIndex).toBe(1);
+
+      dispatchSpy.mockRestore();
+    });
+
+    it('dispatches audio-player:play when same track is paused (not playing)', () => {
+      // Simulate: no track is currently playing (all return false)
+      mockIsTrackCurrentlyPlaying.mockReturnValue(false);
+
+      render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
+
+      const dispatchSpy = vi.spyOn(document, 'dispatchEvent');
+
+      // Click "The Weight of Water" — same track but it's paused
+      const trackButton = screen.getByText('The Weight of Water').closest('button')!;
+      fireEvent.click(trackButton);
+
+      // Event SHOULD be dispatched — track is not playing
+      expect(dispatchSpy).toHaveBeenCalledTimes(1);
+      const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
+      expect(event.type).toBe('audio-player:play');
+      expect(event.detail.tracks).toEqual(mockAllTracks);
+      expect(event.detail.startIndex).toBe(0);
+
+      dispatchSpy.mockRestore();
+    });
   });
 });

@@ -13,6 +13,7 @@ import {
   nextTrack,
   prevTrack,
   clearPlaylist,
+  isTrackCurrentlyPlaying,
 } from '../../src/components/AudioPlayer/playlistStore';
 import type { Track } from '../../src/components/AudioPlayer/types';
 
@@ -228,6 +229,39 @@ describe('playlistStore', () => {
       expect(currentTime.value).toBe(0);
       expect(duration.value).toBe(0);
       expect(playbackState.value).toBe('idle');
+    });
+  });
+
+  describe('isTrackCurrentlyPlaying', () => {
+    it('returns false when playlist is empty / no track loaded', () => {
+      expect(isTrackCurrentlyPlaying('1')).toBe(false);
+    });
+
+    it('returns false when the track is loaded but not playing (isPlaying = false)', () => {
+      setPlaylist(mockTracks, 0);
+      // isPlaying is still false after setPlaylist
+      expect(isTrackCurrentlyPlaying('1')).toBe(false);
+    });
+
+    it('returns true when the track matches currentTrack AND isPlaying is true', () => {
+      setPlaylist(mockTracks, 0);
+      isPlaying.value = true;
+      expect(isTrackCurrentlyPlaying('1')).toBe(true);
+    });
+
+    it('returns false when a different track id is checked', () => {
+      setPlaylist(mockTracks, 0);
+      isPlaying.value = true;
+      expect(isTrackCurrentlyPlaying('99')).toBe(false);
+      expect(isTrackCurrentlyPlaying('2')).toBe(false);
+    });
+
+    it('returns false when track matches but is paused (isPlaying = false)', () => {
+      setPlaylist(mockTracks, 0);
+      isPlaying.value = true;
+      // Simulate pause
+      isPlaying.value = false;
+      expect(isTrackCurrentlyPlaying('1')).toBe(false);
     });
   });
 });
