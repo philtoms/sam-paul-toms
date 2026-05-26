@@ -78,7 +78,7 @@ function MiniWaveform({ audioUrl, height = 24 }: { audioUrl: string; height?: nu
       container: containerRef.current,
       height,
       waveColor: '#6b7280',
-      progressColor: '#8b5cf6',
+      progressColor: '#eab308',
       barWidth: 2,
       barGap: 1,
       barRadius: 1,
@@ -96,7 +96,7 @@ function MiniWaveform({ audioUrl, height = 24 }: { audioUrl: string; height?: nu
     };
   }, [audioUrl, height]);
 
-  return <div ref={containerRef} class="w-48 h-6 hidden sm:block" />;
+  return <div ref={containerRef} class="w-96 h-6 hidden sm:block" />;
 }
 
 export default function TrackRow({ track, audioUrl, onPlay }: TrackRowProps) {

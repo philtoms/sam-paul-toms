@@ -154,11 +154,13 @@ describe('Player Style', () => {
     // All major sections are direct children of the expanded bar (single-row layout)
     const directChildren = Array.from(bar!.children);
     const childClasses = directChildren.map((el) => el.className);
-    // Order: track-info → transport → waveform → volume
+    // Order: track-info → transport → time → waveform → time → volume
     expect(childClasses).toEqual([
       'audio-player-track-info',
       'audio-player-transport',
+      'audio-player-time',
       'audio-player-waveform',
+      'audio-player-time',
       'audio-player-volume',
     ]);
   });
@@ -227,7 +229,7 @@ describe('Player Style', () => {
     expect(bar.classList.contains('audio-player-bar')).toBe(true);
   });
 
-  it('expanded bar uses CSS Grid layout with four columns', async () => {
+  it('expanded bar uses CSS Grid layout with six columns', async () => {
     mockPlaybackState = 'paused';
     mockCurrentTrack = mockTrack;
 
@@ -248,7 +250,8 @@ describe('Player Style', () => {
 
     const computedStyle = window.getComputedStyle(bar);
     expect(computedStyle.display).toBe('grid');
-    expect(computedStyle.gridTemplateColumns).toBe('200px auto 1fr auto');
+    // 6 columns: track-info(300px) transport(auto) time(auto) waveform(1fr) time(auto) volume(auto)
+    expect(computedStyle.gridTemplateColumns).toBe('300px auto auto 1fr auto auto');
 
     // Cleanup injected style
     document.head.removeChild(styleEl);

@@ -5,11 +5,13 @@
   right: 1rem;
   z-index: 50;
   background: var(--color-player-bg);
-  border: 1px solid var(--color-player-border);
-  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
   box-shadow: var(--shadow-lg);
   padding: 0 1rem;
-  transition: height 0.3s ease, opacity 0.3s ease;
+  transition:
+    height 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .audio-player-bar--collapsed {
@@ -20,12 +22,20 @@
 
 .audio-player-bar--expanded {
   display: grid;
-  grid-template-columns: 200px auto 1fr auto;
+  grid-template-columns: 300px auto auto 1fr auto auto;
   align-items: center;
   height: 64px;
   gap: 1rem;
   opacity: 1;
   overflow: visible;
+}
+
+/* Time displays */
+.audio-player-time {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text, #a3a3a3);
+  white-space: nowrap;
 }
 
 /* Waveform container — fills remaining grid column (1fr) */
@@ -73,7 +83,7 @@
 }
 
 .audio-player-track-info__artist {
-  color: #9ca3af;
+  color: var(--color-text-secondary, #a3a3a3);
   font-size: 0.75rem;
 }
 
@@ -87,7 +97,7 @@
 .audio-player-btn {
   background: none;
   border: none;
-  color: inherit;
+  color: rgba(245, 245, 245, 0.5); /* text-text/50 */
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
@@ -98,25 +108,25 @@
 }
 
 .audio-player-btn:hover {
-  color: var(--color-accent, #8b5cf6);
+  color: var(--color-accent, #eab308);
 }
 
 .audio-player-btn:focus-visible {
-  outline: 2px solid var(--color-accent, #8b5cf6);
+  outline: 2px solid var(--color-accent, #eab308);
   outline-offset: 2px;
 }
 
 .audio-player-btn--play {
   width: 40px;
   height: 40px;
-  background: var(--color-accent, #8b5cf6);
-  color: #fff;
+  background: #eab308; /* yellow-500 */
+  color: #000;
   border-radius: 50%;
 }
 
 .audio-player-btn--play:hover {
-  color: #fff;
-  opacity: 0.9;
+  color: #000;
+  background: #facc15; /* yellow-400 */
 }
 
 .audio-player-btn--skip {
@@ -154,12 +164,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #9ca3af;
+  color: rgba(245, 245, 245, 0.5); /* text-text/50 */
   transition: color 0.15s ease;
 }
 
 .audio-player-volume__icon:hover {
-  color: var(--color-text, #f5f5f5);
+  color: var(--color-accent, #eab308);
 }
 
 .audio-player-volume__slider {
@@ -209,7 +219,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--color-accent, #8b5cf6);
+  background: var(--color-accent, #eab308);
   cursor: pointer;
   transition: transform 0.15s ease;
 }
@@ -222,7 +232,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--color-accent, #8b5cf6);
+  background: var(--color-accent, #eab308);
   border: none;
   cursor: pointer;
 }
@@ -232,13 +242,50 @@
   padding-bottom: 5rem;
 }
 
+/* Responsive: tablet / small desktop */
+@media (max-width: 860px) {
+  .audio-player-bar--expanded {
+    grid-template-columns: 1fr auto auto 1fr auto auto;
+    gap: 0.75rem;
+  }
+}
+
 /* Responsive: mobile */
 @media (max-width: 639px) {
+  .audio-player-bar--expanded {
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas:
+      "track transport volume";
+    gap: 0.5rem;
+    height: 56px;
+    padding: 0 0.75rem;
+  }
+
+  .audio-player-track-info {
+    grid-area: track;
+    gap: 0;
+  }
+
+  .audio-player-transport {
+    grid-area: transport;
+    gap: 0.25rem;
+  }
+
+  .audio-player-volume {
+    grid-area: volume;
+    padding: 0.25rem;
+  }
+
+  /* Hide elements that don't fit on mobile */
   .audio-player-track-info__artwork {
     display: none;
   }
 
   .audio-player-waveform {
+    display: none;
+  }
+
+  .audio-player-time {
     display: none;
   }
 
@@ -248,5 +295,25 @@
 
   .audio-player-volume::after {
     display: none;
+  }
+
+  .audio-player-track-info__title,
+  .audio-player-track-info__artist {
+    font-size: 0.75rem;
+  }
+
+  .audio-player-btn--play {
+    width: 36px;
+    height: 36px;
+  }
+
+  .audio-player-btn--skip {
+    width: 28px;
+    height: 28px;
+  }
+
+  .audio-player-volume__icon .audio-player-icon {
+    width: 18px;
+    height: 18px;
   }
 }

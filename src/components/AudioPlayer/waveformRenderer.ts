@@ -14,11 +14,11 @@ let ws: WaveSurfer | null = null;
 
 /** Default waveform visualization options */
 const defaultOptions: Partial<WaveSurferOptions> = {
-  height: 48,
+  height: 40,
   waveColor: '#6b7280', // gray-500
   // Note: progressColor is hardcoded because canvas fillStyle cannot resolve
-  // CSS custom properties. This mirrors the --color-accent value (#8b5cf6).
-  progressColor: '#8b5cf6', // --color-accent
+  // CSS custom properties. This mirrors the --color-accent value (#eab308).
+  progressColor: '#eab308', // --color-accent
   cursorColor: '#f5f5f5', // --color-text
   barWidth: 2,
   barGap: 1,

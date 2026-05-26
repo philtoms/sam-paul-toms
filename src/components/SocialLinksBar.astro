@@ -22,14 +22,14 @@ const { allTracksJson } = Astro.props;
 ---
 
 <div
-  class="flex items-center gap-2 flex-wrap"
+  class="flex items-center gap-1 flex-wrap"
   data-social-links-bar
   data-tracks={allTracksJson}
 >
   {/* Play All button */}
   <button
     id="play-all-btn"
-    class="flex items-center justify-center w-10 h-10 bg-yellow-500 rounded-full text-black transition-colors hover:bg-yellow-400"
+    class="flex items-center justify-center mr-3 w-10 h-10 bg-yellow-500 rounded-full text-black transition-colors hover:bg-yellow-400"
     aria-label="Play all tracks"
   >
     <svg
@@ -46,7 +46,7 @@ const { allTracksJson } = Astro.props;
   <a
     href="#"
     aria-label="IMDB"
-    class="group flex items-center justify-center w-5 h-5 text-text/50 transition-colors hover:text-accent relative"
+    class="group flex items-center justify-center w-5 h-5 text-text-secondary transition-colors hover:text-text relative"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +63,7 @@ const { allTracksJson } = Astro.props;
       <path d="M17 8l-4 4 4 4"></path>
     </svg>
     <span
-      class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap"
+      class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text-secondary whitespace-nowrap"
       >IMDB</span
     >
   </a>
@@ -71,7 +71,7 @@ const { allTracksJson } = Astro.props;
   <a
     href="#"
     aria-label="Tidal"
-    class="group flex items-center justify-center w-5 h-5 text-text/50 transition-colors hover:text-accent relative"
+    class="group flex items-center justify-center w-5 h-5 text-text-secondary transition-colors hover:text-text relative"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -84,7 +84,7 @@ const { allTracksJson } = Astro.props;
       ></path>
     </svg>
     <span
-      class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap"
+      class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text-secondary whitespace-nowrap"
       >Tidal</span
     >
   </a>
@@ -92,7 +92,7 @@ const { allTracksJson } = Astro.props;
   <a
     href="#"
     aria-label="Spotify"
-    class="group flex items-center justify-center w-5 h-5 text-text/50 transition-colors hover:text-accent relative"
+    class="group flex items-center justify-center w-5 h-5 text-text-secondary transition-colors hover:text-text relative"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +105,7 @@ const { allTracksJson } = Astro.props;
       ></path>
     </svg>
     <span
-      class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap"
+      class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text-secondary whitespace-nowrap"
       >Spotify</span
     >
   </a>
@@ -113,7 +113,7 @@ const { allTracksJson } = Astro.props;
   <a
     href="#"
     aria-label="Instagram"
-    class="group flex items-center justify-center w-5 h-5 text-text/50 transition-colors hover:text-accent relative"
+    class="group flex items-center justify-center w-5 h-5 text-text-secondary transition-colors hover:text-text relative"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +130,7 @@ const { allTracksJson } = Astro.props;
       <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
     </svg>
     <span
-      class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap"
+      class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text-secondary whitespace-nowrap"
       >Instagram</span
     >
   </a>
@@ -138,7 +138,7 @@ const { allTracksJson } = Astro.props;
   <a
     href="#"
     aria-label="Apple Music"
-    class="group flex items-center justify-center w-5 h-5 text-text/50 transition-colors hover:text-accent relative"
+    class="group flex items-center justify-center w-5 h-5 text-text-secondary transition-colors hover:text-text relative"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -151,7 +151,7 @@ const { allTracksJson } = Astro.props;
       ></path>
     </svg>
     <span
-      class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text/70 whitespace-nowrap"
+      class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text-secondary whitespace-nowrap"
       >Apple Music</span
     >
   </a>
@@ -159,7 +159,7 @@ const { allTracksJson } = Astro.props;
   <a
     href="/about"
     aria-label="Contact"
-    class="border border-white/50 rounded-full px-3 py-0.5 text-xs font-bold text-text/70 transition-colors hover:text-accent"
+    class="border border-white/50 rounded-full ml-3 px-3 py-1.5 text-xs text-text transition-colors hover:bg-text hover:text-bg"
   >
     Contact
   </a>

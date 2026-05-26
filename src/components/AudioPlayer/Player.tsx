@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'preact/hooks';
+import { useRef, useEffect, useCallback, useMemo } from 'preact/hooks';
 import {
   playbackState,
   currentTrack,
@@ -167,6 +167,17 @@ export default function Player() {
     }
   }, []);
 
+  /** Format seconds → m:ss */
+  const fmt = useMemo(
+    () => (secs: number) => {
+      if (!isFinite(secs) || secs < 0) return '0:00';
+      const m = Math.floor(secs / 60);
+      const s = Math.floor(secs % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    },
+    [],
+  );
+
   const track = currentTrack.value;
   const isIdle = playbackState.value === 'idle' && !track;
 
@@ -275,8 +286,14 @@ export default function Player() {
         </button>
       </div>
 
+      {/* Current time */}
+      <span class="audio-player-time">{fmt(currentTime.value)}</span>
+
       {/* Waveform area (flexible center) */}
       <div ref={waveformContainerRef} class="audio-player-waveform" />
+
+      {/* Total time */}
+      <span class="audio-player-time">{fmt(duration.value)}</span>
 
       {/* Volume (right) */}
       <div class="audio-player-volume">
