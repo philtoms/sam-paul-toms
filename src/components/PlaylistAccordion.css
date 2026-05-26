@@ -16,7 +16,7 @@
   border: none;
   color: var(--color-text);
   font-family: inherit;
-  transition: background-color 200ms ease;
+  transition: background-color 350ms ease-in-out;
 }
 
 .accordion-header:hover {
@@ -24,13 +24,14 @@
 }
 
 .accordion-chevron {
-  transition: transform 200ms ease;
+  transition: transform 350ms ease-in-out;
 }
 
 .accordion-content {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 200ms ease;
+  opacity: 0;
+  transition: grid-template-rows 350ms ease-in-out, opacity 350ms ease-in-out;
 }
 
 .accordion-content > * {
@@ -39,4 +40,5 @@
 
 .accordion-content--open {
   grid-template-rows: 1fr;
+  opacity: 1;
 }

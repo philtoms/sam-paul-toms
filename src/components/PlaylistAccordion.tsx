@@ -2,7 +2,7 @@
  * PlaylistAccordion — Interactive accordion for playlist sections.
  *
  * Renders collapsible sections (Documentary, Film, Library, Trailers/Themes/Idents).
- * Only one section open at a time. First section open by default.
+ * All sections open by default. Sections toggle independently.
  * Track clicks dispatch audio-player:play events via the custom event system.
  */
 
@@ -39,11 +39,15 @@ interface PlaylistAccordionProps {
 }
 
 export default function PlaylistAccordion({ sections, playableTracksMap, allTracks }: PlaylistAccordionProps) {
-  // First section open by default
-  const [openSlug, setOpenSlug] = useState<string>(sections[0]?.slug ?? '');
+  // All sections open by default
+  const [openSlugs, setOpenSlugs] = useState<Set<string>>(() => new Set(sections.map(s => s.slug)));
 
   const toggleSection = (slug: string) => {
-    setOpenSlug(prev => prev === slug ? '' : slug);
+    setOpenSlugs(prev => {
+      const next = new Set(prev);
+      next.has(slug) ? next.delete(slug) : next.add(slug);
+      return next;
+    });
   };
 
   const handleTrackPlay = (sectionSlug: string, trackIndex: number) => {
@@ -69,7 +73,7 @@ export default function PlaylistAccordion({ sections, playableTracksMap, allTrac
   return (
     <div class="playlist-accordion">
       {sections.map(section => {
-        const isOpen = openSlug === section.slug;
+        const isOpen = openSlugs.has(section.slug);
         const trackCount = section.tracks.length;
 
         return (

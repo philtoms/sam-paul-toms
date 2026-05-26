@@ -112,25 +112,35 @@ describe('PlaylistAccordion', () => {
     expect(screen.getByText('Trailers, Themes & Idents')).toBeTruthy();
   });
 
-  it('first section is expanded by default', () => {
+  it('all sections are expanded by default', () => {
     render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
 
-    // First section tracks should be visible
+    // All section tracks should be visible
+    // Documentary
     expect(screen.getByText('The Weight of Water')).toBeTruthy();
     expect(screen.getByText('Beneath the Ice')).toBeTruthy();
     expect(screen.getByText('Unbroken')).toBeTruthy();
-  });
-
-  it('clicking a section header expands it and collapses others', () => {
-    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
-
-    // Click Film section
-    const filmHeader = screen.getByText('Film').closest('button')!;
-    fireEvent.click(filmHeader);
-
-    // Film tracks should now be visible
+    // Film
     expect(screen.getByText('The Crossing')).toBeTruthy();
     expect(screen.getByText('Paper Towns')).toBeTruthy();
+    // Library
+    expect(screen.getByText('Drift')).toBeTruthy();
+    // Trailers
+    expect(screen.getByText('Horizon')).toBeTruthy();
+    expect(screen.getByText('Pulse')).toBeTruthy();
+  });
+
+  it('clicking an open section header collapses it without affecting others', () => {
+    render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
+
+    // All sections open by default — click Documentary to close it
+    const docHeader = screen.getByText('Documentary').closest('button')!;
+    fireEvent.click(docHeader);
+
+    // Film, Library, Trailers should remain open
+    expect(screen.getByText('The Crossing')).toBeTruthy();
+    expect(screen.getByText('Drift')).toBeTruthy();
+    expect(screen.getByText('Horizon')).toBeTruthy();
   });
 
   it('track rows render title, subtitle, and duration', () => {
@@ -159,22 +169,22 @@ describe('PlaylistAccordion', () => {
     dispatchSpy.mockRestore();
   });
 
-  it('only one section is open at a time', () => {
+  it('multiple sections can be open simultaneously', () => {
     const { container } = render(
       <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
     );
 
-    // Initially, Documentary is open
+    // Initially, all 4 sections are open
     const openSections = container.querySelectorAll('.accordion-content--open');
-    expect(openSections.length).toBe(1);
+    expect(openSections.length).toBe(4);
 
-    // Click Film header
-    const filmHeader = screen.getByText('Film').closest('button')!;
-    fireEvent.click(filmHeader);
+    // Click Documentary header to close it
+    const docHeader = screen.getByText('Documentary').closest('button')!;
+    fireEvent.click(docHeader);
 
-    // Still only one open section
+    // 3 remain open
     const openSectionsAfterClick = container.querySelectorAll('.accordion-content--open');
-    expect(openSectionsAfterClick.length).toBe(1);
+    expect(openSectionsAfterClick.length).toBe(3);
   });
 
   it('clicking an open section header collapses it', () => {
@@ -184,12 +194,13 @@ describe('PlaylistAccordion', () => {
     const docHeader = screen.getByText('Documentary').closest('button')!;
     fireEvent.click(docHeader);
 
-    // Click Film to open it
+    // Click Film to close it too (it's already open by default)
     const filmHeader = screen.getByText('Film').closest('button')!;
     fireEvent.click(filmHeader);
 
-    // Now Film should be the only open section
-    expect(screen.getByText('The Crossing')).toBeTruthy();
+    // Library and Trailers should still be open
+    expect(screen.getByText('Drift')).toBeTruthy();
+    expect(screen.getByText('Horizon')).toBeTruthy();
   });
 
   it('playlist-accordion has no background, border, or border-radius inline styles', () => {
@@ -225,24 +236,22 @@ describe('PlaylistAccordion', () => {
 
     const headers = container.querySelectorAll('.accordion-header');
 
-    // First section (Documentary) is open by default — chevron should have rotate-90
-    const firstChevron = headers[0].querySelector('.accordion-chevron')!;
-    expect(firstChevron.classList.contains('rotate-90')).toBe(true);
+    // All sections are open by default — ALL chevrons should have rotate-90
+    for (let i = 0; i < headers.length; i++) {
+      const chevron = headers[i].querySelector('.accordion-chevron')!;
+      expect(chevron.classList.contains('rotate-90')).toBe(true);
+    }
 
-    // Second section (Film) is closed — chevron should NOT have rotate-90
-    const secondChevron = headers[1].querySelector('.accordion-chevron')!;
-    expect(secondChevron.classList.contains('rotate-90')).toBe(false);
-
-    // Click Film section to open it
-    fireEvent.click(headers[1]);
-
-    // Now Film chevron should have rotate-90
-    const updatedSecondChevron = container.querySelectorAll('.accordion-header')[1].querySelector('.accordion-chevron')!;
-    expect(updatedSecondChevron.classList.contains('rotate-90')).toBe(true);
+    // Click Documentary section to close it
+    fireEvent.click(headers[0]);
 
     // Documentary chevron should no longer have rotate-90
-    const updatedFirstChevron = container.querySelectorAll('.accordion-header')[0].querySelector('.accordion-chevron')!;
-    expect(updatedFirstChevron.classList.contains('rotate-90')).toBe(false);
+    const docChevron = container.querySelectorAll('.accordion-header')[0].querySelector('.accordion-chevron')!;
+    expect(docChevron.classList.contains('rotate-90')).toBe(false);
+
+    // Film chevron should still have rotate-90
+    const filmChevron = container.querySelectorAll('.accordion-header')[1].querySelector('.accordion-chevron')!;
+    expect(filmChevron.classList.contains('rotate-90')).toBe(true);
   });
 
   it('passes correct audio URLs from playableTracksMap to track row waveforms', () => {
