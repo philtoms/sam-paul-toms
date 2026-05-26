@@ -19,6 +19,15 @@ interface Props {
 }
 
 const { allTracksJson } = Astro.props;
+
+// Social/streaming links sourced from environment variables.
+// Icons are conditionally rendered — hidden entirely when the URL is empty
+// so the layout adapts gracefully when URLs are added later.
+const socialImdb = import.meta.env.PUBLIC_SOCIAL_IMDB;
+const socialTidal = import.meta.env.PUBLIC_SOCIAL_TIDAL;
+const socialSpotify = import.meta.env.PUBLIC_SOCIAL_SPOTIFY;
+const socialInstagram = import.meta.env.PUBLIC_SOCIAL_INSTAGRAM;
+const socialAppleMusic = import.meta.env.PUBLIC_SOCIAL_APPLE_MUSIC;
 ---
 
 <div
@@ -42,9 +51,10 @@ const { allTracksJson } = Astro.props;
     </svg>
   </button>
 
-  {/* Social/streaming icon links */}
+  {/* Social/streaming icon links — rendered only when URL is configured */}
+  {socialImdb && (
   <a
-    href="#"
+    href={socialImdb}
     aria-label="IMDB"
     class="group flex items-center justify-center w-5 h-5 text-text-secondary transition-colors hover:text-text relative"
   >
@@ -67,9 +77,11 @@ const { allTracksJson } = Astro.props;
       >IMDB</span
     >
   </a>
+  )}
 
+  {socialTidal && (
   <a
-    href="#"
+    href={socialTidal}
     aria-label="Tidal"
     class="group flex items-center justify-center w-5 h-5 text-text-secondary transition-colors hover:text-text relative"
   >
@@ -88,9 +100,11 @@ const { allTracksJson } = Astro.props;
       >Tidal</span
     >
   </a>
+  )}
 
+  {socialSpotify && (
   <a
-    href="#"
+    href={socialSpotify}
     aria-label="Spotify"
     class="group flex items-center justify-center w-5 h-5 text-text-secondary transition-colors hover:text-text relative"
   >
@@ -109,9 +123,11 @@ const { allTracksJson } = Astro.props;
       >Spotify</span
     >
   </a>
+  )}
 
+  {socialInstagram && (
   <a
-    href="#"
+    href={socialInstagram}
     aria-label="Instagram"
     class="group flex items-center justify-center w-5 h-5 text-text-secondary transition-colors hover:text-text relative"
   >
@@ -134,9 +150,11 @@ const { allTracksJson } = Astro.props;
       >Instagram</span
     >
   </a>
+  )}
 
+  {socialAppleMusic && (
   <a
-    href="#"
+    href={socialAppleMusic}
     aria-label="Apple Music"
     class="group flex items-center justify-center w-5 h-5 text-text-secondary transition-colors hover:text-text relative"
   >
@@ -155,6 +173,7 @@ const { allTracksJson } = Astro.props;
       >Apple Music</span
     >
   </a>
+  )}
 
   <button
     type="button"
