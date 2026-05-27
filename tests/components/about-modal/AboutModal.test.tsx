@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/preact';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import AboutModal from '../../../src/components/AboutModal';
 
 const defaultProps = {
@@ -286,5 +288,17 @@ describe('AboutModal', () => {
       expect(dialog).toBeInTheDocument();
       expect(dialog.getAttribute('aria-modal')).toBe('true');
     });
+  });
+
+  it('global CSS reserves scrollbar gutter to prevent layout shift', () => {
+    const cssPath = resolve(__dirname, '../../../src/styles/global.css');
+    const css = readFileSync(cssPath, 'utf-8');
+
+    // Extract the html { ... } block
+    const htmlBlockMatch = css.match(/html\s*\{[^}]*\}/s);
+    expect(htmlBlockMatch).not.toBeNull();
+
+    const htmlBlock = htmlBlockMatch![0];
+    expect(htmlBlock).toContain('scrollbar-gutter: stable');
   });
 });

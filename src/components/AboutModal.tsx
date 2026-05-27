@@ -31,6 +31,10 @@ export interface AboutModalProps {
  * - Escape key to close
  * - Focus trap & restore on close
  * - Body scroll lock while open
+ *
+ * Layout-shift note: `scrollbar-gutter: stable` on `<html>` (global.css)
+ * reserves scrollbar space so that toggling `overflow-hidden` on `<body>`
+ * does not cause a horizontal layout shift when the modal opens/closes.
  */
 export default function AboutModal(props: AboutModalProps) {
   const { title, photo, photoAlt, genreTags, pressQuotes } = props;
@@ -49,7 +53,7 @@ export default function AboutModal(props: AboutModalProps) {
       setIsVisible(true);
     });
     // Lock body scroll
-    document.body.classList.add('overflow-hidden');
+    // document.body.classList.add('overflow-hidden');
   }, []);
 
   /** Close the modal with animation */
@@ -58,7 +62,7 @@ export default function AboutModal(props: AboutModalProps) {
     // Wait for fade-out animation to complete before unmounting
     setTimeout(() => {
       setIsOpen(false);
-      document.body.classList.remove('overflow-hidden');
+      // document.body.classList.remove('overflow-hidden');
       // Restore focus to the element that opened the modal
       if (previousFocusRef.current instanceof HTMLElement) {
         previousFocusRef.current.focus();
@@ -112,7 +116,7 @@ export default function AboutModal(props: AboutModalProps) {
   /** Get the rendered bio HTML from the hidden DOM container */
   const bioHtml =
     typeof document !== 'undefined'
-      ? document.getElementById('about-bio-content')?.innerHTML ?? ''
+      ? (document.getElementById('about-bio-content')?.innerHTML ?? '')
       : '';
 
   if (!isOpen) return null;
@@ -120,7 +124,9 @@ export default function AboutModal(props: AboutModalProps) {
   return (
     <div
       class={`fixed inset-0 z-60 flex items-center justify-center p-4 transition-opacity duration-200 ${
-        isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        isVisible
+          ? 'opacity-100 pointer-events-auto'
+          : 'opacity-0 pointer-events-none'
       }`}
       role="dialog"
       aria-modal="true"
@@ -196,7 +202,10 @@ export default function AboutModal(props: AboutModalProps) {
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {pressQuotes.map((quote) => (
                 <figure class="bg-white/5 rounded-lg p-6 border border-white/10">
-                  <span aria-hidden="true" class="block text-accent text-4xl opacity-60 leading-none select-none">
+                  <span
+                    aria-hidden="true"
+                    class="block text-accent text-4xl opacity-60 leading-none select-none"
+                  >
                     {'\u201C'}
                   </span>
                   <blockquote class="text-white/90 text-lg italic mt-2">

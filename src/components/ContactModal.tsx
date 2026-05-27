@@ -17,6 +17,10 @@ import {
  * - Escape key to close
  * - Focus trap & restore on close
  * - Body scroll lock while open
+ *
+ * Layout-shift note: `scrollbar-gutter: stable` on `<html>` (global.css)
+ * reserves scrollbar space so that toggling `overflow-hidden` on `<body>`
+ * does not cause a horizontal layout shift when the modal opens/closes.
  */
 export default function ContactModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +37,7 @@ export default function ContactModal() {
       setIsVisible(true);
     });
     // Lock body scroll
-    document.body.classList.add('overflow-hidden');
+    // document.body.classList.add('overflow-hidden');
   }, []);
 
   /** Close the modal with animation */
@@ -42,7 +46,7 @@ export default function ContactModal() {
     // Wait for fade-out animation to complete before unmounting
     setTimeout(() => {
       setIsOpen(false);
-      document.body.classList.remove('overflow-hidden');
+      // document.body.classList.remove('overflow-hidden');
       // Restore focus to the element that opened the modal
       if (previousFocusRef.current instanceof HTMLElement) {
         previousFocusRef.current.focus();
@@ -137,7 +141,9 @@ export default function ContactModal() {
   return (
     <div
       class={`fixed inset-0 z-60 flex items-center justify-center p-4 transition-opacity duration-200 ${
-        isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        isVisible
+          ? 'opacity-100 pointer-events-auto'
+          : 'opacity-0 pointer-events-none'
       }`}
       role="dialog"
       aria-modal="true"
@@ -199,7 +205,10 @@ export default function ContactModal() {
               placeholder="Your name"
               value={formState.name}
               onInput={(e) =>
-                setFormState({ ...formState, name: (e.target as HTMLInputElement).value })
+                setFormState({
+                  ...formState,
+                  name: (e.target as HTMLInputElement).value,
+                })
               }
               class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-colors duration-200"
             />
@@ -223,7 +232,10 @@ export default function ContactModal() {
               placeholder="you@example.com"
               value={formState.email}
               onInput={(e) =>
-                setFormState({ ...formState, email: (e.target as HTMLInputElement).value })
+                setFormState({
+                  ...formState,
+                  email: (e.target as HTMLInputElement).value,
+                })
               }
               class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-colors duration-200"
             />

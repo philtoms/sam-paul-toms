@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/preact';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import ContactModal from '../../../src/components/ContactModal';
 
 describe('ContactModal', () => {
@@ -163,5 +165,17 @@ describe('ContactModal', () => {
     await waitFor(() => {
       expect(document.body.classList.contains('overflow-hidden')).toBe(false);
     }, { timeout: 1000 });
+  });
+
+  it('global CSS reserves scrollbar gutter to prevent layout shift', () => {
+    const cssPath = resolve(__dirname, '../../../src/styles/global.css');
+    const css = readFileSync(cssPath, 'utf-8');
+
+    // Extract the html { ... } block
+    const htmlBlockMatch = css.match(/html\s*\{[^}]*\}/s);
+    expect(htmlBlockMatch).not.toBeNull();
+
+    const htmlBlock = htmlBlockMatch![0];
+    expect(htmlBlock).toContain('scrollbar-gutter: stable');
   });
 });
