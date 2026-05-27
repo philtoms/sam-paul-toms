@@ -169,7 +169,13 @@ function MiniWaveform({
     if (trackId) {
       disposeEffect = effect(() => {
         const activeTrack = currentTrack.value;
-        if (activeTrack?.id !== trackId) return;
+        if (activeTrack?.id !== trackId) {
+          // Reset progress to zero when this track is no longer active
+          if (wsRef.current) {
+            wsRef.current.seekTo(0);
+          }
+          return;
+        }
         const time = currentTime.value;
         const dur = duration.value;
         if (dur > 0 && wsRef.current) {

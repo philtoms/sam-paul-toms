@@ -41,22 +41,26 @@ vi.mock('wavesurfer.js', () => ({
   },
 }));
 
-// Mock playlistStore signals
-const { mockCurrentTrack, mockCurrentTime, mockDuration } = vi.hoisted(() => ({
-  mockCurrentTrack: { value: null as any, peek: function() { return this.value; } },
-  mockCurrentTime: { value: 0, peek: function() { return this.value; } },
-  mockDuration: { value: 0, peek: function() { return this.value; } },
+// Mock playlistStore signals — use wrapper objects so real signals can be
+// initialized after the @preact/signals import resolves.
+// vi.hoisted runs before imports, so signal() is unavailable there.
+const { mockSignalRefs } = vi.hoisted(() => ({
+  mockSignalRefs: {
+    currentTrack: null as any,
+    currentTime: null as any,
+    duration: null as any,
+  },
 }));
 
 vi.mock('../../src/components/AudioPlayer/playlistStore', () => ({
   get currentTrack() {
-    return mockCurrentTrack;
+    return mockSignalRefs.currentTrack;
   },
   get currentTime() {
-    return mockCurrentTime;
+    return mockSignalRefs.currentTime;
   },
   get duration() {
-    return mockDuration;
+    return mockSignalRefs.duration;
   },
 }));
 
@@ -70,6 +74,14 @@ vi.mock('../../src/scripts/audio-player-events', () => ({
 }));
 
 import TrackRow from '../../src/components/TrackRow';
+
+// Initialize real Preact signals (after imports so signal() is available).
+// The mock getters above delegate to these via the wrapper object.
+import { signal } from '@preact/signals';
+
+const mockCurrentTrack = (mockSignalRefs.currentTrack = signal<any>(null));
+const mockCurrentTime = (mockSignalRefs.currentTime = signal(0));
+const mockDuration = (mockSignalRefs.duration = signal(0));
 
 const baseTrack = {
   title: 'The Weight of Water',
@@ -282,7 +294,7 @@ describe('TrackRow', () => {
     expect(mockWsInstance.seekTo).toHaveBeenCalledWith(0.3);
   });
 
-  it('does not call seekTo via effect() when trackId does not match current track', () => {
+  it('resets seekTo to 0 via effect() when trackId does not match current track', () => {
     mockCurrentTrack.value = { id: 'other-track', title: 'Other', artist: 'A', audioUrl: 'other.mp3' };
     mockCurrentTime.value = 60;
     mockDuration.value = 200;
@@ -296,7 +308,8 @@ describe('TrackRow', () => {
       />,
     );
 
-    expect(mockWsInstance.seekTo).not.toHaveBeenCalled();
+    // After fix: effect resets progress to 0 when track is not active
+    expect(mockWsInstance.seekTo).toHaveBeenCalledWith(0);
   });
 
   it('clamps seekTo fraction via effect() when currentTime exceeds duration', () => {
@@ -315,5 +328,30 @@ describe('TrackRow', () => {
 
     // 300/200 = 1.5, clamped to 1
     expect(mockWsInstance.seekTo).toHaveBeenCalledWith(1);
+  });
+
+  it('resets waveform progress to 0 when track is no longer the active track', () => {
+    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
+    mockCurrentTime.value = 60;
+    mockDuration.value = 200;
+
+    render(
+      <TrackRow
+        track={baseTrack}
+        audioUrl="http://example.com/track.mp3"
+        trackId="track-1"
+        onPlay={vi.fn()}
+      />,
+    );
+
+    // Initially track-1 is active — progress synced to 60/200 = 0.3
+    expect(mockWsInstance.seekTo).toHaveBeenCalledWith(0.3);
+    mockWsInstance.seekTo.mockClear();
+
+    // Switch active track to a different track — effect should re-run
+    mockCurrentTrack.value = { id: 'other-track', title: 'Other', artist: 'A', audioUrl: 'other.mp3' };
+
+    // Progress should be reset to 0
+    expect(mockWsInstance.seekTo).toHaveBeenCalledWith(0);
   });
 });
