@@ -38,6 +38,11 @@ interface TrackRowProps {
   onPlay: () => void;
 }
 
+/** Check whether a string is an HTTP(S) URL (used for custom icon images) */
+function isUrlIcon(value: string): boolean {
+  return value.startsWith('http://') || value.startsWith('https://');
+}
+
 /** Icon lookup by category type */
 const icons: Record<string, JSX.Element> = {
   music: (
@@ -202,7 +207,11 @@ export default function TrackRow({
   trackId,
   onPlay,
 }: TrackRowProps) {
-  const icon = icons[track.icon] || icons.music;
+  const icon = isUrlIcon(track.icon) ? (
+    <img src={track.icon} alt="" class="w-4 h-4" />
+  ) : (
+    icons[track.icon] || icons.music
+  );
 
   return (
     <button

@@ -330,6 +330,57 @@ describe('TrackRow', () => {
     expect(mockWsInstance.seekTo).toHaveBeenCalledWith(1);
   });
 
+  it('renders an <img> element when track.icon is an https:// URL', () => {
+    const { container } = render(
+      <TrackRow track={{ ...baseTrack, icon: 'https://example.com/icon.png' }} onPlay={vi.fn()} />,
+    );
+
+    const iconSpan = container.querySelector('.shrink-0');
+    expect(iconSpan).toBeTruthy();
+    const img = iconSpan!.querySelector('img');
+    expect(img).toBeTruthy();
+    expect(img!.getAttribute('src')).toBe('https://example.com/icon.png');
+    expect(img!.getAttribute('alt')).toBe('');
+    expect(img!.classList.contains('w-4')).toBe(true);
+    expect(img!.classList.contains('h-4')).toBe(true);
+  });
+
+  it('renders an <img> element when track.icon is an http:// URL', () => {
+    const { container } = render(
+      <TrackRow track={{ ...baseTrack, icon: 'http://example.com/icon.png' }} onPlay={vi.fn()} />,
+    );
+
+    const iconSpan = container.querySelector('.shrink-0');
+    expect(iconSpan).toBeTruthy();
+    const img = iconSpan!.querySelector('img');
+    expect(img).toBeTruthy();
+    expect(img!.getAttribute('src')).toBe('http://example.com/icon.png');
+  });
+
+  it('renders SVG icon for named icon (no regression)', () => {
+    const { container } = render(
+      <TrackRow track={{ ...baseTrack, icon: 'film' }} onPlay={vi.fn()} />,
+    );
+
+    const iconSpan = container.querySelector('.shrink-0');
+    expect(iconSpan).toBeTruthy();
+    // Should render SVG, not IMG
+    expect(iconSpan!.querySelector('svg')).toBeTruthy();
+    expect(iconSpan!.querySelector('img')).toBeNull();
+  });
+
+  it('renders default music SVG for unrecognised non-URL icon name', () => {
+    const { container } = render(
+      <TrackRow track={{ ...baseTrack, icon: 'unknown' }} onPlay={vi.fn()} />,
+    );
+
+    const iconSpan = container.querySelector('.shrink-0');
+    expect(iconSpan).toBeTruthy();
+    // Should fall back to music SVG, not render an img
+    expect(iconSpan!.querySelector('svg')).toBeTruthy();
+    expect(iconSpan!.querySelector('img')).toBeNull();
+  });
+
   it('resets waveform progress to 0 when track is no longer the active track', () => {
     mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
     mockCurrentTime.value = 60;
