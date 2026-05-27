@@ -3,6 +3,13 @@ import '../styles/global.css';
 import SEOHead from '../components/SEOHead.astro';
 import Player from '../components/AudioPlayer/Player';
 import ContactModal from '../components/ContactModal';
+import AboutModal from '../components/AboutModal';
+
+interface PressQuote {
+  text: string;
+  source: string;
+  url?: string;
+}
 
 interface Props {
   title?: string;
@@ -12,6 +19,11 @@ interface Props {
   type?: 'website' | 'music.song' | 'music.album' | 'music.playlist';
   structuredData?: object | object[];
   noindex?: boolean;
+  aboutTitle?: string;
+  aboutPhoto?: string;
+  aboutPhotoAlt?: string;
+  aboutGenreTags?: string[];
+  aboutPressQuotes?: PressQuote[];
 }
 
 const {
@@ -22,6 +34,11 @@ const {
   type = 'website',
   structuredData,
   noindex,
+  aboutTitle = '',
+  aboutPhoto = '',
+  aboutPhotoAlt = '',
+  aboutGenreTags = [],
+  aboutPressQuotes = [],
 } = Astro.props;
 ---
 
@@ -47,5 +64,15 @@ const {
       <Player client:load />
     </div>
     <ContactModal client:load />
+    {aboutTitle && (
+      <AboutModal
+        client:load
+        title={aboutTitle}
+        photo={aboutPhoto}
+        photoAlt={aboutPhotoAlt}
+        genreTags={aboutGenreTags}
+        pressQuotes={aboutPressQuotes}
+      />
+    )}
   </body>
 </html>
