@@ -5,9 +5,15 @@ import CompactBio from '../components/CompactBio.astro';
 import SocialLinksBar from '../components/SocialLinksBar.astro';
 import PlaylistAccordion from '../components/PlaylistAccordion';
 import YouTubeEmbed from '../components/YouTubeEmbed.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import { buildTrackFromContent } from '../scripts/audio-helpers';
 import type { Track } from '../components/AudioPlayer/types';
+
+// Fetch about content for the AboutModal
+const aboutEntries = await getCollection('about');
+const aboutEntry = aboutEntries[0];
+const { Content: AboutContent } = await render(aboutEntry);
+const { title: aboutTitle, photo: aboutPhoto, photoAlt: aboutPhotoAlt, genreTags: aboutGenreTags, pressQuotes: aboutPressQuotes } = aboutEntry.data;
 
 // Fetch works sections in display order
 const sectionOrder = [
@@ -64,6 +70,11 @@ const bioSummary =
   description="Official music portfolio of Sam Paul Toms. Listen to tracks, albums, and EPs."
   image="/favicon.svg"
   type="website"
+  aboutTitle={aboutTitle}
+  aboutPhoto={aboutPhoto}
+  aboutPhotoAlt={aboutPhotoAlt}
+  aboutGenreTags={aboutGenreTags}
+  aboutPressQuotes={aboutPressQuotes}
 >
   <HeroBanner />
 
@@ -71,7 +82,7 @@ const bioSummary =
     {/* Bio Section */}
     <section class="section">
       <div class="container">
-        <CompactBio summary={bioSummary} aboutUrl="/about">
+        <CompactBio summary={bioSummary}>
           <div class="mt-6">
             <SocialLinksBar allTracksJson={allTracksJson} />
           </div>
@@ -98,4 +109,9 @@ const bioSummary =
       </div>
     </section>
   </main>
+
+  {/* Hidden bio content for AboutModal to read from DOM */}
+  <div id="about-bio-content" style="display:none">
+    <AboutContent />
+  </div>
 </BaseLayout>

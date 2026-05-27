@@ -16,7 +16,6 @@ export interface AboutModalProps {
   photoAlt: string;
   genreTags: string[];
   pressQuotes: PressQuote[];
-  bioHtml: string;
 }
 
 /**
@@ -34,7 +33,7 @@ export interface AboutModalProps {
  * - Body scroll lock while open
  */
 export default function AboutModal(props: AboutModalProps) {
-  const { title, photo, photoAlt, genreTags, pressQuotes, bioHtml } = props;
+  const { title, photo, photoAlt, genreTags, pressQuotes } = props;
 
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -119,6 +118,12 @@ export default function AboutModal(props: AboutModalProps) {
     },
     [close],
   );
+
+  /** Get the rendered bio HTML from the hidden DOM container */
+  const bioHtml =
+    typeof document !== 'undefined'
+      ? document.getElementById('about-bio-content')?.innerHTML ?? ''
+      : '';
 
   if (!isOpen) return null;
 

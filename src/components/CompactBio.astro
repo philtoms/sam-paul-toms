@@ -1,27 +1,37 @@
 ---
 /**
- * CompactBio — A condensed bio section with summary and "Read more" link.
+ * CompactBio — A condensed bio section with summary and "Read more" button.
  *
  * Props:
- * - summary:  Short 2–3 sentence bio summary
- * - aboutUrl: URL to the full about page
+ * - summary: Short 2–3 sentence bio summary
  */
 
 interface Props {
   summary: string;
-  aboutUrl: string;
 }
 
-const { summary, aboutUrl } = Astro.props;
+const { summary } = Astro.props;
 ---
 
 <div>
   <p class="text-sm leading-relaxed text-text/70">{summary}</p>
-  <a
-    href={aboutUrl}
-    class="mt-3 inline-block text-sm font-medium text-accent transition-colors hover:text-accent-hover"
+  <button
+    id="about-modal-btn"
+    type="button"
+    class="mt-3 inline-block text-sm font-medium text-accent transition-colors hover:text-accent-hover cursor-pointer"
   >
     Read more &rarr;
-  </a>
+  </button>
   <slot />
 </div>
+
+<script>
+  import { openAboutModal } from '../scripts/about-modal-events';
+
+  const aboutBtn = document.getElementById('about-modal-btn');
+  if (aboutBtn) {
+    aboutBtn.addEventListener('click', () => {
+      openAboutModal();
+    });
+  }
+</script>
