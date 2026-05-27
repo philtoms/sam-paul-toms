@@ -75,11 +75,28 @@ describe('ContactModal', () => {
       expect(screen.getByText('Get In Touch')).toBeInTheDocument();
     });
 
-    // Click the backdrop (the dialog overlay, not the panel)
-    const dialog = screen.getByRole('dialog');
-    fireEvent.click(dialog);
+    // Click the actual backdrop div (bg-black/60), not the outer dialog container
+    const backdrop = document.querySelector('.bg-black\\/60') as HTMLElement;
+    expect(backdrop).not.toBeNull();
+    fireEvent.click(backdrop);
 
     // Wait for fade-out animation
+    await waitFor(() => {
+      expect(screen.queryByText('Get In Touch')).not.toBeInTheDocument();
+    }, { timeout: 1000 });
+  });
+
+  it('closes modal when clicking the backdrop div directly', async () => {
+    render(<ContactModal />);
+
+    document.dispatchEvent(new CustomEvent('contact-modal:open'));
+    await waitFor(() => {
+      expect(screen.getByText('Get In Touch')).toBeInTheDocument();
+    });
+
+    const backdrop = document.querySelector('.bg-black\\/60') as HTMLElement;
+    fireEvent.click(backdrop);
+
     await waitFor(() => {
       expect(screen.queryByText('Get In Touch')).not.toBeInTheDocument();
     }, { timeout: 1000 });

@@ -93,16 +93,6 @@ export default function ContactModal() {
     };
   }, []);
 
-  /** Handle backdrop click (close only if clicking the backdrop, not the panel) */
-  const handleBackdropClick = useCallback(
-    (e: Event) => {
-      if (e.target === e.currentTarget) {
-        close();
-      }
-    },
-    [close],
-  );
-
   /** Form validation & submission */
   const [formState, setFormState] = useState({
     name: '',
@@ -149,18 +139,18 @@ export default function ContactModal() {
       class={`fixed inset-0 z-60 flex items-center justify-center p-4 transition-opacity duration-200 ${
         isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
       }`}
-      onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
       aria-label="Contact form"
     >
       {/* Backdrop */}
-      <div class="absolute inset-0 bg-black/60" />
+      <div class="absolute inset-0 bg-black/60" onClick={close} />
 
       {/* Modal panel */}
       <div
         ref={modalPanelRef}
         tabindex={-1}
+        onClick={(e) => e.stopPropagation()}
         class="relative bg-bg-elevated rounded-lg shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto outline-none"
       >
         {/* Header */}

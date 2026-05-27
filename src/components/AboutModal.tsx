@@ -109,16 +109,6 @@ export default function AboutModal(props: AboutModalProps) {
     };
   }, []);
 
-  /** Handle backdrop click (close only if clicking the backdrop, not the panel) */
-  const handleBackdropClick = useCallback(
-    (e: Event) => {
-      if (e.target === e.currentTarget) {
-        close();
-      }
-    },
-    [close],
-  );
-
   /** Get the rendered bio HTML from the hidden DOM container */
   const bioHtml =
     typeof document !== 'undefined'
@@ -132,18 +122,18 @@ export default function AboutModal(props: AboutModalProps) {
       class={`fixed inset-0 z-60 flex items-center justify-center p-4 transition-opacity duration-200 ${
         isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
       }`}
-      onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
       aria-label="About"
     >
       {/* Backdrop */}
-      <div class="absolute inset-0 bg-black/60" />
+      <div class="absolute inset-0 bg-black/60" onClick={close} />
 
       {/* Modal panel */}
       <div
         ref={modalPanelRef}
         tabindex={-1}
+        onClick={(e) => e.stopPropagation()}
         class="relative bg-bg-elevated rounded-lg shadow-xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto outline-none"
       >
         {/* Close button */}
