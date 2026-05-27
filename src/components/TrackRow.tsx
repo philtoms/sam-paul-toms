@@ -54,7 +54,7 @@ const icons: Record<string, JSX.Element> = {
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      class="w-4 h-4"
+      class="w-5 h-5"
     >
       <path d="M9 18V5l12-2v13" />
       <circle cx="6" cy="18" r="3" />
@@ -70,7 +70,7 @@ const icons: Record<string, JSX.Element> = {
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      class="w-4 h-4"
+      class="w-5 h-5"
     >
       <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
       <line x1="7" y1="2" x2="7" y2="22" />
@@ -91,7 +91,7 @@ const icons: Record<string, JSX.Element> = {
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      class="w-4 h-4"
+      class="w-5 h-5"
     >
       <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
       <polyline points="17 2 12 7 7 2" />
@@ -102,7 +102,7 @@ const icons: Record<string, JSX.Element> = {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
-      class="w-4 h-4"
+      class="w-5 h-5"
     >
       <path
         fill-rule="evenodd"
@@ -208,7 +208,7 @@ export default function TrackRow({
   onPlay,
 }: TrackRowProps) {
   const icon = isUrlIcon(track.icon) ? (
-    <img src={track.icon} alt="" class="w-4 h-4" />
+    <img src={track.icon} alt="" class="w-full h-full object-cover" />
   ) : (
     icons[track.icon] || icons.music
   );
@@ -220,7 +220,7 @@ export default function TrackRow({
       onClick={onPlay}
     >
       {/* Category icon */}
-      <span class="shrink-0 text-text/40 transition-colors group-hover:text-accent">
+      <span class="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 text-text/40 transition-colors group-hover:text-accent overflow-hidden">
         {icon}
       </span>
 

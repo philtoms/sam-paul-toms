@@ -229,6 +229,36 @@ describe('Player Style', () => {
     expect(bar.classList.contains('audio-player-bar')).toBe(true);
   });
 
+  it('track info icon has square dimensions with rounded corners', async () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = mockTrack;
+
+    // Inject the Player CSS so jsdom can resolve computed styles
+    const cssContent = await import('fs').then((fs) =>
+      fs.promises.readFile(
+        require('path').resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
+        'utf-8',
+      ),
+    );
+    const styleEl = document.createElement('style');
+    styleEl.textContent = cssContent;
+    document.head.appendChild(styleEl);
+
+    const { container } = render(<Player />);
+    const icon = container.querySelector('.audio-player-track-info__icon') as HTMLElement;
+    expect(icon).toBeInTheDocument();
+
+    const computedStyle = window.getComputedStyle(icon);
+    expect(computedStyle.width).toBe('40px');
+    expect(computedStyle.height).toBe('40px');
+    expect(computedStyle.borderRadius).toBe('var(--radius-lg)');
+    expect(computedStyle.overflow).toBe('hidden');
+    expect(computedStyle.background).toContain('rgba(255, 255, 255, 0.05)');
+
+    // Cleanup injected style
+    document.head.removeChild(styleEl);
+  });
+
   it('expanded bar uses CSS Grid layout with six columns', async () => {
     mockPlaybackState = 'paused';
     mockCurrentTrack = mockTrack;

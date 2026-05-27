@@ -124,9 +124,14 @@ describe('TrackRow', () => {
       <TrackRow track={{ ...baseTrack, icon: 'film' }} onPlay={vi.fn()} />,
     );
 
-    // The icon container should contain an SVG element
+    // The icon container should be a square with rounded corners
     const iconSpan = container.querySelector('.shrink-0');
     expect(iconSpan).toBeTruthy();
+    expect(iconSpan!.classList.contains('w-10')).toBe(true);
+    expect(iconSpan!.classList.contains('h-10')).toBe(true);
+    expect(iconSpan!.classList.contains('rounded-lg')).toBe(true);
+    expect(iconSpan!.classList.contains('overflow-hidden')).toBe(true);
+    expect(iconSpan!.classList.contains('bg-white/5')).toBe(true);
     expect(iconSpan!.querySelector('svg')).toBeTruthy();
   });
 
@@ -341,8 +346,9 @@ describe('TrackRow', () => {
     expect(img).toBeTruthy();
     expect(img!.getAttribute('src')).toBe('https://example.com/icon.png');
     expect(img!.getAttribute('alt')).toBe('');
-    expect(img!.classList.contains('w-4')).toBe(true);
-    expect(img!.classList.contains('h-4')).toBe(true);
+    expect(img!.classList.contains('w-full')).toBe(true);
+    expect(img!.classList.contains('h-full')).toBe(true);
+    expect(img!.classList.contains('object-cover')).toBe(true);
   });
 
   it('renders an <img> element when track.icon is an http:// URL', () => {
