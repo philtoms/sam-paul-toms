@@ -39,12 +39,18 @@ interface PlaylistAccordionProps {
   allTracks: PlayableTrack[];
 }
 
-export default function PlaylistAccordion({ sections, playableTracksMap, allTracks }: PlaylistAccordionProps) {
+export default function PlaylistAccordion({
+  sections,
+  playableTracksMap,
+  allTracks,
+}: PlaylistAccordionProps) {
   // All sections open by default
-  const [openSlugs, setOpenSlugs] = useState<Set<string>>(() => new Set(sections.map(s => s.slug)));
+  const [openSlugs, setOpenSlugs] = useState<Set<string>>(
+    () => new Set(sections.map((s) => s.slug)),
+  );
 
   const toggleSection = (slug: string) => {
-    setOpenSlugs(prev => {
+    setOpenSlugs((prev) => {
       const next = new Set(prev);
       next.has(slug) ? next.delete(slug) : next.add(slug);
       return next;
@@ -79,7 +85,7 @@ export default function PlaylistAccordion({ sections, playableTracksMap, allTrac
 
   return (
     <div class="playlist-accordion">
-      {sections.map(section => {
+      {sections.map((section) => {
         const isOpen = openSlugs.has(section.slug);
         const trackCount = section.tracks.length;
 
@@ -105,15 +111,16 @@ export default function PlaylistAccordion({ sections, playableTracksMap, allTrac
               </svg>
               <span class="flex items-center gap-3">
                 <span class="text-lg font-semibold">{section.title}</span>
-                <span class="text-xs text-text/40">{trackCount} {trackCount === 1 ? 'track' : 'tracks'}</span>
+                <span class="text-xs text-text/40">
+                  {trackCount} {trackCount === 1 ? 'track' : 'tracks'}
+                </span>
               </span>
             </button>
 
-            <div class={`accordion-content ${isOpen ? 'accordion-content--open' : ''}`}>
+            <div
+              class={`accordion-content ${isOpen ? 'accordion-content--open' : ''}`}
+            >
               <div>
-                {section.description && (
-                  <p class="px-4 pt-2 pb-1 text-xs text-text/50">{section.description}</p>
-                )}
                 {section.tracks.map((track, i) => (
                   <TrackRow
                     key={`${section.slug}-${i}`}

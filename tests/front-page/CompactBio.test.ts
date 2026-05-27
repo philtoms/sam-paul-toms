@@ -31,4 +31,10 @@ describe('CompactBio component structure', () => {
   it('accepts child content via default slot', () => {
     expect(component).toContain('<slot />');
   });
+
+  it('renders bio paragraph with text-base font size', () => {
+    expect(component).toContain('text-base');
+    // Ensure the old text-sm was removed from the paragraph
+    expect(component).not.toContain('class="text-sm leading-relaxed');
+  });
 });
