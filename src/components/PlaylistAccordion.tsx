@@ -109,7 +109,7 @@ export default function PlaylistAccordion({
               >
                 <path d="m9 5 7 7 -7 7" />
               </svg>
-              <span class="flex items-center gap-3">
+              <span class="accordion-header-text">
                 <span class="text-lg font-semibold">{section.title}</span>
                 <span class="text-xs text-text/40">
                   {trackCount} {trackCount === 1 ? 'track' : 'tracks'}

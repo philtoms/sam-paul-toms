@@ -52,7 +52,6 @@ const socialAppleMusic = import.meta.env.PUBLIC_SOCIAL_APPLE_MUSIC;
   </button>
 
   {/* Social/streaming icon links — rendered only when URL is configured */}
-  {socialImdb && (
   <a
     href={socialImdb}
     aria-label="IMDB"
@@ -77,9 +76,7 @@ const socialAppleMusic = import.meta.env.PUBLIC_SOCIAL_APPLE_MUSIC;
       >IMDB</span
     >
   </a>
-  )}
 
-  {socialTidal && (
   <a
     href={socialTidal}
     aria-label="Tidal"
@@ -97,12 +94,11 @@ const socialAppleMusic = import.meta.env.PUBLIC_SOCIAL_APPLE_MUSIC;
     </svg>
     <span
       class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text-secondary whitespace-nowrap"
-      >Tidal</span
     >
+      Tidal
+    </span>
   </a>
-  )}
 
-  {socialSpotify && (
   <a
     href={socialSpotify}
     aria-label="Spotify"
@@ -120,12 +116,11 @@ const socialAppleMusic = import.meta.env.PUBLIC_SOCIAL_APPLE_MUSIC;
     </svg>
     <span
       class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text-secondary whitespace-nowrap"
-      >Spotify</span
     >
+      Spotify
+    </span>
   </a>
-  )}
 
-  {socialInstagram && (
   <a
     href={socialInstagram}
     aria-label="Instagram"
@@ -147,12 +142,11 @@ const socialAppleMusic = import.meta.env.PUBLIC_SOCIAL_APPLE_MUSIC;
     </svg>
     <span
       class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text-secondary whitespace-nowrap"
-      >Instagram</span
     >
+      Instagram
+    </span>
   </a>
-  )}
 
-  {socialAppleMusic && (
   <a
     href={socialAppleMusic}
     aria-label="Apple Music"
@@ -170,10 +164,10 @@ const socialAppleMusic = import.meta.env.PUBLIC_SOCIAL_APPLE_MUSIC;
     </svg>
     <span
       class="absolute top-full mt-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 border border-white/50 rounded-sm px-2 py-0.5 text-xs font-bold text-text-secondary whitespace-nowrap"
-      >Apple Music</span
     >
+      Apple Music
+    </span>
   </a>
-  )}
 
   <button
     type="button"

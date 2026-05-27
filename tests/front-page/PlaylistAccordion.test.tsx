@@ -336,6 +336,62 @@ describe('PlaylistAccordion', () => {
   });
 
 
+  describe('vertical header layout', () => {
+    it('wraps title and track count in an accordion-header-text container with vertical stacking', () => {
+      const { container } = render(
+        <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
+      );
+
+      const headerTexts = container.querySelectorAll('.accordion-header-text');
+      expect(headerTexts.length).toBe(4);
+
+      // Each .accordion-header-text should have exactly 2 children: title span and track count span
+      for (const headerText of headerTexts) {
+        const spans = headerText.querySelectorAll('span');
+        expect(spans.length).toBe(2);
+      }
+    });
+
+    it('renders track count as a separate element below the title (not inline)', () => {
+      const { container } = render(
+        <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
+      );
+
+      // Documentary section: 3 tracks
+      const docHeaderText = container.querySelectorAll('.accordion-header-text')[0];
+      const docSpans = docHeaderText.querySelectorAll('span');
+      expect(docSpans[0].textContent).toBe('Documentary');
+      expect(docSpans[1].textContent).toBe('3 tracks');
+    });
+
+    it('uses singular "track" for sections with exactly 1 track', () => {
+      const { container } = render(
+        <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
+      );
+
+      // Library section (index 2) has 1 track
+      const libraryHeaderText = container.querySelectorAll('.accordion-header-text')[2];
+      const trackCountSpan = libraryHeaderText.querySelectorAll('span')[1];
+      expect(trackCountSpan.textContent).toBe('1 track');
+    });
+
+    it('title span precedes track count span in DOM order within accordion-header-text', () => {
+      const { container } = render(
+        <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
+      );
+
+      const headerTexts = container.querySelectorAll('.accordion-header-text');
+      for (const headerText of headerTexts) {
+        const children = headerText.children;
+        expect(children.length).toBe(2);
+        // First child is the title (has font-semibold)
+        expect(children[0].classList.contains('font-semibold')).toBe(true);
+        // Second child is the track count (has text-xs)
+        expect(children[1].classList.contains('text-xs')).toBe(true);
+      }
+    });
+  });
+
   describe('no-op guard for currently-playing track', () => {
     it('does NOT dispatch audio-player:play when clicked track is already playing', () => {
       // Simulate: "The Weight of Water" (doc-0) is currently playing

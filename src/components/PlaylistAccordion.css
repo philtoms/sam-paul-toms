@@ -23,6 +23,11 @@
   background-color: color-mix(in srgb, #fff 5%, transparent);
 }
 
+.accordion-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
 .accordion-chevron {
   transition: transform 350ms ease-in-out;
 }
