@@ -137,6 +137,67 @@ describe('Player', () => {
     expect(icon).toBeInTheDocument();
   });
 
+  it('renders an <img> element when track icon is an HTTPS URL', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = {
+      ...mockTrack,
+      icon: 'https://example.com/artwork.jpg',
+    };
+
+    const { container } = render(<Player />);
+
+    const iconContainer = container.querySelector(
+      '.audio-player-track-info__icon',
+    );
+    expect(iconContainer).toBeInTheDocument();
+
+    const img = iconContainer!.querySelector('img');
+    expect(img).toBeInTheDocument();
+    expect(img?.getAttribute('src')).toBe('https://example.com/artwork.jpg');
+  });
+
+  it('renders an SVG (no <img>) when track icon is a category key', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = {
+      ...mockTrack,
+      icon: 'film',
+    };
+
+    const { container } = render(<Player />);
+
+    const iconContainer = container.querySelector(
+      '.audio-player-track-info__icon',
+    );
+    expect(iconContainer).toBeInTheDocument();
+
+    const img = iconContainer!.querySelector('img');
+    expect(img).not.toBeInTheDocument();
+
+    const svg = iconContainer!.querySelector('svg');
+    expect(svg).toBeInTheDocument();
+  });
+
+  it('renders the default music SVG when track icon is undefined', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = {
+      ...mockTrack,
+      // icon is intentionally omitted
+    };
+
+    const { container } = render(<Player />);
+
+    const iconContainer = container.querySelector(
+      '.audio-player-track-info__icon',
+    );
+    expect(iconContainer).toBeInTheDocument();
+
+    const img = iconContainer!.querySelector('img');
+    expect(img).not.toBeInTheDocument();
+
+    const svg = iconContainer!.querySelector('svg');
+    expect(svg).toBeInTheDocument();
+  });
+
   it('initializes audio engine on mount', () => {
     render(<Player />);
 

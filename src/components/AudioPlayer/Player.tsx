@@ -50,7 +50,15 @@ const categoryIcons: Record<string, JSX.Element> = {
   ),
 };
 
+/** Check whether a string is an HTTP(S) URL (used for custom icon images) */
+function isUrlIcon(value: string): boolean {
+  return value.startsWith('http://') || value.startsWith('https://');
+}
+
 function trackIcon(icon?: string): JSX.Element {
+  if (icon && isUrlIcon(icon)) {
+    return <img src={icon} alt="" class="w-full h-full object-cover" />;
+  }
   return categoryIcons[icon ?? 'music'] ?? categoryIcons.music;
 }
 
