@@ -60,7 +60,7 @@ describe('SocialLinksBar component structure', () => {
     for (const name of platformNames) {
       // Find the span containing the platform name (after an SVG inside a link)
       const spanPattern = new RegExp(
-        `aria-label="${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[\\s\\S]*?<\\/svg>[\\s]*<span[^>]*>${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/span`,
+        `aria-label="${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[\\s\\S]*?<\\/svg>[\\s]*<span[^>]*>\\s*${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*<\\/span`,
       );
       expect(component).toMatch(spanPattern);
     }

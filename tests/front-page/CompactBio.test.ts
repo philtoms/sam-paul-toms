@@ -13,18 +13,18 @@ const componentPath = resolve(process.cwd(), 'src/components/CompactBio.astro');
 const component = readFileSync(componentPath, 'utf-8');
 
 describe('CompactBio component structure', () => {
-  it('accepts required props: summary, aboutUrl', () => {
-    for (const prop of ['summary', 'aboutUrl']) {
-      expect(component).toContain(prop);
-    }
+  it('accepts required props: summary', () => {
+    expect(component).toContain('summary');
+    // Component uses a button to open an about modal instead of aboutUrl prop
+    expect(component).toContain('about-modal-btn');
   });
 
   it('renders summary text from prop', () => {
     expect(component).toContain('{summary}');
   });
 
-  it('renders "Read more" link pointing to aboutUrl', () => {
-    expect(component).toContain('href={aboutUrl}');
+  it('renders "Read more" button with about-modal-btn', () => {
+    expect(component).toContain('id="about-modal-btn"');
     expect(component).toContain('Read more');
   });
 
@@ -32,9 +32,9 @@ describe('CompactBio component structure', () => {
     expect(component).toContain('<slot />');
   });
 
-  it('renders bio paragraph with text-base font size', () => {
-    expect(component).toContain('text-base');
-    // Ensure the old text-sm was removed from the paragraph
-    expect(component).not.toContain('class="text-sm leading-relaxed');
+  it('renders bio paragraph with text-lg font size', () => {
+    expect(component).toContain('text-lg');
+    // Ensure the old text-base was removed from the paragraph
+    expect(component).not.toContain('class="text-base leading-relaxed');
   });
 });
