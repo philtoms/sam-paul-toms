@@ -40,9 +40,13 @@ const {
   aboutGenreTags = [],
   aboutPressQuotes = [],
 } = Astro.props;
+
+// Accent colour override from env var. Falls back to #eab308 (yellow-500).
+// --color-accent-hover is computed via color-mix() at runtime.
+const accentColor = import.meta.env.PUBLIC_ACCENT_COLOR || '#eab308';
 ---
 
-<html lang="en">
+<html lang="en" style={`--color-accent: ${accentColor}; --color-accent-hover: color-mix(in srgb, var(--color-accent) 80%, white); --color-accent-muted: var(--color-accent);`}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

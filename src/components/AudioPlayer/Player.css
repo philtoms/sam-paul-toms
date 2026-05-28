@@ -124,14 +124,14 @@
 .audio-player-btn--play {
   width: 40px;
   height: 40px;
-  background: #eab308; /* yellow-500 */
+  background: var(--color-accent);
   color: #000;
   border-radius: 50%;
 }
 
 .audio-player-btn--play:hover {
   color: #000;
-  background: #facc15; /* yellow-400 */
+  background: var(--color-accent-hover);
 }
 
 .audio-player-btn--skip {

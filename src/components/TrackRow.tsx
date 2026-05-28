@@ -25,6 +25,7 @@ import {
   duration,
 } from './AudioPlayer/playlistStore';
 import { seekPlayer } from '../scripts/audio-player-events';
+import { getAccentHoverColor } from '../scripts/accent-color';
 
 interface TrackRowProps {
   track: {
@@ -141,7 +142,7 @@ function MiniWaveform({
       container: containerRef.current,
       height,
       waveColor: '#6b7280',
-      progressColor: '#eab308',
+      progressColor: getAccentHoverColor(),
       barWidth: 2,
       barGap: 1,
       barRadius: 1,

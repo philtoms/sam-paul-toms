@@ -41,6 +41,11 @@ vi.mock('wavesurfer.js', () => ({
   },
 }));
 
+// Mock accent-color module so progressColor resolves to the default
+vi.mock('../../src/scripts/accent-color', () => ({
+  getAccentColor: () => '#eab308',
+}));
+
 // Mock playlistStore signals — use wrapper objects so real signals can be
 // initialized after the @preact/signals import resolves.
 // vi.hoisted runs before imports, so signal() is unavailable there.

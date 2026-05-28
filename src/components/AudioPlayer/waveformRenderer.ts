@@ -1,5 +1,6 @@
 import WaveSurfer from 'wavesurfer.js';
 import type { WaveSurferOptions } from 'wavesurfer.js';
+import { getAccentHoverColor } from '../../scripts/accent-color';
 
 /**
  * Waveform renderer wrapping wavesurfer.js v7.
@@ -16,9 +17,8 @@ let ws: WaveSurfer | null = null;
 const defaultOptions: Partial<WaveSurferOptions> = {
   height: 40,
   waveColor: '#6b7280', // gray-500
-  // Note: progressColor is hardcoded because canvas fillStyle cannot resolve
-  // CSS custom properties. This mirrors the --color-accent value (#eab308).
-  progressColor: '#eab308', // --color-accent
+  // Note: progressColor is resolved at runtime via getAccentHoverColor() because
+  // canvas fillStyle cannot resolve CSS custom properties.
   cursorColor: '#f5f5f5', // --color-text
   barWidth: 2,
   barGap: 1,
@@ -43,6 +43,7 @@ export function init(
 
   ws = WaveSurfer.create({
     ...defaultOptions,
+    progressColor: getAccentHoverColor(),
     ...options,
     container,
   });

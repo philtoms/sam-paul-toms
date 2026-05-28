@@ -11,10 +11,10 @@
   --color-text-secondary: #a3a3a3; /* Muted/secondary text */
   --color-text-tertiary: #737373; /* Disabled/hint text */
 
-  /* Accent — yellow, music-forward */
-  --color-accent: #eab308; /* Primary accent (yellow-500) */
-  --color-accent-hover: #facc15; /* Lighter accent for hover states (yellow-400) */
-  --color-accent-muted: #eab308; /* For Tailwind opacity utility usage (e.g., bg-accent/20) */
+  /* Accent — overridden at runtime by PUBLIC_ACCENT_COLOR env var via BaseLayout.astro */
+  --color-accent: #eab308; /* Static default; overridden by env var at runtime */
+  --color-accent-hover: #facc15; /* Static default; overridden by color-mix() at runtime */
+  --color-accent-muted: #eab308; /* Static default; overridden by env var at runtime */
 
   /* Semantic colors */
   --color-success: #22c55e;

@@ -1,6 +1,11 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+// Mock accent-color module so progressColor resolves to the default
+vi.mock('../../src/scripts/accent-color', () => ({
+  getAccentColor: () => '#eab308',
+}));
+
 // Mock wavesurfer.js
 const mockWaveSurferInstance = {
   setVolume: vi.fn(),
