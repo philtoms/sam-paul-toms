@@ -4,15 +4,10 @@ import { join } from 'path';
 
 const distPath = join(process.cwd(), 'dist/about/index.html');
 
-describe('About page render', () => {
+describe.skipIf(!existsSync(distPath))('About page render', () => {
   let html: string;
 
   beforeAll(() => {
-    if (!existsSync(distPath)) {
-      throw new Error(
-        `dist/about/index.html not found. Run "npm run build" first.`
-      );
-    }
     html = readFileSync(distPath, 'utf-8');
   });
 

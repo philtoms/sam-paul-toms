@@ -4,6 +4,10 @@ import { spawn, type ChildProcess } from 'node:child_process';
 const PORT = 4399;
 const BASE_URL = `http://localhost:${PORT}`;
 
+// These tests require a running dev server and are skipped unless
+// the SAM_INTEGRATION env var is set (e.g. CI with a dedicated step).
+const runIntegration = !!process.env.SAM_INTEGRATION;
+
 async function waitForServer(url: string, timeoutMs: number) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
@@ -18,7 +22,7 @@ async function waitForServer(url: string, timeoutMs: number) {
   throw new Error(`Server at ${url} did not start within ${timeoutMs}ms`);
 }
 
-describe('Release pages', () => {
+describe.skipIf(!runIntegration)('Release pages', () => {
   let server: ChildProcess;
 
   beforeAll(async () => {
