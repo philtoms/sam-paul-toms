@@ -11,10 +11,12 @@ import {
   pausePlayer,
   addToQueue,
   seekPlayer,
+  togglePlayer,
   AUDIO_PLAYER_PLAY,
   AUDIO_PLAYER_PAUSE,
   AUDIO_PLAYER_ADD,
   AUDIO_PLAYER_SEEK,
+  AUDIO_PLAYER_TOGGLE,
 } from '../../src/scripts/audio-player-events';
 import type { Track } from '../../src/components/AudioPlayer/types';
 
@@ -102,12 +104,26 @@ describe('audio-player-events', () => {
     });
   });
 
+  describe('togglePlayer', () => {
+    it('dispatches audio-player:toggle event on document', () => {
+      const dispatchSpy = vi.spyOn(document, 'dispatchEvent');
+
+      togglePlayer();
+
+      expect(dispatchSpy).toHaveBeenCalledTimes(1);
+      const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
+      expect(event.type).toBe(AUDIO_PLAYER_TOGGLE);
+      expect(event.detail).toBeNull();
+    });
+  });
+
   describe('event constants', () => {
     it('exports correct event name strings', () => {
       expect(AUDIO_PLAYER_PLAY).toBe('audio-player:play');
       expect(AUDIO_PLAYER_PAUSE).toBe('audio-player:pause');
       expect(AUDIO_PLAYER_ADD).toBe('audio-player:add');
       expect(AUDIO_PLAYER_SEEK).toBe('audio-player:seek');
+      expect(AUDIO_PLAYER_TOGGLE).toBe('audio-player:toggle');
     });
   });
 });

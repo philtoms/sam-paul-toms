@@ -13,6 +13,7 @@ export const AUDIO_PLAYER_PLAY = 'audio-player:play';
 export const AUDIO_PLAYER_PAUSE = 'audio-player:pause';
 export const AUDIO_PLAYER_ADD = 'audio-player:add';
 export const AUDIO_PLAYER_SEEK = 'audio-player:seek';
+export const AUDIO_PLAYER_TOGGLE = 'audio-player:toggle';
 
 /** Event detail interfaces */
 export interface PlayEventDetail {
@@ -85,4 +86,12 @@ export function seekPlayer(trackId: string, fraction: number): void {
       detail: { trackId, fraction },
     }),
   );
+}
+
+/**
+ * Dispatch an event to toggle play/pause on the audio player.
+ * The Player component handles this by calling audioEngine.togglePlay().
+ */
+export function togglePlayer(): void {
+  document.dispatchEvent(new CustomEvent(AUDIO_PLAYER_TOGGLE));
 }

@@ -1,9 +1,21 @@
 ---
 /**
- * SocialLinksBar — Play All button + social/streaming icon links.
+ * SocialLinksBar — Play/Pause toggle button + social/streaming icon links.
  *
- * A pure Astro component with a client-side script handling Play All clicks.
- * Follows the same pattern as TrackList.astro to dispatch audio events.
+ * A pure Astro component with a client-side script handling the Play All / Pause
+ * toggle button. The button uses Preact signals (isPlaying, playbackState, tracks)
+ * and the effect() function to reactively sync its icon and aria-label with the
+ * Player bar's transport state — no direct coupling to the audio engine.
+ *
+ * Behavior:
+ * - **Idle / no tracks loaded:** Clicking dispatches `audio-player:play` with the
+ *   full track list (startIndex: 0), opening the Player bar and starting playback.
+ * - **Track loaded:** Clicking dispatches `audio-player:toggle` to toggle
+ *   play/pause, mirroring the Player bar's transport button exactly.
+ * - **Icon sync:** A Preact `effect()` reactively swaps the SVG between a play
+ *   triangle (▶) and pause bars (⏸) based on the `isPlaying` signal.
+ * - **aria-label sync:** "Play all tracks" when idle, "Play" when paused with
+ *   a track loaded, "Pause" when playing.
  *
  * Each social icon link reveals its platform name via a smooth CSS
  * opacity transition on hover (200ms ease). The label appears below the
@@ -180,22 +192,51 @@ const socialAppleMusic = import.meta.env.PUBLIC_SOCIAL_APPLE_MUSIC;
 </div>
 
 <script>
-  // Play All button: parse tracks from data-tracks and dispatch audio-player:play event
+  import { isPlaying, playbackState, tracks } from '../components/AudioPlayer/playlistStore';
+  import { effect } from '@preact/signals';
+  import { togglePlayer } from '../scripts/audio-player-events';
+
+  // Play All / Play-Pause toggle button
   const wrapper = document.querySelector('[data-social-links-bar]');
   const playAllBtn = document.getElementById('play-all-btn');
 
   if (wrapper && playAllBtn) {
     const tracksJson = wrapper.getAttribute('data-tracks');
-    if (tracksJson) {
-      const tracks = JSON.parse(tracksJson);
-      playAllBtn.addEventListener('click', () => {
-        document.dispatchEvent(
-          new CustomEvent('audio-player:play', {
-            detail: { tracks, startIndex: 0 },
-          }),
-        );
-      });
-    }
+
+    playAllBtn.addEventListener('click', () => {
+      if (playbackState.value === 'idle' || tracks.value.length === 0) {
+        // No track loaded — start the full playlist from scratch
+        if (tracksJson) {
+          const parsedTracks = JSON.parse(tracksJson);
+          document.dispatchEvent(
+            new CustomEvent('audio-player:play', {
+              detail: { tracks: parsedTracks, startIndex: 0 },
+            }),
+          );
+        }
+      } else {
+        // Track loaded — toggle play/pause
+        togglePlayer();
+      }
+    });
+
+    // Reactive icon + aria-label sync with player bar state
+    effect(() => {
+      const playing = isPlaying.value;
+      if (playing) {
+        // Pause icon (two vertical bars)
+        playAllBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><rect x="6" y="4" width="4" height="16" rx="1" /><rect x="14" y="4" width="4" height="16" rx="1" /></svg>`;
+        playAllBtn.setAttribute('aria-label', 'Pause');
+      } else if (playbackState.value === 'idle' || tracks.value.length === 0) {
+        // Play triangle — idle state
+        playAllBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><polygon points="7 3 21 12 7 21 7 3"></polygon></svg>`;
+        playAllBtn.setAttribute('aria-label', 'Play all tracks');
+      } else {
+        // Play triangle — paused state
+        playAllBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><polygon points="7 3 21 12 7 21 7 3"></polygon></svg>`;
+        playAllBtn.setAttribute('aria-label', 'Play');
+      }
+    });
   }
 
   // Contact button: dispatch contact-modal:open event

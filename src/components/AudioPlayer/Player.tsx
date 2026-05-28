@@ -171,16 +171,22 @@ export default function Player() {
       }
     };
 
+    const handleToggle = () => {
+      audioEngine.togglePlay();
+    };
+
     document.addEventListener('audio-player:play', handlePlay);
     document.addEventListener('audio-player:pause', handlePause);
     document.addEventListener('audio-player:add', handleAdd);
     document.addEventListener('audio-player:seek', handleSeek);
+    document.addEventListener('audio-player:toggle', handleToggle);
 
     return () => {
       document.removeEventListener('audio-player:play', handlePlay);
       document.removeEventListener('audio-player:pause', handlePause);
       document.removeEventListener('audio-player:add', handleAdd);
       document.removeEventListener('audio-player:seek', handleSeek);
+      document.removeEventListener('audio-player:toggle', handleToggle);
     };
   }, []);
 

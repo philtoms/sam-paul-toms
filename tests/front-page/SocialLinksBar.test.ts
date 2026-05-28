@@ -42,6 +42,15 @@ describe('SocialLinksBar component structure', () => {
     expect(component).toContain('play-all-btn');
   });
 
+  it('references audio-player:toggle via togglePlayer import', () => {
+    expect(component).toContain('togglePlayer');
+    expect(component).toContain("from '../scripts/audio-player-events'");
+  });
+
+  it('default aria-label is "Play all tracks"', () => {
+    expect(component).toContain('aria-label="Play all tracks"');
+  });
+
   it('uses consistent icon sizing for social links', () => {
     // Social/streaming icons use w-4 h-4 SVGs inside w-5 h-5 containers
     expect(component).toContain('w-4 h-4');
