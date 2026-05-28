@@ -4,7 +4,7 @@
   left: 1rem;
   right: 1rem;
   z-index: 50;
-  background: var(--color-player-bg);
+  /* background: var(--color-player-bg); */
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
   box-shadow: var(--shadow-lg);
@@ -28,6 +28,29 @@
   gap: 1rem;
   opacity: 1;
   overflow: visible;
+}
+
+/* Background image layer — cinematic crop of the hero banner */
+.audio-player-bar--expanded::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  z-index: -1;
+  background-image: url('/images/banner/spt_low_res.png');
+  background-size: cover;
+  background-position: 0 85%;
+}
+
+/* Dark scrim overlay — ensures text/icon legibility */
+.audio-player-bar--expanded::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  z-index: -1;
+  /* background: rgba(42, 42, 42, 0.75); */
 }
 
 /* Time displays */
@@ -259,8 +282,7 @@
 @media (max-width: 639px) {
   .audio-player-bar--expanded {
     grid-template-columns: 1fr auto auto;
-    grid-template-areas:
-      "track transport volume";
+    grid-template-areas: 'track transport volume';
     gap: 0.5rem;
     height: 56px;
     padding: 0 0.75rem;

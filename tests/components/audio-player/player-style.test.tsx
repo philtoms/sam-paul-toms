@@ -345,6 +345,79 @@ describe('Player Style', () => {
     expect(volumeContainer.contains(slider)).toBe(true);
   });
 
+  it('expanded player bar creates a positioning context for background pseudo-elements', async () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = mockTrack;
+
+    // Inject the Player CSS so jsdom can resolve computed styles
+    const cssContent = await import('fs').then((fs) =>
+      fs.promises.readFile(
+        require('path').resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
+        'utf-8',
+      ),
+    );
+    const styleEl = document.createElement('style');
+    styleEl.textContent = cssContent;
+    document.head.appendChild(styleEl);
+
+    const { container } = render(<Player />);
+    const bar = container.querySelector('.audio-player-bar--expanded') as HTMLElement;
+    expect(bar).toBeInTheDocument();
+
+    const computedStyle = window.getComputedStyle(bar);
+    // position: fixed (from .audio-player-bar) creates a containing block
+    // for absolutely-positioned ::before/::after pseudo-elements
+    expect(computedStyle.position).toBe('fixed');
+
+    // Cleanup injected style
+    document.head.removeChild(styleEl);
+  });
+
+  it('expanded player bar CSS defines background image and overlay via pseudo-elements', async () => {
+    // Read the raw CSS and parse for ::before/::after rules — JSDOM cannot
+    // resolve computed styles on pseudo-elements
+    const cssContent = await import('fs').then((fs) =>
+      fs.promises.readFile(
+        require('path').resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
+        'utf-8',
+      ),
+    );
+
+    // ::before should reference the banner image with cover sizing and cinematic crop
+    expect(cssContent).toMatch(
+      /\.audio-player-bar--expanded::before\s*\{[^}]*background-image:\s*url\(['"]\/images\/banner\/spt_low_res\.png['"]\)/,
+    );
+    expect(cssContent).toMatch(
+      /\.audio-player-bar--expanded::before\s*\{[^}]*background-size:\s*cover/,
+    );
+    expect(cssContent).toMatch(
+      /\.audio-player-bar--expanded::before\s*\{[^}]*background-position:\s*center\s+30%/,
+    );
+    expect(cssContent).toMatch(
+      /\.audio-player-bar--expanded::before\s*\{[^}]*z-index:\s*-1/,
+    );
+
+    // ::after should provide a dark scrim overlay for legibility
+    expect(cssContent).toMatch(
+      /\.audio-player-bar--expanded::after\s*\{[^}]*background:\s*rgba\(42,\s*42,\s*42,\s*0\.75\)/,
+    );
+    expect(cssContent).toMatch(
+      /\.audio-player-bar--expanded::after\s*\{[^}]*z-index:\s*-1/,
+    );
+
+    // Both pseudo-elements should have border-radius matching the pill shape
+    const beforeMatch = cssContent.match(
+      /\.audio-player-bar--expanded::before\s*\{([^}]*)\}/,
+    );
+    const afterMatch = cssContent.match(
+      /\.audio-player-bar--expanded::after\s*\{([^}]*)\}/,
+    );
+    expect(beforeMatch).toBeTruthy();
+    expect(afterMatch).toBeTruthy();
+    expect(beforeMatch![1]).toContain('border-radius: 9999px');
+    expect(afterMatch![1]).toContain('border-radius: 9999px');
+  });
+
   it('volume slider element exists and is a range input', () => {
     mockPlaybackState = 'paused';
     mockCurrentTrack = mockTrack;
