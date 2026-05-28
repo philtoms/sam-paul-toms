@@ -6,5 +6,8 @@ dist/
 # Dev audio samples (large binary files, local only)
 public/audio-samples/
 
+# Generated waveform peak data (build artifact)
+public/waveforms/
+
 .worktrees
 .kb/

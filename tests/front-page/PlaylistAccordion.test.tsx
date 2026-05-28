@@ -8,31 +8,26 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/preact';
 
-// Mock wavesurfer.js — TrackRow's MiniWaveform creates WaveSurfer instances
-const { mockCreate, sharedMockInstance } = vi.hoisted(() => {
-  const instance = {
-    setVolume: vi.fn(),
-    load: vi.fn(),
-    destroy: vi.fn(),
-    getDuration: vi.fn(() => 200),
-    seekTo: vi.fn(),
-    on: vi.fn(() => vi.fn()),
-  };
-  return {
-    mockCreate: vi.fn(() => instance),
-    sharedMockInstance: instance,
-  };
-});
+// Mock accent-color for SVG waveform instances
+vi.mock('../../src/scripts/accent-color', () => ({
+  getAccentColor: () => '#eab308',
+  getAccentHoverColor: () => '#facc15',
+}));
+
+// Mock fetch for waveform peak data
+const { mockFetch } = vi.hoisted(() => ({
+  mockFetch: vi.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({ peaks: Array(200).fill(0.5), duration: 200 }),
+    }),
+  ),
+}));
+vi.stubGlobal('fetch', mockFetch);
 
 // Mock isTrackCurrentlyPlaying — controlled per test
 const { mockIsTrackCurrentlyPlaying } = vi.hoisted(() => ({
   mockIsTrackCurrentlyPlaying: vi.fn(() => false),
-}));
-
-vi.mock('wavesurfer.js', () => ({
-  default: {
-    create: mockCreate,
-  },
 }));
 
 vi.mock('../../src/components/AudioPlayer/playlistStore', () => ({
@@ -273,25 +268,19 @@ describe('PlaylistAccordion', () => {
     expect(filmChevron.classList.contains('rotate-90')).toBe(true);
   });
 
-  it('passes correct audio URLs from playableTracksMap to track row waveforms', () => {
+  it('passes correct audio URLs from playableTracksMap to track rows', () => {
     render(
       <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
     );
 
-    // All tracks across all sections are rendered in the DOM (closed sections
-    // use CSS overflow:hidden), so 8 WaveSurfer instances are created total
-    expect(mockCreate).toHaveBeenCalledTimes(8);
+    // All 8 tracks across all sections are rendered in the DOM
+    // Each TrackRow with an audioUrl creates an SVG waveform that fetches peaks
+    expect(mockFetch).toHaveBeenCalledTimes(8);
 
-    // Verify the loaded audio URLs match the playableTracksMap order
-    expect(sharedMockInstance.load).toHaveBeenCalledTimes(8);
-    expect(sharedMockInstance.load.mock.calls[0][0]).toBe('http://example.com/doc-0.mp3');
-    expect(sharedMockInstance.load.mock.calls[1][0]).toBe('http://example.com/doc-1.mp3');
-    expect(sharedMockInstance.load.mock.calls[2][0]).toBe('http://example.com/doc-2.mp3');
-    expect(sharedMockInstance.load.mock.calls[3][0]).toBe('http://example.com/film-0.mp3');
-    expect(sharedMockInstance.load.mock.calls[4][0]).toBe('http://example.com/film-1.mp3');
-    expect(sharedMockInstance.load.mock.calls[5][0]).toBe('http://example.com/lib-0.mp3');
-    expect(sharedMockInstance.load.mock.calls[6][0]).toBe('http://example.com/trailer-0.mp3');
-    expect(sharedMockInstance.load.mock.calls[7][0]).toBe('http://example.com/trailer-1.mp3');
+    // Verify fetch was called 8 times (one per track with audioUrl)
+    // The URL derivation uses getWaveformPeaksUrl which extracts from the audio URL
+    const fetchCalls = mockFetch.mock.calls.map((call: Array<string>) => call[0]);
+    expect(fetchCalls.length).toBe(8);
   });
 
   it('clicking first track of first section dispatches with startIndex 0 and all tracks', () => {

@@ -9,7 +9,7 @@ A music portfolio website for Sam, built with modern web technologies. Dark-them
 - **[Tailwind CSS v4](https://tailwindcss.com)** — Utility-first CSS with CSS-first configuration (`@theme` block)
 - **[Cloudflare Pages](https://pages.cloudflare.com)** — Deployment platform with server-side rendering
 - **[howler.js](https://howlerjs.com)** — Cross-browser audio engine with format fallback
-- **[wavesurfer.js v7](https://wavesurfer.xyz)** — Audio waveform visualization
+- **SVG Waveform Renderer** — Lightweight SVG-based waveform visualization from pre-computed peak data
 - **TypeScript (strict)** — Type-safe development
 
 ## Quick Start
@@ -23,7 +23,7 @@ The dev server starts at `http://localhost:4321`.
 
 ## Local Development Audio
 
-By default, the app resolves audio URLs using `R2_PUBLIC_URL` (defaults to the Wrangler R2 proxy at `http://localhost:8788/r2`). To hear audio in local dev without R2 access, you can generate placeholder MP3 files:
+By default, the app resolves audio URLs using `R2_PUBLIC_URL` (defaults to the Wrangler R2 proxy at `http://localhost:4321/r2`). To hear audio in local dev without R2 access, you can generate placeholder MP3 files:
 
 ### Prerequisites
 
@@ -95,7 +95,7 @@ The player is built as a **Preact island** (`client:load`) with three main layer
 
 2. **Audio Engine** (`audioEngine.ts`) — Wraps howler.js for cross-browser audio playback. Provides OGG/MP3 format fallback, HTML5 streaming mode for large files, RAF-based time tracking, and reactive auto-load via Preact's `effect()`.
 
-3. **Waveform Renderer** (`waveformRenderer.ts`) — Wraps wavesurfer.js v7 for waveform visualization. Audio output is muted so howler.js is the sole audio source. Visual progress is synced via RAF loop.
+3. **Waveform Renderer** (`waveformRenderer.ts`) — SVG-based waveform visualization using pre-computed peak data. Peak data is generated at build time by `npm run generate:waveforms` and served as static JSON. Visual progress is synced via RAF loop.
 
 The player uses `transition:persist` in the layout to survive Astro View Transitions without destroying the component or interrupting playback.
 
@@ -133,7 +133,7 @@ addToQueue({
 
 ### Environment Variable
 
-- `R2_PUBLIC_URL` — Base URL for Cloudflare R2 object storage. Audio URLs are constructed as `${R2_PUBLIC_URL}/${track-relative-path}`. For local development with Wrangler's R2 emulation, use `http://localhost:8788/r2`.
+- `R2_PUBLIC_URL` — Base URL for Cloudflare R2 object storage. Audio URLs are constructed as `${R2_PUBLIC_URL}/${track-relative-path}`. For local development with Wrangler's R2 emulation, use `http://localhost:4321/r2`.
 
 ## Environment Variables
 

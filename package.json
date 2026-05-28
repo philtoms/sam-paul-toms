@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test:watch": "vitest",
-    "clean:worktrees": "git worktree list --porcelain | grep '^worktree ' | grep -v $(pwd) | cut -d' ' -f2 | xargs -I {} git worktree remove '{}' && git branch --list 'kb/*' | sed 's/^..//' | xargs git branch -D"
+    "clean:worktrees": "git worktree list --porcelain | grep '^worktree ' | grep -v $(pwd) | cut -d' ' -f2 | xargs -I {} git worktree remove '{}' && git branch --list 'kb/*' | sed 's/^..//' | xargs git branch -D",
+    "generate:waveforms": "R2_PUBLIC_URL=${R2_PUBLIC_URL:-public/audio-samples} node scripts/generate-waveforms.cjs"
   },
   "keywords": [],
   "author": "",
@@ -27,8 +28,7 @@
     "howler": "^2.2.4",
     "preact": "^10.29.2",
     "tailwindcss": "^4.3.0",
-    "typescript": "^5.9.3",
-    "wavesurfer.js": "^7.12.7"
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

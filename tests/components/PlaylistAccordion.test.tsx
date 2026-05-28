@@ -11,24 +11,27 @@
  * rule is present in the stylesheet as a belt-and-suspenders regression guard.
  */
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/preact';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-// Mock wavesurfer.js — TrackRow's MiniWaveform creates WaveSurfer instances
-vi.mock('wavesurfer.js', () => ({
-  default: {
-    create: vi.fn(() => ({
-      setVolume: vi.fn(),
-      load: vi.fn(),
-      destroy: vi.fn(),
-      getDuration: vi.fn(() => 200),
-      seekTo: vi.fn(),
-      on: vi.fn(() => vi.fn()),
-    })),
-  },
+// Mock accent-color for SVG waveform instances
+vi.mock('../../src/scripts/accent-color', () => ({
+  getAccentColor: () => '#eab308',
+  getAccentHoverColor: () => '#facc15',
 }));
+
+// Mock fetch for waveform peak data
+const { mockFetch } = vi.hoisted(() => ({
+  mockFetch: vi.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({ peaks: Array(200).fill(0.5), duration: 200 }),
+    }),
+  ),
+}));
+vi.stubGlobal('fetch', mockFetch);
 
 vi.mock('../../src/components/AudioPlayer/playlistStore', () => ({
   isTrackCurrentlyPlaying: vi.fn(() => false),

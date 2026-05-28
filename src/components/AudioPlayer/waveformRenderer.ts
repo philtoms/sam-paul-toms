@@ -1,81 +1,72 @@
-import WaveSurfer from 'wavesurfer.js';
-import type { WaveSurferOptions } from 'wavesurfer.js';
-import { getAccentHoverColor } from '../../scripts/accent-color';
-
 /**
- * Waveform renderer wrapping wavesurfer.js v7.
+ * Waveform renderer — thin wrapper around svgWaveform.ts.
  *
- * wavesurfer.js is used purely for visual waveform rendering — it is muted
- * so howler.js remains the sole audio source (avoids double-playback).
- * The Player component syncs visual progress via a RAF loop that calls
- * `setProgress(currentTime / duration)`.
+ * Provides the same external API shape that Player.tsx expects
+ * (init, loadAudio → loadPeaks, setProgress, onSeek, destroy),
+ * but delegates to the lightweight SVG renderer using pre-computed
+ * peak data instead of WaveSurfer.js canvas-based decoding.
+ *
+ * The audio engine (Howler.js / audioEngine.ts) is the sole audio source.
+ * This module is purely visual.
  */
 
-let ws: WaveSurfer | null = null;
+import {
+  createSvgWaveform,
+  type SvgWaveformInstance,
+  type SvgWaveformOptions,
+} from './svgWaveform';
 
-/** Default waveform visualization options */
-const defaultOptions: Partial<WaveSurferOptions> = {
-  height: 40,
-  waveColor: '#6b7280', // gray-500
-  // Note: progressColor is resolved at runtime via getAccentHoverColor() because
-  // canvas fillStyle cannot resolve CSS custom properties.
-  cursorColor: '#f5f5f5', // --color-text
-  barWidth: 2,
-  barGap: 1,
-  barRadius: 2,
-  fillParent: true,
-  interact: true,
-};
+let instance: SvgWaveformInstance | null = null;
 
 /**
  * Initialize the waveform renderer in the given container element.
- * Creates a WaveSurfer instance with the configured visual options.
- * wavesurfer's audio output is muted so howler.js is the sole audio source.
+ * Creates an SVG waveform instance with the configured visual options.
  *
  * @param container - DOM element where the waveform will be rendered
- * @param options - Optional overrides for wavesurfer configuration
+ * @param options - Optional overrides for waveform configuration
  */
 export function init(
   container: HTMLElement,
-  options?: Partial<WaveSurferOptions>,
+  options?: SvgWaveformOptions,
 ): void {
   destroy();
-
-  ws = WaveSurfer.create({
-    ...defaultOptions,
-    progressColor: getAccentHoverColor(),
-    ...options,
-    container,
-  });
-
-  // Mute wavesurfer's audio — howler.js is the sole audio source
-  ws.setVolume(0);
+  instance = createSvgWaveform(container, options);
 }
 
 /**
- * Load an audio file into wavesurfer for waveform decoding and rendering.
- * The audio is decoded client-side to generate waveform peaks.
- * wavesurfer's volume is set to 0 to prevent double-playback with howler.js.
+ * Load pre-computed peak data and render waveform bars.
+ * Replaces the old loadAudio() which downloaded and decoded MP3 files client-side.
  *
- * @param url - URL of the audio file to decode and render
+ * @param peaks - Array of normalized peak values (0–1), typically ~200 values
  */
-export function loadAudio(url: string): void {
-  if (!ws) return;
-  ws.load(url);
-  // Re-ensure volume is 0 after loading
-  ws.setVolume(0);
+export function loadPeaks(peaks: number[]): void {
+  if (!instance) return;
+  instance.loadPeaks(peaks);
+}
+
+/**
+ * Backward-compatible alias. In the WaveSurfer era, this downloaded an MP3
+ * and decoded it client-side. Now it's a no-op — peaks must be loaded via
+ * loadPeaks(). Kept for API compatibility during migration.
+ *
+ * @deprecated Use loadPeaks() instead. This will be removed in a future refactor.
+ */
+export function loadAudio(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _url: string,
+): void {
+  // No-op: waveform data is now loaded via loadPeaks()
+  // The MP3 file is only fetched by Howler.js when the user clicks play
 }
 
 /**
  * Update the visual progress bar to reflect the current playback position.
- * Since wavesurfer is muted, this only updates the visual display.
  *
  * @param fraction - Playback position as a fraction of total duration (0–1)
  */
 export function setProgress(fraction: number): void {
-  if (!ws) return;
-  const clamped = Math.max(0, Math.min(1, fraction));
-  ws.seekTo(clamped);
+  if (!instance) return;
+  instance.setProgress(fraction);
 }
 
 /**
@@ -86,30 +77,16 @@ export function setProgress(fraction: number): void {
  * @returns Unsubscribe function
  */
 export function onSeek(callback: (fraction: number) => void): () => void {
-  if (!ws) return () => {};
-
-  return ws.on('interaction', (newTime: number) => {
-    const duration = ws!.getDuration();
-    if (duration > 0) {
-      callback(newTime / duration);
-    }
-  });
+  if (!instance) return () => {};
+  return instance.onSeek(callback);
 }
 
 /**
- * Get the WaveSurfer instance (for testing purposes only).
- * @internal
- */
-export function getWaveSurfer(): WaveSurfer | null {
-  return ws;
-}
-
-/**
- * Destroy the wavesurfer instance and clean up resources.
+ * Destroy the waveform renderer and clean up resources.
  */
 export function destroy(): void {
-  if (ws) {
-    ws.destroy();
-    ws = null;
+  if (instance) {
+    instance.destroy();
+    instance = null;
   }
 }

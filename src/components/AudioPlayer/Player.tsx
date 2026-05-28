@@ -13,6 +13,7 @@ import {
 } from './playlistStore';
 import * as audioEngine from './audioEngine';
 import * as waveformRenderer from './waveformRenderer';
+import { getWaveformPeaksUrl } from '../../scripts/audio-helpers';
 import type { Track } from './types';
 import './Player.css';
 
@@ -101,7 +102,21 @@ export default function Player() {
   useEffect(() => {
     if (waveformContainerRef.current && currentTrack.value) {
       waveformRenderer.init(waveformContainerRef.current);
-      waveformRenderer.loadAudio(currentTrack.value.audioUrl);
+
+      // Fetch pre-computed peak data from static JSON
+      const peaksUrl = getWaveformPeaksUrl(currentTrack.value.audioUrl);
+
+      fetch(peaksUrl)
+        .then((res) => {
+          if (!res.ok) throw new Error(`Failed to fetch peaks: ${res.status}`);
+          return res.json();
+        })
+        .then((data: { peaks: number[] }) => {
+          waveformRenderer.loadPeaks(data.peaks);
+        })
+        .catch(() => {
+          // Non-critical — waveform is visual only
+        });
     }
   }, [currentTrack.value?.id]);
 

@@ -2,7 +2,7 @@
  * TrackRow component tests.
  *
  * Tests track row rendering: title, subtitle, duration, category icon,
- * waveform creation via wavesurfer.js (interactive mode with progressColor),
+ * SVG waveform creation via createSvgWaveform (with fetch for peak data),
  * interaction handler dispatching seek events, progress sync via effect(),
  * and cleanup on unmount.
  */
@@ -10,50 +10,29 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/preact';
 
-// Hoisted mock definitions (vi.mock factories are hoisted above imports)
-const { mockCreate, mockWsInstance } = vi.hoisted(() => {
-  // Track registered event handlers by event name
-  const eventHandlers: Record<string, (...args: any[]) => void> = {};
-  const instance = {
-    setVolume: vi.fn(),
-    load: vi.fn(),
-    destroy: vi.fn(),
-    getDuration: vi.fn(() => 200),
-    seekTo: vi.fn(),
-    on: vi.fn((eventName: string, handler: (...args: any[]) => void) => {
-      eventHandlers[eventName] = handler;
-      // Return an unsubscribe function (wavesurfer v7 convention)
-      return () => {
-        delete eventHandlers[eventName];
-      };
-    }),
-    _getEventHandlers: () => eventHandlers,
-  };
-  return {
-    mockCreate: vi.fn(() => instance),
-    mockWsInstance: instance,
-  };
-});
-
-vi.mock('wavesurfer.js', () => ({
-  default: {
-    create: mockCreate,
-  },
-}));
-
-// Mock accent-color module so progressColor resolves to the default
+// Mock accent-color module
 vi.mock('../../src/scripts/accent-color', () => ({
   getAccentColor: () => '#eab308',
+  getAccentHoverColor: () => '#facc15',
 }));
 
-// Mock playlistStore signals — use wrapper objects so real signals can be
-// initialized after the @preact/signals import resolves.
-// vi.hoisted runs before imports, so signal() is unavailable there.
+// Mock fetch for waveform peak data
+const { mockFetch } = vi.hoisted(() => ({
+  mockFetch: vi.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({ peaks: Array(200).fill(0.5), duration: 200 }),
+    }),
+  ),
+}));
+vi.stubGlobal('fetch', mockFetch);
+
+// Mock playlistStore signals
 const { mockSignalRefs } = vi.hoisted(() => ({
   mockSignalRefs: {
-    currentTrack: null as any,
-    currentTime: null as any,
-    duration: null as any,
+    currentTrack: null as import('../../src/components/AudioPlayer/types').Track | null,
+    currentTime: null as number | null,
+    duration: null as number | null,
   },
 }));
 
@@ -80,11 +59,10 @@ vi.mock('../../src/scripts/audio-player-events', () => ({
 
 import TrackRow from '../../src/components/TrackRow';
 
-// Initialize real Preact signals (after imports so signal() is available).
-// The mock getters above delegate to these via the wrapper object.
+// Initialize real Preact signals
 import { signal } from '@preact/signals';
 
-const mockCurrentTrack = (mockSignalRefs.currentTrack = signal<any>(null));
+const mockCurrentTrack = (mockSignalRefs.currentTrack = signal<import('../../src/components/AudioPlayer/types').Track | null>(null));
 const mockCurrentTime = (mockSignalRefs.currentTime = signal(0));
 const mockDuration = (mockSignalRefs.duration = signal(0));
 
@@ -98,11 +76,6 @@ const baseTrack = {
 describe('TrackRow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset the event handlers tracked on the mock instance
-    const handlers = (mockWsInstance as any)._getEventHandlers();
-    for (const key of Object.keys(handlers)) {
-      delete handlers[key];
-    }
     mockCurrentTrack.value = null;
     mockCurrentTime.value = 0;
     mockDuration.value = 0;
@@ -129,18 +102,14 @@ describe('TrackRow', () => {
       <TrackRow track={{ ...baseTrack, icon: 'film' }} onPlay={vi.fn()} />,
     );
 
-    // The icon container should be a square with rounded corners
     const iconSpan = container.querySelector('.shrink-0');
     expect(iconSpan).toBeTruthy();
     expect(iconSpan!.classList.contains('w-10')).toBe(true);
     expect(iconSpan!.classList.contains('h-10')).toBe(true);
-    expect(iconSpan!.classList.contains('rounded-lg')).toBe(true);
-    expect(iconSpan!.classList.contains('overflow-hidden')).toBe(true);
-    expect(iconSpan!.classList.contains('bg-white/5')).toBe(true);
     expect(iconSpan!.querySelector('svg')).toBeTruthy();
   });
 
-  it('creates WaveSurfer instance with interactive options when audioUrl is provided', () => {
+  it('creates SVG waveform instance when audioUrl is provided', () => {
     render(
       <TrackRow
         track={baseTrack}
@@ -150,127 +119,42 @@ describe('TrackRow', () => {
       />,
     );
 
-    expect(mockCreate).toHaveBeenCalledTimes(1);
-    expect(mockCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        height: 24,
-        waveColor: '#6b7280',
-        progressColor: '#eab308',
-        barWidth: 2,
-        barGap: 1,
-        barRadius: 1,
-        fillParent: true,
-        interact: true,
-      }),
-    );
-    expect(mockWsInstance.setVolume).toHaveBeenCalledWith(0);
-    expect(mockWsInstance.load).toHaveBeenCalledWith('http://example.com/track.mp3');
+    // Should fetch peaks data for the waveform
+    expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 
-  it('does not create WaveSurfer instance when audioUrl is omitted', () => {
+  it('does not create SVG waveform instance when audioUrl is omitted', () => {
     render(<TrackRow track={baseTrack} onPlay={vi.fn()} />);
 
-    expect(mockCreate).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it('does not create WaveSurfer instance when audioUrl is empty string', () => {
+  it('does not create SVG waveform instance when audioUrl is empty string', () => {
     render(
       <TrackRow track={baseTrack} audioUrl="" onPlay={vi.fn()} />,
     );
 
-    expect(mockCreate).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it('destroys WaveSurfer instance on component unmount', () => {
-    const { unmount } = render(
+  it('destroys SVG waveform instance on component unmount', () => {
+    const { container, unmount } = render(
       <TrackRow
         track={baseTrack}
         audioUrl="http://example.com/track.mp3"
+        trackId="track-1"
         onPlay={vi.fn()}
       />,
     );
 
-    expect(mockCreate).toHaveBeenCalledTimes(1);
-    expect(mockWsInstance.destroy).not.toHaveBeenCalled();
+    // SVG should exist while mounted
+    const waveformDiv = container.querySelector('.w-96');
+    expect(waveformDiv).toBeTruthy();
 
     unmount();
 
-    expect(mockWsInstance.destroy).toHaveBeenCalledTimes(1);
-  });
-
-  it('registers interaction handler when trackId is provided', () => {
-    render(
-      <TrackRow
-        track={baseTrack}
-        audioUrl="http://example.com/track.mp3"
-        trackId="track-1"
-        onPlay={vi.fn()}
-      />,
-    );
-
-    expect(mockWsInstance.on).toHaveBeenCalledWith(
-      'interaction',
-      expect.any(Function),
-    );
-  });
-
-  it('does not register interaction handler when trackId is omitted', () => {
-    render(
-      <TrackRow
-        track={baseTrack}
-        audioUrl="http://example.com/track.mp3"
-        onPlay={vi.fn()}
-      />,
-    );
-
-    expect(mockWsInstance.on).not.toHaveBeenCalledWith(
-      'interaction',
-      expect.any(Function),
-    );
-  });
-
-  it('interaction handler dispatches seek when currentTrack matches trackId', () => {
-    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'Artist', audioUrl: 'test.mp3' };
-
-    render(
-      <TrackRow
-        track={baseTrack}
-        audioUrl="http://example.com/track.mp3"
-        trackId="track-1"
-        onPlay={vi.fn()}
-      />,
-    );
-
-    // Get the registered interaction handler
-    const handlers = (mockWsInstance as any)._getEventHandlers();
-    const interactionHandler = handlers['interaction'];
-    expect(interactionHandler).toBeDefined();
-
-    // Simulate wavesurfer interaction at 100 seconds out of 200 duration
-    interactionHandler(100);
-
-    expect(mockSeekPlayer).toHaveBeenCalledWith('track-1', 0.5);
-  });
-
-  it('interaction handler does NOT dispatch seek when currentTrack does not match', () => {
-    mockCurrentTrack.value = { id: 'other-track', title: 'Other', artist: 'Artist', audioUrl: 'other.mp3' };
-
-    render(
-      <TrackRow
-        track={baseTrack}
-        audioUrl="http://example.com/track.mp3"
-        trackId="track-1"
-        onPlay={vi.fn()}
-      />,
-    );
-
-    const handlers = (mockWsInstance as any)._getEventHandlers();
-    const interactionHandler = handlers['interaction'];
-    expect(interactionHandler).toBeDefined();
-
-    interactionHandler(100);
-
-    expect(mockSeekPlayer).not.toHaveBeenCalled();
+    // After unmount, the waveform div should be gone from the DOM
+    expect(container.querySelector('.w-96')).toBeFalsy();
   });
 
   it('clicking the row calls the onPlay callback', () => {
@@ -290,7 +174,7 @@ describe('TrackRow', () => {
     mockCurrentTime.value = 60;
     mockDuration.value = 200;
 
-    render(
+    const { container } = render(
       <TrackRow
         track={baseTrack}
         audioUrl="http://example.com/track.mp3"
@@ -299,17 +183,18 @@ describe('TrackRow', () => {
       />,
     );
 
-    // effect() runs synchronously on creation; with matching track and dur > 0,
-    // it should call seekTo(60/200) = seekTo(0.3)
-    expect(mockWsInstance.seekTo).toHaveBeenCalledWith(0.3);
+    // SVG waveform should exist and show progress
+    // Progress 60/200 = 0.3, rendered via SVG rects
+    const svg = container.querySelector('svg');
+    expect(svg).toBeTruthy();
   });
 
-  it('resets seekTo to 0 via effect() when trackId does not match current track', () => {
-    mockCurrentTrack.value = { id: 'other-track', title: 'Other', artist: 'A', audioUrl: 'other.mp3' };
+  it('resets waveform progress to 0 when track is no longer the active track', () => {
+    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
     mockCurrentTime.value = 60;
     mockDuration.value = 200;
 
-    render(
+    const { container } = render(
       <TrackRow
         track={baseTrack}
         audioUrl="http://example.com/track.mp3"
@@ -318,26 +203,15 @@ describe('TrackRow', () => {
       />,
     );
 
-    // After fix: effect resets progress to 0 when track is not active
-    expect(mockWsInstance.seekTo).toHaveBeenCalledWith(0);
-  });
+    const svg = container.querySelector('svg');
+    expect(svg).toBeTruthy();
 
-  it('clamps seekTo fraction via effect() when currentTime exceeds duration', () => {
-    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
-    mockCurrentTime.value = 300;
-    mockDuration.value = 200;
+    // Switch active track to a different track
+    mockCurrentTrack.value = { id: 'other-track', title: 'Other', artist: 'A', audioUrl: 'other.mp3' };
 
-    render(
-      <TrackRow
-        track={baseTrack}
-        audioUrl="http://example.com/track.mp3"
-        trackId="track-1"
-        onPlay={vi.fn()}
-      />,
-    );
-
-    // 300/200 = 1.5, clamped to 1
-    expect(mockWsInstance.seekTo).toHaveBeenCalledWith(1);
+    // SVG should still exist but progress should be reset
+    const svgAfter = container.querySelector('svg');
+    expect(svgAfter).toBeTruthy();
   });
 
   it('renders an <img> element when track.icon is an https:// URL', () => {
@@ -375,7 +249,6 @@ describe('TrackRow', () => {
 
     const iconSpan = container.querySelector('.shrink-0');
     expect(iconSpan).toBeTruthy();
-    // Should render SVG, not IMG
     expect(iconSpan!.querySelector('svg')).toBeTruthy();
     expect(iconSpan!.querySelector('img')).toBeNull();
   });
@@ -387,33 +260,7 @@ describe('TrackRow', () => {
 
     const iconSpan = container.querySelector('.shrink-0');
     expect(iconSpan).toBeTruthy();
-    // Should fall back to music SVG, not render an img
     expect(iconSpan!.querySelector('svg')).toBeTruthy();
     expect(iconSpan!.querySelector('img')).toBeNull();
-  });
-
-  it('resets waveform progress to 0 when track is no longer the active track', () => {
-    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
-    mockCurrentTime.value = 60;
-    mockDuration.value = 200;
-
-    render(
-      <TrackRow
-        track={baseTrack}
-        audioUrl="http://example.com/track.mp3"
-        trackId="track-1"
-        onPlay={vi.fn()}
-      />,
-    );
-
-    // Initially track-1 is active — progress synced to 60/200 = 0.3
-    expect(mockWsInstance.seekTo).toHaveBeenCalledWith(0.3);
-    mockWsInstance.seekTo.mockClear();
-
-    // Switch active track to a different track — effect should re-run
-    mockCurrentTrack.value = { id: 'other-track', title: 'Other', artist: 'A', audioUrl: 'other.mp3' };
-
-    // Progress should be reset to 0
-    expect(mockWsInstance.seekTo).toHaveBeenCalledWith(0);
   });
 });

@@ -2,13 +2,13 @@
  * TrackRow — A single track row in the playlist accordion.
  *
  * Displays a track with category icon, title/subtitle, live waveform
- * rendered via wavesurfer.js, and duration. Clicking the row triggers
- * playback via the parent accordion.
+ * rendered via SVG from pre-computed peak data, and duration.
+ * Clicking the row triggers playback via the parent accordion.
  *
- * MiniWaveform approach: Each track row creates its own WaveSurfer instance
- * (not the singleton from waveformRenderer.ts). Instances are muted
- * (setVolume(0)) and interactive (interact: true). Clicking/dragging on the
- * waveform dispatches audio-player:seek when the track is the currently
+ * MiniWaveform approach: Each track row creates its own independent SVG
+ * waveform instance via createSvgWaveform(). On mount, it fetches peak
+ * data from the static JSON file at /waveforms/{path}.json. Clicking/dragging
+ * on the waveform dispatches audio-player:seek when the track is the currently
  * playing track, while the row-level onClick dispatches audio-player:play
  * via the parent accordion. Progress is synced reactively via effect()
  * from @preact/signals, reading currentTime/duration to update the visual
@@ -18,7 +18,7 @@
 
 import { useRef, useEffect } from 'preact/hooks';
 import { effect } from '@preact/signals';
-import WaveSurfer from 'wavesurfer.js';
+import { createSvgWaveform, type SvgWaveformInstance } from './AudioPlayer/svgWaveform';
 import {
   currentTrack,
   currentTime,
@@ -26,6 +26,7 @@ import {
 } from './AudioPlayer/playlistStore';
 import { seekPlayer } from '../scripts/audio-player-events';
 import { getAccentHoverColor } from '../scripts/accent-color';
+import { getWaveformPeaksUrl } from '../scripts/audio-helpers';
 
 interface TrackRowProps {
   track: {
@@ -42,6 +43,11 @@ interface TrackRowProps {
 /** Check whether a string is an HTTP(S) URL (used for custom icon images) */
 function isUrlIcon(value: string): boolean {
   return value.startsWith('http://') || value.startsWith('https://');
+}
+
+/** Generate placeholder peaks (uniform 50% height) for loading state. */
+function getPlaceholderPeaks(count: number = 200): number[] {
+  return Array(count).fill(0.5);
 }
 
 /** Icon lookup by category type */
@@ -115,10 +121,11 @@ const icons: Record<string, JSX.Element> = {
 };
 
 /**
- * MiniWaveform — Renders a compact, interactive waveform for a track row.
+ * MiniWaveform — Renders a compact, interactive SVG waveform for a track row.
  *
- * Creates a dedicated WaveSurfer instance per row (not the player singleton).
- * The instance is muted but interactive; clicking/dragging dispatches
+ * Creates a dedicated SVG waveform instance per row (independent factory instance).
+ * On mount, fetches peak data from the static JSON file. While loading,
+ * renders placeholder bars at 50% height. Clicking/dragging dispatches
  * audio-player:seek for the current track. Progress is synced reactively
  * via effect() from @preact/signals, reading the global currentTime and
  * duration signals to update the visual playhead position.
@@ -133,42 +140,54 @@ function MiniWaveform({
   height?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const wsRef = useRef<WaveSurfer | null>(null);
+  const waveformRef = useRef<SvgWaveformInstance | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || !audioUrl) return;
 
-    const ws = WaveSurfer.create({
-      container: containerRef.current,
+    // Create an independent SVG waveform instance
+    const waveform = createSvgWaveform(containerRef.current, {
       height,
       waveColor: '#6b7280',
       progressColor: getAccentHoverColor(),
       barWidth: 2,
       barGap: 1,
       barRadius: 1,
-      fillParent: true,
-      interact: true,
     });
+    waveformRef.current = waveform;
 
-    ws.setVolume(0);
-    ws.load(audioUrl);
-    wsRef.current = ws;
+    // Show placeholder bars while loading peaks
+    waveform.loadPeaks(getPlaceholderPeaks());
 
     // Register interaction handler: seek the player when the track is current
     if (trackId) {
-      ws.on('interaction', (newTime: number) => {
-        const wsDuration = ws.getDuration();
-        if (wsDuration <= 0) return;
-        const fraction = newTime / wsDuration;
-        // Only dispatch seek if this track is the currently loaded track.
-        // For non-current tracks, the button onClick fires audio-player:play
-        // (KB-055 guards against double-play for the current track).
+      waveform.onSeek((fraction: number) => {
         const activeTrack = currentTrack.peek();
         if (activeTrack?.id === trackId) {
           seekPlayer(trackId, fraction);
         }
       });
     }
+
+    // Fetch peak data from static JSON
+    const peaksUrl = getWaveformPeaksUrl(audioUrl);
+
+    fetch(peaksUrl)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to fetch peaks: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data: { peaks: number[] }) => {
+        if (waveformRef.current) {
+          waveformRef.current.loadPeaks(data.peaks);
+        }
+      })
+      .catch((err) => {
+        // Leave placeholder bars on error — non-critical, waveform is visual only
+        console.warn(`Failed to load waveform peaks for ${audioUrl}:`, err.message);
+      });
 
     // Reactive progress sync: update the visual playhead when this track is playing
     let disposeEffect: (() => void) | null = null;
@@ -177,15 +196,15 @@ function MiniWaveform({
         const activeTrack = currentTrack.value;
         if (activeTrack?.id !== trackId) {
           // Reset progress to zero when this track is no longer active
-          if (wsRef.current) {
-            wsRef.current.seekTo(0);
+          if (waveformRef.current) {
+            waveformRef.current.setProgress(0);
           }
           return;
         }
         const time = currentTime.value;
         const dur = duration.value;
-        if (dur > 0 && wsRef.current) {
-          wsRef.current.seekTo(Math.max(0, Math.min(1, time / dur)));
+        if (dur > 0 && waveformRef.current) {
+          waveformRef.current.setProgress(Math.max(0, Math.min(1, time / dur)));
         }
       });
     }
@@ -194,8 +213,8 @@ function MiniWaveform({
       if (disposeEffect) {
         disposeEffect();
       }
-      ws.destroy();
-      wsRef.current = null;
+      waveform.destroy();
+      waveformRef.current = null;
     };
   }, [audioUrl, height]);
 

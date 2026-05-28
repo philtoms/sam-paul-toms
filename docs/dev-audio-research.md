@@ -6,7 +6,7 @@
 
 ## Problem
 
-During local development, the audio player requires audio files served from a URL. In production, these come from Cloudflare R2 via a public URL. Locally, the default `R2_PUBLIC_URL=http://localhost:8788/r2` expects Wrangler's R2 dev proxy to be running — which requires bucket setup and actual audio files in R2.
+During local development, the audio player requires audio files served from a URL. In production, these come from Cloudflare R2 via a public URL. Locally, the default `R2_PUBLIC_URL=http://localhost:4321/r2` expects Wrangler's R2 dev proxy to be running — which requires bucket setup and actual audio files in R2.
 
 Developers need a way to work on the audio player UI and logic without setting up R2.
 
@@ -15,13 +15,13 @@ Developers need a way to work on the audio player UI and logic without setting u
 1. **Frontmatter** defines relative paths: `audioFile: releases/echoes-ep/01-reverberations.mp3`
 2. **`resolveAudioUrl()`** (`src/scripts/audio-helpers.ts`) prepends `R2_PUBLIC_URL`:
    ```
-   http://localhost:8788/r2/releases/echoes-ep/01-reverberations.mp3
+   http://localhost:4321/r2/releases/echoes-ep/01-reverberations.mp3
    ```
 3. **`buildSources()`** (`src/components/AudioPlayer/audioEngine.ts`) generates OGG + MP3 fallback:
    ```
    [
-     "http://localhost:8788/r2/releases/echoes-ep/01-reverberations.ogg",
-     "http://localhost:8788/r2/releases/echoes-ep/01-reverberations.mp3"
+     "http://localhost:4321/r2/releases/echoes-ep/01-reverberations.ogg",
+     "http://localhost:4321/r2/releases/echoes-ep/01-reverberations.mp3"
    ]
    ```
 4. **Howler.js** tries OGG first, falls back to MP3
@@ -48,11 +48,13 @@ http://localhost:4321/audio-samples/releases/echoes-ep/01-reverberations.mp3
 ### Setup
 
 1. **Create directory structure:**
+
    ```bash
    mkdir -p public/audio-samples/releases/echoes-ep
    ```
 
 2. **Add sample MP3 files** (small clips, ~30 seconds each, ~500KB each):
+
    ```
    public/audio-samples/releases/echoes-ep/01-reverberations.mp3
    public/audio-samples/releases/echoes-ep/02-hollow.mp3
@@ -74,22 +76,23 @@ http://localhost:4321/audio-samples/releases/echoes-ep/01-reverberations.mp3
 ```
 
 OGG fallback URL (will 404, Howler falls back to MP3):
+
 ```
 http://localhost:4321/audio-samples/releases/echoes-ep/01-reverberations.ogg
 ```
 
 ### Pros
 
-| Factor | Assessment |
-|--------|-----------|
-| **Setup complexity** | Trivial — mkdir + copy files |
-| **No external service** | ✅ Works offline |
-| **No CORS issues** | ✅ Same origin as dev server |
-| **Format support** | Any format Astro can serve (MP3, OGG, WAV) |
-| **Code changes needed** | ❌ None — just change `R2_PUBLIC_URL` in `.env` |
-| **Latency** | Instant (local filesystem) |
-| **Reliability** | Excellent — no network dependency |
-| **.gitignore** | Add `public/audio-samples/` to avoid committing large binaries |
+| Factor                  | Assessment                                                     |
+| ----------------------- | -------------------------------------------------------------- |
+| **Setup complexity**    | Trivial — mkdir + copy files                                   |
+| **No external service** | ✅ Works offline                                               |
+| **No CORS issues**      | ✅ Same origin as dev server                                   |
+| **Format support**      | Any format Astro can serve (MP3, OGG, WAV)                     |
+| **Code changes needed** | ❌ None — just change `R2_PUBLIC_URL` in `.env`                |
+| **Latency**             | Instant (local filesystem)                                     |
+| **Reliability**         | Excellent — no network dependency                              |
+| **.gitignore**          | Add `public/audio-samples/` to avoid committing large binaries |
 
 ### Cons
 
@@ -121,12 +124,14 @@ Run a lightweight HTTP server serving a directory of sample audio files on a cho
 ### Setup
 
 1. **Create audio directory:**
+
    ```bash
    mkdir -p ~/dev-audio/releases/echoes-ep
    # Copy sample MP3 files into this directory
    ```
 
 2. **Start server:**
+
    ```bash
    cd ~/dev-audio
    python3 -m http.server 8888
@@ -145,13 +150,13 @@ http://localhost:8888/releases/echoes-ep/01-reverberations.mp3
 
 ### Pros
 
-| Factor | Assessment |
-|--------|-----------|
-| **Setup complexity** | Low — one command |
-| **No external service** | ✅ Works offline |
-| **CORS** | ⚠️ Python's http.server doesn't send CORS headers by default. May need a wrapper script. |
-| **Code changes needed** | ❌ None |
-| **Separation** | ✅ Audio files completely separate from Astro project |
+| Factor                  | Assessment                                                                               |
+| ----------------------- | ---------------------------------------------------------------------------------------- |
+| **Setup complexity**    | Low — one command                                                                        |
+| **No external service** | ✅ Works offline                                                                         |
+| **CORS**                | ⚠️ Python's http.server doesn't send CORS headers by default. May need a wrapper script. |
+| **Code changes needed** | ❌ None                                                                                  |
+| **Separation**          | ✅ Audio files completely separate from Astro project                                    |
 
 ### Cons
 
@@ -196,18 +201,19 @@ Host sample audio files on a free external service and point `R2_PUBLIC_URL` at 
 3. Use the raw/download URL as `R2_PUBLIC_URL`
 
 **URL pattern:**
+
 ```
 https://raw.githubusercontent.com/<user>/sam-dev-audio/main/audio/releases/echoes-ep/01-reverberations.mp3
 ```
 
-| Factor | Assessment |
-|--------|-----------|
-| **Setup complexity** | Medium — create repo, upload files |
-| **CORS** | ⚠️ `raw.githubusercontent.com` sends `Access-Control-Allow-Origin: *` ✅ |
-| **File size limit** | 100MB per file via web, 2GB via git-lfs |
-| **Rate limit** | 60 requests/hour unauthenticated (more than enough for dev) |
-| **Code changes needed** | ❌ None |
-| **Offline** | ❌ Requires internet |
+| Factor                  | Assessment                                                               |
+| ----------------------- | ------------------------------------------------------------------------ |
+| **Setup complexity**    | Medium — create repo, upload files                                       |
+| **CORS**                | ⚠️ `raw.githubusercontent.com` sends `Access-Control-Allow-Origin: *` ✅ |
+| **File size limit**     | 100MB per file via web, 2GB via git-lfs                                  |
+| **Rate limit**          | 60 requests/hour unauthenticated (more than enough for dev)              |
+| **Code changes needed** | ❌ None                                                                  |
+| **Offline**             | ❌ Requires internet                                                     |
 
 #### 3b. Cloudflare R2 Free Tier (Actual R2, but separate dev bucket)
 
@@ -217,18 +223,19 @@ https://raw.githubusercontent.com/<user>/sam-dev-audio/main/audio/releases/echoe
 4. Point `R2_PUBLIC_URL` at the dev bucket's public URL
 
 **URL pattern:**
+
 ```
 https://pub-<dev-bucket-id>.r2.dev/releases/echoes-ep/01-reverberations.mp3
 ```
 
-| Factor | Assessment |
-|--------|-----------|
-| **Setup complexity** | Medium — Cloudflare dashboard setup |
-| **CORS** | ✅ Fully configurable |
-| **Free tier** | 10GB storage, 10M reads/month |
-| **Code changes needed** | ❌ None |
-| **Offline** | ❌ Requires internet |
-| **Fidelity** | ✅ Identical to production setup |
+| Factor                  | Assessment                          |
+| ----------------------- | ----------------------------------- |
+| **Setup complexity**    | Medium — Cloudflare dashboard setup |
+| **CORS**                | ✅ Fully configurable               |
+| **Free tier**           | 10GB storage, 10M reads/month       |
+| **Code changes needed** | ❌ None                             |
+| **Offline**             | ❌ Requires internet                |
+| **Fidelity**            | ✅ Identical to production setup    |
 
 #### 3c. Internet Archive
 
@@ -236,18 +243,19 @@ https://pub-<dev-bucket-id>.r2.dev/releases/echoes-ep/01-reverberations.mp3
 2. Use the download URLs
 
 **URL pattern:**
+
 ```
 https://archive.org/download/sam-dev-audio/releases/echoes-ep/01-reverberations.mp3
 ```
 
-| Factor | Assessment |
-|--------|-----------|
-| **Setup complexity** | Medium — account + upload |
-| **CORS** | ⚠️ Internet Archive sends permissive CORS headers ✅ |
-| **Rate limit** | Reasonable for dev use |
-| **Code changes needed** | ❌ None |
-| **Offline** | ❌ Requires internet |
-| **Permanence** | ⚠️ IA may flag inactive items |
+| Factor                  | Assessment                                           |
+| ----------------------- | ---------------------------------------------------- |
+| **Setup complexity**    | Medium — account + upload                            |
+| **CORS**                | ⚠️ Internet Archive sends permissive CORS headers ✅ |
+| **Rate limit**          | Reasonable for dev use                               |
+| **Code changes needed** | ❌ None                                              |
+| **Offline**             | ❌ Requires internet                                 |
+| **Permanence**          | ⚠️ IA may flag inactive items                        |
 
 ---
 
@@ -284,16 +292,16 @@ tracks:
 
 ## Comparison Matrix
 
-| Option | Offline | CORS-Safe | Setup Effort | Code Changes | Fidelity to Prod |
-|--------|---------|-----------|-------------|-------------|-----------------|
-| 1. Astro `public/` | ✅ | ✅ | Low | None | High |
-| 2. Static file server | ✅ | ⚠️* | Low | None | Medium |
-| 3a. GitHub raw | ❌ | ✅ | Medium | None | High |
-| 3b. R2 dev bucket | ❌ | ✅ | Medium | None | **Exact** |
-| 3c. Internet Archive | ❌ | ✅ | Medium | None | High |
-| 4. Absolute URLs | ❌ | Varies | None | None | Medium |
+| Option                | Offline | CORS-Safe | Setup Effort | Code Changes | Fidelity to Prod |
+| --------------------- | ------- | --------- | ------------ | ------------ | ---------------- |
+| 1. Astro `public/`    | ✅      | ✅        | Low          | None         | High             |
+| 2. Static file server | ✅      | ⚠️\*      | Low          | None         | Medium           |
+| 3a. GitHub raw        | ❌      | ✅        | Medium       | None         | High             |
+| 3b. R2 dev bucket     | ❌      | ✅        | Medium       | None         | **Exact**        |
+| 3c. Internet Archive  | ❌      | ✅        | Medium       | None         | High             |
+| 4. Absolute URLs      | ❌      | Varies    | None         | None         | Medium           |
 
-*With CORS wrapper script: ✅
+\*With CORS wrapper script: ✅
 
 ---
 
@@ -306,12 +314,14 @@ tracks:
 ### Setup Steps
 
 1. **Add to `.gitignore`:**
+
    ```
    # Dev audio samples (large binary files)
    public/audio-samples/
    ```
 
 2. **Create a setup script** (optional, for convenience):
+
    ```bash
    #!/bin/bash
    # scripts/setup-dev-audio.sh
@@ -335,6 +345,7 @@ tracks:
    ```
 
 3. **Set `.env`:**
+
    ```
    R2_PUBLIC_URL=http://localhost:4321/audio-samples
    ```
@@ -347,8 +358,8 @@ tracks:
 
 ### Configuration Summary
 
-| Variable | Production | Development |
-|----------|-----------|-------------|
+| Variable        | Production                | Development                           |
+| --------------- | ------------------------- | ------------------------------------- |
 | `R2_PUBLIC_URL` | `https://pub-xxxx.r2.dev` | `http://localhost:4321/audio-samples` |
 
 ### No Code Changes Required
@@ -375,3 +386,53 @@ These are noted for potential future tasks:
 - A npm script (`npm run setup:dev-audio`) that automates sample file generation
 - Adding OGG support to the generated sample files (double the files, better format coverage)
 - A `.env.development` file pattern so dev audio config is team-shareable without modifying `.env.example`
+
+---
+
+## Build-Time Waveform Peak Generation
+
+**Task:** KB-081
+**Date:** 2026-05-28
+
+### Overview
+
+Waveform visualization moved from client-side (WaveSurfer.js) to server-side (build-time) pre-computation. Instead of downloading the full MP3 to the browser just to display waveform bars, a build script decodes audio files and writes normalized peak data as static JSON files. The client renders lightweight SVG bars from this peak data.
+
+### How It Works
+
+1. **Build script** (`scripts/generate-waveforms.ts`) reads content files, fetches audio, decodes via ffmpeg, computes 200 normalized peaks, and writes JSON to `public/waveforms/`
+2. **Static serving** — Astro automatically serves everything in `public/` at root, so `public/waveforms/works/documentary/01.json` is served at `/waveforms/works/documentary/01.json`
+3. **Client-side rendering** — SVG waveform (`src/components/AudioPlayer/svgWaveform.ts`) fetches the lightweight JSON (~1-2KB) on mount and renders `<rect>` bars
+4. **Audio engine unchanged** — Howler.js still fetches the MP3 only when the user clicks play
+
+### Usage
+
+```bash
+# Generate waveform peak data for all tracks
+npm run generate:waveforms
+
+# This creates files like:
+# public/waveforms/works/documentary/01-the-weight-of-water.json
+# public/waveforms/releases/midnight-sessions/01-dusk.json
+```
+
+### Output Format
+
+```json
+{
+  "peaks": [0.12, 0.45, 0.78, ...],
+  "duration": 222
+}
+```
+
+### Incremental Builds
+
+The script skips files that already have a corresponding JSON file in `public/waveforms/`. To regenerate, delete the relevant JSON files and re-run.
+
+### Path Convention
+
+The build script uses the raw `audioFile` path from content frontmatter (e.g., `works/documentary/01-the-weight-of-water.mp3`) to create `public/waveforms/works/documentary/01-the-weight-of-water.json`. The runtime helper `getWaveformPeaksUrl()` (in `src/scripts/audio-helpers.ts`) derives the same path from the full audio URL by finding the content directory segment (`works/` or `releases/`) in the URL.
+
+### Architecture Decision
+
+**Why build-time, not runtime API endpoint:** Cloudflare Workers have no Web Audio API and no built-in MP3 decoder. Adding a WASM decoder to the Worker bundle would increase cold-start time and complexity. Since audio files never change, peak data is deterministic and should be pre-computed once at build time. This also means zero runtime latency for waveform display.

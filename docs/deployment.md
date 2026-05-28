@@ -200,7 +200,7 @@ npx wrangler r2 object put sam-audio/releases/test/01-demo.mp3 \
 npx wrangler pages dev -- npm run dev
 ```
 
-This starts a local Cloudflare Pages emulator with R2 available at `http://localhost:8788/r2`. The `R2_PUBLIC_URL=http://localhost:8788/r2` in `.env` makes audio files accessible.
+This starts a local Cloudflare Pages emulator with R2 available at `http://localhost:4321/r2`. The `R2_PUBLIC_URL=http://localhost:4321/r2` in `.env` makes audio files accessible.
 
 ### Simpler dev without R2
 

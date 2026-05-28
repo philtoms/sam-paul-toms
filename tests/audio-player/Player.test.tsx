@@ -18,14 +18,30 @@ vi.mock('../../src/components/AudioPlayer/audioEngine', () => ({
 vi.mock('../../src/components/AudioPlayer/waveformRenderer', () => ({
   init: vi.fn(),
   loadAudio: vi.fn(),
+  loadPeaks: vi.fn(),
   setProgress: vi.fn(),
   onSeek: vi.fn(() => vi.fn()),
   destroy: vi.fn(),
 }));
 
+// Mock fetch for waveform peaks
+const mockFetch = vi.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ peaks: Array(200).fill(0.5), duration: 200 }),
+  }),
+);
+vi.stubGlobal('fetch', mockFetch);
+
+// Mock audio-helpers
+vi.mock('../../src/scripts/audio-helpers', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getWaveformPeaksUrl: (_audioUrl: string) => '/waveforms/test.json',
+}));
+
 // Mock playlistStore signals for testing
 let mockPlaybackState = 'idle';
-let mockCurrentTrack: any = null;
+let mockCurrentTrack: import('../../src/components/AudioPlayer/types').Track | null = null;
 let mockIsPlaying = false;
 let mockVolume = 0.8;
 let mockCurrentTime = 0;
@@ -351,14 +367,16 @@ describe('Player', () => {
     document.head.removeChild(styleEl);
   });
 
-  it('calls waveformRenderer.loadAudio with track audioUrl when a track is loaded', () => {
+  it('fetches waveform peaks and calls loadPeaks when a track is loaded', () => {
     mockPlaybackState = 'paused';
     mockCurrentTrack = mockTrack;
 
     render(<Player />);
 
-    expect(waveformRenderer.loadAudio).toHaveBeenCalledWith(
-      mockTrack.audioUrl,
+    expect(waveformRenderer.init).toHaveBeenCalled();
+    // Player now fetches peaks JSON instead of loading audio directly
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/waveforms/'),
     );
   });
 });
