@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "test:watch": "vitest",
     "clean:worktrees": "git worktree list --porcelain | grep '^worktree ' | grep -v $(pwd) | cut -d' ' -f2 | xargs -I {} git worktree remove '{}' && git branch --list 'kb/*' | sed 's/^..//' | xargs git branch -D",
-    "generate:waveforms": "R2_PUBLIC_URL=${R2_PUBLIC_URL:-public/audio-samples} node scripts/generate-waveforms.cjs"
+    "generate:waveforms": "R2_PUBLIC_URL=${R2_PUBLIC_URL:-public/audio-samples} node scripts/generate-waveforms.cjs",
+    "wav2mp3": "node scripts/wav2mp3.cjs"
   },
   "keywords": [],
   "author": "",
