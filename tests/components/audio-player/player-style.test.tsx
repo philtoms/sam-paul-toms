@@ -158,9 +158,9 @@ describe('Player Style', () => {
     expect(childClasses).toEqual([
       'audio-player-track-info',
       'audio-player-transport',
-      'audio-player-time',
+      'audio-player-time audio-player-time--current',
       'audio-player-waveform',
-      'audio-player-time',
+      'audio-player-time audio-player-time--total',
       'audio-player-volume',
     ]);
   });

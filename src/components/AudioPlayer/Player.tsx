@@ -359,13 +359,13 @@ export default function Player() {
       </div>
 
       {/* Current time */}
-      <span class="audio-player-time">{fmt(currentTime.value)}</span>
+      <span class="audio-player-time audio-player-time--current">{fmt(currentTime.value)}</span>
 
       {/* Waveform area (flexible center) */}
       <div ref={waveformContainerRef} class="audio-player-waveform" />
 
       {/* Total time */}
-      <span class="audio-player-time">{fmt(duration.value)}</span>
+      <span class="audio-player-time audio-player-time--total">{fmt(duration.value)}</span>
 
       {/* Volume (right) */}
       <div class="audio-player-volume">

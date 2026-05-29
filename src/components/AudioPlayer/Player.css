@@ -270,6 +270,12 @@
   padding-bottom: 5rem;
 }
 
+@media (max-width: 639px) {
+  .audio-player-body-padding {
+    padding-bottom: 7rem;
+  }
+}
+
 /* Responsive: tablet / small desktop */
 @media (max-width: 860px) {
   .audio-player-bar--expanded {
@@ -282,10 +288,20 @@
 @media (max-width: 639px) {
   .audio-player-bar--expanded {
     grid-template-columns: 1fr auto auto;
-    grid-template-areas: 'track transport volume';
-    gap: 0.5rem;
-    height: 56px;
-    padding: 0 0.75rem;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      'track transport volume'
+      'time-start waveform time-end';
+    gap: 0.25rem 0.5rem;
+    height: auto;
+    padding: 0.5rem 0.75rem;
+    border-radius: 1rem;
+  }
+
+  /* Fix pseudo-elements to match reduced border-radius */
+  .audio-player-bar--expanded::before,
+  .audio-player-bar--expanded::after {
+    border-radius: 1rem;
   }
 
   .audio-player-track-info {
@@ -303,16 +319,28 @@
     padding: 0.25rem;
   }
 
+  /* Waveform: show on second row, reduced height */
+  .audio-player-waveform {
+    grid-area: waveform;
+    height: 28px;
+    min-width: 60px;
+  }
+
+  /* Time displays on second row */
+  .audio-player-time--current {
+    grid-area: time-start;
+    display: block;
+    align-self: center;
+  }
+
+  .audio-player-time--total {
+    grid-area: time-end;
+    display: block;
+    align-self: center;
+  }
+
   /* Hide elements that don't fit on mobile */
   .audio-player-track-info__icon {
-    display: none;
-  }
-
-  .audio-player-waveform {
-    display: none;
-  }
-
-  .audio-player-time {
     display: none;
   }
 
