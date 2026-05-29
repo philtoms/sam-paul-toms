@@ -290,7 +290,7 @@
     grid-template-columns: 1fr auto auto;
     grid-template-rows: auto auto;
     grid-template-areas:
-      'track transport volume'
+      'track volume transport'
       'time-start waveform time-end';
     gap: 0.25rem 0.5rem;
     height: auto;
@@ -302,6 +302,11 @@
   .audio-player-bar--expanded::before,
   .audio-player-bar--expanded::after {
     border-radius: 1rem;
+  }
+
+  /* Crop the top-left area of the banner on mobile instead of bottom */
+  .audio-player-bar--expanded::before {
+    background-position: 0 0;
   }
 
   .audio-player-track-info {

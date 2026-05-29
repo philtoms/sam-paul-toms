@@ -14,6 +14,59 @@ const playerCss = readFileSync(playerCssPath, 'utf-8');
 const globalCssPath = resolve(__dirname, '../../src/styles/global.css');
 const globalCss = readFileSync(globalCssPath, 'utf-8');
 
+describe('Mobile Layout (≤430px) — KB-084', () => {
+  describe('Step 1: All social bar elements centered on mobile', () => {
+    it('outer flex container has max-[430px]:justify-center class', () => {
+      const divMatch = socialLinksBar.match(
+        /class="([^"]*flex-wrap[^"]*)"/,
+      );
+      expect(divMatch).not.toBeNull();
+      expect(divMatch![1]).toContain('max-[430px]:justify-center');
+    });
+
+    it('all social bar elements (Play All, social links, contact) are centered as a group at ≤430px', () => {
+      // The parent container centers all wrapped rows — class comes before data-social-links-bar
+      const containerMatch = socialLinksBar.match(
+        /class="([^"]*flex-wrap[^"]*)"[^>]*data-social-links-bar/s,
+      );
+      expect(containerMatch).not.toBeNull();
+      expect(containerMatch![1]).toContain('max-[430px]:justify-center');
+    });
+  });
+
+  describe('Step 2: Transport controls moved right in mobile player grid', () => {
+    it('mobile grid first row has transport after volume (track volume transport)', () => {
+      // Extract the mobile grid-template-areas
+      const mobileBlockMatch = playerCss.match(
+        /@media\s*\(\s*max-width:\s*639px\s*\)[\s\S]*?grid-template-areas:\s*([\s\S]*?);/,
+      );
+      expect(mobileBlockMatch).not.toBeNull();
+      const areas = mobileBlockMatch![1].trim();
+      // First row should be 'track volume transport'
+      const firstRowMatch = areas.match(/'track\s+volume\s+transport'/);
+      expect(firstRowMatch).not.toBeNull();
+    });
+  });
+
+  describe('Step 3: Player bar background-position responsive', () => {
+    it('mobile override changes ::before background-position to 0 0', () => {
+      // Find the mobile media query block
+      const mobileMediaMatch = playerCss.match(
+        /@media\s*\(\s*max-width:\s*639px\s*\)[\s\S]*?\.audio-player-bar--expanded::before\s*\{[^}]*background-position:\s*0\s+0[^}]*\}/s,
+      );
+      expect(mobileMediaMatch).not.toBeNull();
+    });
+
+    it('desktop ::before remains background-position: 0 85%', () => {
+      // The desktop rule (outside media query) should still have 0 85%
+      const desktopBeforeMatch = playerCss.match(
+        /\.audio-player-bar--expanded::before\s*\{[^}]*background-position:\s*0\s+85%/,
+      );
+      expect(desktopBeforeMatch).not.toBeNull();
+    });
+  });
+});
+
 describe('Mobile Layout (≤430px) — KB-083', () => {
   describe('Step 1: Bio text smaller on mobile', () => {
     it('CompactBio uses text-lg at default with max-[430px]:text-sm override', () => {
