@@ -35,15 +35,15 @@ describe('Mobile Layout (≤430px) — KB-084', () => {
   });
 
   describe('Step 2: Transport controls moved right in mobile player grid', () => {
-    it('mobile grid first row has transport after volume (track volume transport)', () => {
+    it('mobile grid first row has track spanning three columns with transport at far right', () => {
       // Extract the mobile grid-template-areas
       const mobileBlockMatch = playerCss.match(
         /@media\s*\(\s*max-width:\s*639px\s*\)[\s\S]*?grid-template-areas:\s*([\s\S]*?);/,
       );
       expect(mobileBlockMatch).not.toBeNull();
       const areas = mobileBlockMatch![1].trim();
-      // First row should be 'track volume transport'
-      const firstRowMatch = areas.match(/'track\s+volume\s+transport'/);
+      // First row should be 'track track track transport'
+      const firstRowMatch = areas.match(/'track\s+track\s+track\s+transport'/);
       expect(firstRowMatch).not.toBeNull();
     });
   });
@@ -172,5 +172,39 @@ describe('Mobile Layout (≤430px) — KB-083', () => {
       );
       expect(defaultSectionMatch).not.toBeNull();
     });
+  });
+});
+
+describe('Mobile Player Grid — KB-085', () => {
+  it('first row has track spanning three columns with transport at far right', () => {
+    const mobileBlockMatch = playerCss.match(
+      /@media\s*\(\s*max-width:\s*639px\s*\)[\s\S]*?grid-template-areas:\s*([\s\S]*?);/,
+    );
+    expect(mobileBlockMatch).not.toBeNull();
+    const areas = mobileBlockMatch![1].trim();
+    const firstRowMatch = areas.match(/'track\s+track\s+track\s+transport'/);
+    expect(firstRowMatch).not.toBeNull();
+  });
+
+  it('second row has volume on same line as waveform', () => {
+    const mobileBlockMatch = playerCss.match(
+      /@media\s*\(\s*max-width:\s*639px\s*\)[\s\S]*?grid-template-areas:\s*([\s\S]*?);/,
+    );
+    expect(mobileBlockMatch).not.toBeNull();
+    const areas = mobileBlockMatch![1].trim();
+    const secondRowMatch = areas.match(/'time-start\s+waveform\s+volume\s+time-end'/);
+    expect(secondRowMatch).not.toBeNull();
+  });
+
+  it('mobile grid uses 4 columns', () => {
+    // Find the mobile block by looking for the grid-template-areas that are unique to mobile,
+    // then capture the grid-template-columns from the same rule block
+    const mobileBlockMatch = playerCss.match(
+      /grid-template-columns:\s*(auto\s+1fr\s+auto\s+auto)\s*;\s*\n\s*grid-template-rows/,
+    );
+    expect(mobileBlockMatch).not.toBeNull();
+    const cols = mobileBlockMatch![1].trim().split(/\s+/);
+    expect(cols.length).toBe(4);
+    expect(cols).toEqual(['auto', '1fr', 'auto', 'auto']);
   });
 });

@@ -287,11 +287,11 @@
 /* Responsive: mobile */
 @media (max-width: 639px) {
   .audio-player-bar--expanded {
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: auto 1fr auto auto;
     grid-template-rows: auto auto;
     grid-template-areas:
-      'track volume transport'
-      'time-start waveform time-end';
+      'track track track transport'
+      'time-start waveform time-end volume';
     gap: 0.25rem 0.5rem;
     height: auto;
     padding: 0.5rem 0.75rem;
