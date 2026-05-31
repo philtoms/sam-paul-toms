@@ -60,7 +60,7 @@ describe('HeroBanner fixed-position structure', () => {
   });
 
   it('contains the banner cover image', () => {
-    expect(hero).toContain('src="/images/banner/spt_low_res.png"');
+    expect(hero).toContain('src="/images/banner/SPT_v111.png"');
     expect(hero).toContain('object-cover');
   });
 

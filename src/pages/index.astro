@@ -13,7 +13,13 @@ import type { Track } from '../components/AudioPlayer/types';
 const aboutEntries = await getCollection('about');
 const aboutEntry = aboutEntries[0];
 const { Content: AboutContent } = await render(aboutEntry);
-const { title: aboutTitle, photo: aboutPhoto, photoAlt: aboutPhotoAlt, genreTags: aboutGenreTags, pressQuotes: aboutPressQuotes } = aboutEntry.data;
+const {
+  title: aboutTitle,
+  photo: aboutPhoto,
+  photoAlt: aboutPhotoAlt,
+  genreTags: aboutGenreTags,
+  pressQuotes: aboutPressQuotes,
+} = aboutEntry.data;
 
 // Fetch works sections in display order
 const sectionOrder = [
@@ -62,7 +68,7 @@ const youtubeUrl = 'https://www.youtube.com/watch?v=xlt63O1YvSM';
 
 // Bio summary
 const bioSummary =
-  'Sam is a multidisciplinary artist and producer based in the spaces between genres. Drawing from a deep well of influences, Sam crafts sound worlds that are at once intimate and expansive.';
+  'Sam Paul Toms is an award-nominated London-based composer, producer, and multi-instrumentalist. Specializing in emotive music for media, Sam Paul Toms has created scores for dramatic and documentary film, idents, trailers, and more.';
 ---
 
 <BaseLayout
@@ -78,7 +84,9 @@ const bioSummary =
 >
   <HeroBanner />
 
-  <main class="relative z-10 mt-[calc(100vw*9/16-4rem)] md:mt-[calc(100vw*9/21-4rem)] max-w-[1052px] mx-auto">
+  <main
+    class="relative z-10 mt-[calc(100vw*9/16-4rem)] md:mt-[calc(100vw*9/21-4rem)] max-w-[1052px] mx-auto"
+  >
     {/* Bio Section */}
     <section class="section">
       <div class="container">

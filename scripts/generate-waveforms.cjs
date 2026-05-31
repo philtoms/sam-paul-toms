@@ -213,7 +213,9 @@ function main() {
     console.log(`     Source: ${audioPath}`);
 
     try {
-      const { peaks, duration } = computePeaks(audioPath);
+      const { peaks, duration } = computePeaks(
+        path.join('public/audio-samples', entry.audioFile),
+      );
 
       const jsonOutput = JSON.stringify({ peaks, duration }, null, 2);
       fs.writeFileSync(outputAbsPath, jsonOutput, 'utf-8');

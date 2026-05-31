@@ -20,14 +20,32 @@ import './Player.css';
 /** Icon lookup by category type */
 const categoryIcons: Record<string, JSX.Element> = {
   music: (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="audio-player-icon">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="audio-player-icon"
+    >
       <path d="M9 18V5l12-2v13" />
       <circle cx="6" cy="18" r="3" />
       <circle cx="18" cy="16" r="3" />
     </svg>
   ),
   film: (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="audio-player-icon">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="audio-player-icon"
+    >
       <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
       <line x1="7" y1="2" x2="7" y2="22" />
       <line x1="17" y1="2" x2="17" y2="22" />
@@ -39,21 +57,43 @@ const categoryIcons: Record<string, JSX.Element> = {
     </svg>
   ),
   tv: (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="audio-player-icon">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="audio-player-icon"
+    >
       <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
       <polyline points="17 2 12 7 7 2" />
     </svg>
   ),
   trailer: (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="audio-player-icon">
-      <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      class="audio-player-icon"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
+        clip-rule="evenodd"
+      />
     </svg>
   ),
 };
 
 /** Check whether a string is an HTTP(S) URL (used for custom icon images) */
 function isUrlIcon(value: string): boolean {
-  return value.startsWith('http://') || value.startsWith('https://');
+  return (
+    value.startsWith('http://') ||
+    value.startsWith('https://') ||
+    value.startsWith('images')
+  );
 }
 
 function trackIcon(icon?: string): JSX.Element {
@@ -180,7 +220,10 @@ export default function Player() {
     };
 
     const handleSeek = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { trackId: string; fraction: number };
+      const detail = (e as CustomEvent).detail as {
+        trackId: string;
+        fraction: number;
+      };
       if (detail?.trackId && currentTrack.value?.id === detail.trackId) {
         audioEngine.seek(detail.fraction);
       }
@@ -359,13 +402,17 @@ export default function Player() {
       </div>
 
       {/* Current time */}
-      <span class="audio-player-time audio-player-time--current">{fmt(currentTime.value)}</span>
+      <span class="audio-player-time audio-player-time--current">
+        {fmt(currentTime.value)}
+      </span>
 
       {/* Waveform area (flexible center) */}
       <div ref={waveformContainerRef} class="audio-player-waveform" />
 
       {/* Total time */}
-      <span class="audio-player-time audio-player-time--total">{fmt(duration.value)}</span>
+      <span class="audio-player-time audio-player-time--total">
+        {fmt(duration.value)}
+      </span>
 
       {/* Volume (right) */}
       <div class="audio-player-volume">

@@ -42,7 +42,11 @@ interface TrackRowProps {
 
 /** Check whether a string is an HTTP(S) URL (used for custom icon images) */
 function isUrlIcon(value: string): boolean {
-  return value.startsWith('http://') || value.startsWith('https://');
+  return (
+    value.startsWith('http://') ||
+    value.startsWith('https://') ||
+    value.startsWith('images')
+  );
 }
 
 /** Generate placeholder peaks (uniform 50% height) for loading state. */

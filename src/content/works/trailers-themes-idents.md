@@ -1,31 +1,28 @@
 ---
-title: "Trailers, Themes & Idents"
-slug: "trailers-themes-idents"
-description: "Trailer music, TV themes, and broadcast idents."
+title: 'Trailers, Themes & Idents'
+slug: 'trailers-themes-idents'
+description: 'Trailer music, TV themes, and broadcast idents.'
 tracks:
-  - title: "Horizon"
-    duration: "2:30"
-    icon: "tv"
-    audioFile: "works/trailers/01-horizon.mp3"
-  - title: "Pulse"
-    duration: "1:45"
-    icon: "trailer"
-    subtitle: "Cannes Film Festival 2025"
-    audioFile: "works/trailers/02-pulse.mp3"
-  - title: "Night Signal"
-    duration: "0:32"
-    icon: "tv"
-    subtitle: "Channel 4 Ident"
-    audioFile: "works/trailers/03-night-signal.mp3"
-  - title: "Arrival"
-    duration: "2:10"
-    icon: "trailer"
-    audioFile: "works/trailers/04-arrival.mp3"
-  - title: "The Long Now"
-    duration: "3:08"
-    icon: "tv"
-    subtitle: "BBC Two Theme"
-    audioFile: "works/trailers/05-the-long-now.mp3"
+  - title: 'Void and Vista - Sand (FOLDS Demo excerpt)'
+    subtitle: 'Void and Vista'
+    duration: '01:32'
+    icon: 'images/void-and-vista.png'
+    audioFile: 'works/trailers/Void and Vista - Sand (FOLDS Demo exceprt).mp3'
+  - title: 'HOPPA Podcast - Intro Theme'
+    subtitle: 'HOPPA Podcast'
+    duration: '00:43'
+    icon: 'images/hoppa.jpeg'
+    audioFile: 'works/trailers/HOPPA Podcast - Intro Theme.mp3'
+  - title: 'HOPPA Podcast - Outro Theme'
+    subtitle: 'HOPPA Podcast'
+    duration: '01:35'
+    icon: 'images/hoppa.jpeg'
+    audioFile: 'works/trailers/HOPPA Podcast - Outro Theme.mp3'
+  - title: 'The Bon-Bons - Title Theme'
+    subtitle: 'The Bon-Bons'
+    duration: '01:13'
+    icon: 'images/the-bonbons.jpeg'
+    audioFile: 'works/trailers/The Bon-Bons - Title Theme.mp3'
 ---
 
 Trailer music, TV themes, and broadcast idents.

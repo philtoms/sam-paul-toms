@@ -21,14 +21,11 @@
   class="fixed top-0 left-0 right-0 z-0 flex aspect-[16/9] items-center justify-center overflow-hidden md:aspect-[21/9]"
 >
   <img
-    src="/images/banner/spt_low_res.png"
+    src="/images/banner/SPT_v111.png"
     alt=""
     class="absolute inset-0 h-full w-full object-cover"
   />
-  <div
-    class="hero-bottom-fade absolute bottom-0 left-0 right-0"
-  >
-  </div>
+  <div class="hero-bottom-fade absolute bottom-0 left-0 right-0"></div>
 </div>
 
 <script>
@@ -48,8 +45,8 @@
     /** Cubic ease-out: fast attack, slow settle */
     const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
-    let target = 0;    // eased scroll fraction (immediate)
-    let current = 0;   // lerped value (animated)
+    let target = 0; // eased scroll fraction (immediate)
+    let current = 0; // lerped value (animated)
     let rafId = 0;
 
     const apply = () => {

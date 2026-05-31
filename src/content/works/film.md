@@ -1,32 +1,43 @@
 ---
-title: "Film"
-slug: "film"
-description: "Scores and sound design for feature films."
+title: 'Dramatic Film'
+slug: 'film'
+description: 'Scores and sound design for feature films.'
 tracks:
-  - title: "The Crossing"
-    duration: "4:35"
-    icon: "film"
-    subtitle: "Dir. Léa Dupont"
-    audioFile: "works/film/01-the-crossing.mp3"
-  - title: "Paper Towns"
-    duration: "3:28"
-    icon: "film"
-    subtitle: "Dir. Marcus Chen"
-    audioFile: "works/film/02-paper-towns.mp3"
-  - title: "Between Worlds"
-    duration: "5:12"
-    icon: "film"
-    subtitle: "Dir. Sarah Okafor"
-    audioFile: "works/film/03-between-worlds.mp3"
-  - title: "The Return"
-    duration: "4:05"
-    icon: "film"
-    subtitle: "Dir. Kim Soo-jin"
-    audioFile: "works/film/04-the-return.mp3"
-  - title: "Silent Hours"
-    duration: "3:47"
-    icon: "music"
-    audioFile: "works/film/05-silent-hours.mp3"
+  - title: 'The Solent (excerpt)'
+    duration: '02:37'
+    icon: 'images/the solent.jpeg'
+    subtitle: 'The Solent OST'
+    audioFile: 'works/film/The Solent - The Solent (excerpt).mp3'
+  - title: 'The Pickup (excerpt)'
+    duration: '01:07'
+    icon: 'images/the solent.jpeg'
+    subtitle: 'The Solent OST'
+    audioFile: 'works/film/The Solent - The Pickup (excerpt).mp3'
+  - title: 'In the House, Lying in Ambush (excerpt)'
+    duration: '06:14'
+    icon: 'images/the solent.jpeg'
+    subtitle: 'The Solent OST'
+    audioFile: 'works/film/The Solent - In the House, Lying in Ambush (excerpt).mp3'
+  - title: 'Solace - Opening Titles (excerpt)'
+    duration: '00:50'
+    icon: 'images/solace.jpeg'
+    subtitle: 'Solace OST'
+    audioFile: 'works/film/Solace - Opening Titles (excerpt).mp3'
+  - title: 'Solace - Convoy'
+    duration: '02:40'
+    icon: 'images/solace.jpeg'
+    subtitle: 'Solace OST'
+    audioFile: 'works/film/Solace - Convoy.mp3'
+  - title: 'Solace - Campervan'
+    duration: '03:58'
+    icon: 'images/solace.jpeg'
+    subtitle: 'Solace OST'
+    audioFile: 'works/film/Solace - Campervan.mp3'
+  - title: 'Solace - Final Encounter (excerpts)'
+    duration: '06:09'
+    icon: 'images/solace.jpeg'
+    subtitle: 'Solace OST'
+    audioFile: 'works/film/Solace - Final Encounter (excerpts).mp3'
 ---
 
 Scores and sound design for feature films.
