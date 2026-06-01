@@ -102,10 +102,10 @@ export default function PlaylistAccordion({
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
+                stroke-width="3"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                class={`accordion-chevron w-5 h-5 text-text/40 ${isOpen ? 'rotate-90' : ''}`}
+                class={`accordion-chevron w-5 h-5 text-text/80 ${isOpen ? 'rotate-90' : ''}`}
               >
                 <path d="m9 5 7 7 -7 7" />
               </svg>
