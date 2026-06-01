@@ -307,6 +307,7 @@
   /* Crop the top-left area of the banner on mobile instead of bottom */
   .audio-player-bar--expanded::before {
     background-position: 0 0;
+    background-size: auto;
   }
 
   .audio-player-track-info {
