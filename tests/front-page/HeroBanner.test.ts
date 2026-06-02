@@ -26,9 +26,9 @@ describe('HeroBanner fixed-position structure', () => {
     expect(hero).toContain('z-0');
   });
 
-  it('uses aspect-ratio for responsive hero heights (16/9 mobile, 21/9 desktop)', () => {
-    expect(hero).toContain('aspect-[16/9]');
-    expect(hero).toContain('md:aspect-[21/9]');
+  it('uses aspect-ratio for responsive hero heights (16/5 mobile, 27/9 desktop)', () => {
+    expect(hero).toContain('aspect-[16/5]');
+    expect(hero).toContain('md:aspect-[27/9]');
   });
 
   it('retains the scroll-driven opacity/transform JS', () => {
