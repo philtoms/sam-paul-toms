@@ -157,7 +157,7 @@ describe('ProjectModal', () => {
     });
   });
 
-  it('renders project image when open', async () => {
+  it('does NOT render image when video is present', async () => {
     render(<ProjectModal />);
 
     document.dispatchEvent(
@@ -167,9 +167,24 @@ describe('ProjectModal', () => {
       expect(screen.getByText('Heimat')).toBeInTheDocument();
     });
 
-    const img = screen.getByAltText('Heimat');
+    // Image should not appear when a video URL is provided
+    const img = screen.queryByAltText('Heimat');
+    expect(img).not.toBeInTheDocument();
+  });
+
+  it('renders project image when no video is available', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataNoVideo }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Solace')).toBeInTheDocument();
+    });
+
+    const img = screen.getByAltText('Solace');
     expect(img).toBeInTheDocument();
-    expect(img.getAttribute('src')).toBe('/images/heimat.jpeg');
+    expect(img.getAttribute('src')).toBe('/images/solace.jpeg');
   });
 
   it('renders YouTube iframe when video URL is provided', async () => {

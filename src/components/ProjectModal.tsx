@@ -177,12 +177,14 @@ export default function ProjectModal() {
           </button>
         </div>
 
-        {/* Project image */}
-        <img
-          src={projectData.image}
-          alt={projectData.title}
-          class="w-full rounded-lg object-cover max-h-[400px] shadow-2xl"
-        />
+        {/* Project image — only shown when no video is available */}
+        {!videoId && (
+          <img
+            src={projectData.image}
+            alt={projectData.title}
+            class="w-full rounded-lg object-cover max-h-[400px] shadow-2xl"
+          />
+        )}
 
         {/* Title */}
         <h2 class="text-3xl font-bold text-white mt-6">{projectData.title}</h2>
