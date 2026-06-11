@@ -2,6 +2,25 @@ import type { APIRoute } from 'astro';
 import { z } from 'zod';
 import { Resend } from 'resend';
 
+/**
+ * Verify a Cloudflare Turnstile token against the siteverify endpoint.
+ * Returns true if verification succeeds, false otherwise.
+ * Catches network errors and returns false so the form degrades gracefully.
+ */
+async function verifyTurnstile(token: string, secretKey: string): Promise<boolean> {
+  try {
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: secretKey, response: token }),
+    });
+    const data = await response.json();
+    return data.success === true;
+  } catch {
+    return false;
+  }
+}
+
 const contactSchema = z.object({
   name: z
     .string()
@@ -17,6 +36,7 @@ const contactSchema = z.object({
     .min(1, 'Message is required.')
     .max(5000, 'Message must be 5,000 characters or fewer.'),
   fax: z.string().optional(),
+  turnstileToken: z.string().optional(),
 });
 
 export const POST: APIRoute = async ({ request }) => {
@@ -57,7 +77,23 @@ export const POST: APIRoute = async ({ request }) => {
 
   const { name, email, message } = result.data;
 
-  // Send notification email to Sam via Resend
+  // Turnstile verification — only runs when secret key is configured AND a token is provided.
+  // If either is missing, we skip verification and rely on honeypot-only protection.
+  const turnstileSecretKey = import.meta.env.TURNSTILE_SECRET_KEY;
+  if (turnstileSecretKey && result.data.turnstileToken) {
+    const isValid = await verifyTurnstile(result.data.turnstileToken, turnstileSecretKey);
+    if (!isValid) {
+      return new Response(
+        JSON.stringify({ ok: false, error: 'Bot verification failed. Please try again.' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+    }
+  }
+
+  // Send email via Resend
   const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
   try {
