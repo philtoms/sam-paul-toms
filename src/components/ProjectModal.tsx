@@ -41,20 +41,6 @@ export default function ProjectModal() {
     return '';
   }
 
-  /** Format a date string for display */
-  function formatDate(dateStr: string): string {
-    try {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('en-GB', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    } catch {
-      return dateStr;
-    }
-  }
-
   /** Open the modal with animation */
   const open = useCallback((data: ProjectModalData) => {
     setProjectData(data);
@@ -188,11 +174,6 @@ export default function ProjectModal() {
 
         {/* Title */}
         <h2 class="text-3xl font-bold text-white mt-6">{projectData.title}</h2>
-
-        {/* Publish date */}
-        <p class="text-sm text-text-secondary mt-2">
-          {formatDate(projectData.publishDate)}
-        </p>
 
         {/* Summary */}
         <p class="text-white/80 leading-relaxed mt-4">{projectData.summary}</p>

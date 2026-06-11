@@ -216,6 +216,21 @@ describe('ProjectModal', () => {
     expect(iframe).toBeNull();
   });
 
+  it('does NOT render formatted publish date', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    // The publishDate is 2024-06-01 — verify neither "1 June 2024" nor "June 1, 2024" appears
+    expect(screen.queryByText('1 June 2024')).not.toBeInTheDocument();
+    expect(screen.queryByText('June 1, 2024')).not.toBeInTheDocument();
+  });
+
   it('has role="dialog" and aria-modal="true"', async () => {
     render(<ProjectModal />);
 

@@ -49,7 +49,7 @@ describe('ProjectGrid component structure', () => {
     expect(component).toContain('project.title');
   });
 
-  it('renders formatted dates', () => {
-    expect(component).toContain('toLocaleDateString');
+  it('does not render formatted dates', () => {
+    expect(component).not.toContain('toLocaleDateString');
   });
 });

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Removed published date display from project cards grid and project detail modal (KB-102)
+
 ### Added
 
 - wav2mp3 CLI utility for converting `.wav` files to `.mp3` via ffmpeg (KB-082)

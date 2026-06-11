@@ -5,7 +5,7 @@
  * Props:
  * - projects: Array of project objects from the content collection
  *
- * Each card displays the project image, title, and date.
+ * Each card displays the project image and title.
  * Clicking a card dispatches `project-modal:open` with the project data.
  */
 
@@ -34,14 +34,7 @@ const sorted = [...projects].sort(
   class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
   id="project-grid"
 >
-  {sorted.map((project, index) => {
-    const formattedDate = project.publishDate.toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-
-    return (
+  {sorted.map((project, index) => (
       <div
         class="card cursor-pointer p-3 project-card"
         data-project-index={index}
@@ -55,11 +48,9 @@ const sorted = [...projects].sort(
         </div>
         <div class="pt-3 px-1">
           <h3 class="text-sm font-semibold text-white truncate">{project.title}</h3>
-          <p class="text-xs text-text-secondary mt-1">{formattedDate}</p>
         </div>
       </div>
-    );
-  })}
+  ))}
 </div>
 
 <script>
