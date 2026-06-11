@@ -7,6 +7,7 @@ const releases = defineCollection({
     title: z.string(),
     artist: z.string(),
     releaseDate: z.date(),
+    dateStatus: z.string().optional(),
     type: z.enum(['album', 'ep', 'single']),
     artwork: z.string(),
     description: z.string().optional(),

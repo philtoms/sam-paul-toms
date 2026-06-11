@@ -92,3 +92,7 @@ The content owner should work through this checklist to verify or correct each d
 - The `projects` schema in `src/content/config.ts` has been updated to accept `dateStatus` as an optional string field.
 - The `dateStatus` field is intentionally not consumed by any component — it exists solely as an inline flag for content editors.
 - Once all dates are verified and `dateStatus` fields are removed, the schema field can be removed as well.
+
+## Related
+
+- **KB-092** — Release `releaseDate` audit (all 4 release dates also flagged as unverified; see `docs/release-date-audit.md`)

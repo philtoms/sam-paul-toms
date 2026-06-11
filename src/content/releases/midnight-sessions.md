@@ -2,6 +2,7 @@
 title: Midnight Sessions
 artist: Sam
 releaseDate: 2025-11-15
+dateStatus: "UNVERIFIED — likely placeholder (scaffold commit KB-004; all streaming URLs are example- placeholders; artwork is placeholder SVG; no audio files exist). Content owner: confirm or update."
 type: album
 artwork: /images/releases/midnight-sessions.svg
 description: >

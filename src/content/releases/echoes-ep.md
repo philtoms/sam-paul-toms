@@ -2,6 +2,7 @@
 title: Echoes
 artist: Sam
 releaseDate: 2025-08-03
+dateStatus: "UNVERIFIED — likely placeholder (scaffold commit KB-004; all streaming URLs are example- placeholders; artwork is placeholder SVG; no audio files exist). Content owner: confirm or update."
 type: ep
 artwork: /images/releases/echoes-ep.svg
 description: >

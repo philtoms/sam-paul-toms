@@ -2,6 +2,7 @@
 title: Neon Lights
 artist: Sam
 releaseDate: 2026-01-20
+dateStatus: "UNVERIFIED — likely placeholder (scaffold commit KB-004; all streaming URLs are example- placeholders; artwork is placeholder SVG; no audio files exist). Content owner: confirm or update."
 type: single
 artwork: /images/releases/neon-lights.svg
 description: >
