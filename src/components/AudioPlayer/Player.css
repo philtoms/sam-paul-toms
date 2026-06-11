@@ -38,10 +38,10 @@
   border-radius: 9999px;
   overflow: hidden;
   z-index: -1;
-  background-image: url('/images/banner/SPT_v111.png');
+  background-image: url('/images/spt_no_text.png');
   background-size: cover;
-  background-position: 0 102%;
-  transform: scaleX(-1);
+  /* background-position: 0 102%;
+  transform: scaleX(-1); */
 }
 
 /* Dark scrim overlay — ensures text/icon legibility */
