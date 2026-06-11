@@ -109,11 +109,6 @@ const bioSummary =
       </div>
     </section>
 
-    {/* Media Carousel */}
-    <section class="section">
-      <MediaCarousel client:visible items={galleryItems} />
-    </section>
-
     {/* Playlist Accordion */}
     <section class="section">
       <div class="container max-w-3xl">
@@ -124,6 +119,11 @@ const bioSummary =
           allTracks={allTracks}
         />
       </div>
+    </section>
+
+    {/* Media Carousel */}
+    <section class="section">
+      <MediaCarousel client:visible items={galleryItems} />
     </section>
 
     {/* Projects Grid */}
