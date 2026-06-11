@@ -5,6 +5,7 @@ import CompactBio from '../components/CompactBio.astro';
 import SocialLinksBar from '../components/SocialLinksBar.astro';
 import PlaylistAccordion from '../components/PlaylistAccordion';
 import YouTubeEmbed from '../components/YouTubeEmbed.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
 import { getCollection, render } from 'astro:content';
 import { buildTrackFromContent } from '../scripts/audio-helpers';
 import type { Track } from '../components/AudioPlayer/types';
@@ -66,6 +67,9 @@ const allTracksJson = JSON.stringify(allTracks);
 // YouTube video
 const youtubeUrl = 'https://www.youtube.com/watch?v=xlt63O1YvSM';
 
+// Fetch projects for the project grid
+const projectsEntries = await getCollection('projects');
+
 // Bio summary
 const bioSummary =
   'Sam Paul Toms is an award-nominated London-based composer, producer, and multi-instrumentalist. Specializing in emotive music for media, Sam Paul Toms has created scores for dramatic and documentary film, idents, trailers, and more.';
@@ -110,10 +114,10 @@ const bioSummary =
       </div>
     </section>
 
-    {/* YouTube Embed */}
+    {/* Projects Grid */}
     <section class="section">
-      <div class="container max-w-3xl">
-        <YouTubeEmbed url={youtubeUrl} title="Sam Paul Toms — Featured Video" />
+      <div class="container">
+        <ProjectGrid projects={projectsEntries.map((p) => p.data)} />
       </div>
     </section>
   </main>

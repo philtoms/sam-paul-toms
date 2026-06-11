@@ -1,0 +1,100 @@
+---
+/**
+ * ProjectGrid — Responsive grid of project cards.
+ *
+ * Props:
+ * - projects: Array of project objects from the content collection
+ *
+ * Each card displays the project image, title, and date.
+ * Clicking a card dispatches `project-modal:open` with the project data.
+ */
+
+interface Project {
+  title: string;
+  slug: string;
+  summary: string;
+  publishDate: Date;
+  image: string;
+  video?: string;
+}
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+
+// Sort by publishDate descending (newest first)
+const sorted = [...projects].sort(
+  (a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime(),
+);
+---
+
+<div
+  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+  id="project-grid"
+>
+  {sorted.map((project, index) => {
+    const formattedDate = project.publishDate.toLocaleDateString('en-GB', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+
+    return (
+      <div
+        class="card cursor-pointer p-3 project-card"
+        data-project-index={index}
+      >
+        <div class="artwork-container">
+          <img
+            src={project.image}
+            alt={project.title}
+            loading="lazy"
+          />
+        </div>
+        <div class="pt-3 px-1">
+          <h3 class="text-sm font-semibold text-white truncate">{project.title}</h3>
+          <p class="text-xs text-text-secondary mt-1">{formattedDate}</p>
+        </div>
+      </div>
+    );
+  })}
+</div>
+
+<script>
+  import { openProjectModal } from '../scripts/project-modal-events';
+
+  const grid = document.getElementById('project-grid');
+  if (grid) {
+    grid.addEventListener('click', (e) => {
+      const card = (e.target as HTMLElement).closest('.project-card') as HTMLElement | null;
+      if (!card) return;
+
+      // Retrieve serialised project data from data attribute
+      const index = card.dataset.projectIndex;
+      if (index === undefined) return;
+
+      const dataEl = document.getElementById(`project-data-${index}`) as HTMLScriptElement | null;
+      if (!dataEl) return;
+
+      const data = JSON.parse(dataEl.textContent || '{}');
+      openProjectModal(data);
+    });
+  }
+</script>
+
+{/* Serialised project data for each card (hidden JSON script tags) */}
+{sorted.map((project, index) => (
+  <script
+    type="application/json"
+    id={`project-data-${index}`}
+    set:html={JSON.stringify({
+      title: project.title,
+      summary: project.summary,
+      image: project.image,
+      video: project.video,
+      publishDate: project.publishDate.toISOString(),
+    })}
+  />
+))}

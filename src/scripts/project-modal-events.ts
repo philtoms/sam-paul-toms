@@ -1,0 +1,37 @@
+/**
+ * Custom event system for project modal communication.
+ *
+ * Follows the same pattern as about-modal-events.ts and
+ * contact-modal-events.ts. Any component can dispatch these
+ * events on `document` to open/close the project modal without
+ * coupling to its internal state.
+ */
+
+/** Event type constants */
+export const PROJECT_MODAL_OPEN = 'project-modal:open';
+export const PROJECT_MODAL_CLOSE = 'project-modal:close';
+
+/** Serializable project data passed via CustomEvent detail */
+export interface ProjectModalData {
+  title: string;
+  summary: string;
+  image: string;
+  video?: string;
+  publishDate: string;
+}
+
+/**
+ * Dispatch an event to open the project modal with project data.
+ */
+export function openProjectModal(data: ProjectModalData): void {
+  document.dispatchEvent(
+    new CustomEvent<ProjectModalData>(PROJECT_MODAL_OPEN, { detail: data }),
+  );
+}
+
+/**
+ * Dispatch an event to close the project modal.
+ */
+export function closeProjectModal(): void {
+  document.dispatchEvent(new CustomEvent(PROJECT_MODAL_CLOSE));
+}

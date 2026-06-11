@@ -4,6 +4,7 @@ import SEOHead from '../components/SEOHead.astro';
 import Player from '../components/AudioPlayer/Player';
 import ContactModal from '../components/ContactModal';
 import AboutModal from '../components/AboutModal';
+import ProjectModal from '../components/ProjectModal';
 
 interface PressQuote {
   text: string;
@@ -68,6 +69,7 @@ const accentColor = import.meta.env.PUBLIC_ACCENT_COLOR || '#eab308';
       <Player client:load />
     </div>
     <ContactModal client:load />
+    <ProjectModal client:load />
     {aboutTitle && (
       <AboutModal
         client:load
