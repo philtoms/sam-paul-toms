@@ -63,6 +63,7 @@ By default, the app resolves audio URLs using `R2_PUBLIC_URL` (defaults to the W
 | `npm run format`  | Format all files with Prettier   |
 | `npm run generate:sample-audio` | Generate duration-matching synthetic MP3s for local dev |
 | `npm run generate:waveforms` | Generate waveform peak JSON from audio files |
+| `npm run fetch:oembed` | Fetch Instagram oEmbed thumbnails for gallery items |
 
 ## Directory Structure
 

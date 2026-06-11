@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/clean-dist-audio.mjs",
+    "build": "node scripts/fetch-instagram-oembed.mjs && astro build && node scripts/clean-dist-audio.mjs",
+    "fetch:oembed": "node scripts/fetch-instagram-oembed.mjs",
     "preview": "astro preview",
     "test": "vitest run",
     "lint": "eslint .",

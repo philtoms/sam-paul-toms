@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Build-time Instagram oEmbed thumbnail fetching: `scripts/fetch-instagram-oembed.mjs` reads gallery items with `type: instagram`, fetches thumbnail URLs from the Instagram oEmbed endpoint, and writes them back into markdown frontmatter. Graceful degradation on failure — never blocks the build. Optional disk caching via `INSTAGRAM_OEMBED_CACHE_DIR` env var (KB-114)
+
 ### Fixed
 
 - Music player now fades out and pauses when a YouTube video starts playing, preventing competing audio sources (KB-101)
