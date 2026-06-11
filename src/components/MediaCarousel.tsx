@@ -250,10 +250,6 @@ export default function MediaCarousel({ items }: MediaCarouselProps) {
                 </>
               )}
             </div>
-
-            <div class="media-carousel__caption">
-              <div class="media-carousel__caption-title">{item.title}</div>
-            </div>
           </div>
         ))}
       </div>

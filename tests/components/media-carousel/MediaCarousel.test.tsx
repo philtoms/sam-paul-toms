@@ -92,11 +92,19 @@ describe('MediaCarousel — rendering', () => {
     expect(dots.length).toBe(4);
   });
 
-  it('renders item titles in captions', () => {
+  it('cards have off-white polaroid border and square edges', () => {
     const { container } = render(<MediaCarousel items={mockItems} />);
-    const captions = container.querySelectorAll('.media-carousel__caption-title');
-    expect(captions.length).toBe(4);
-    expect(captions[0].textContent).toBe('Test Image');
+    const cards = container.querySelectorAll('.media-carousel__card');
+    expect(cards.length).toBe(4);
+    // No caption elements should be present
+    const captions = container.querySelectorAll('.media-carousel__caption');
+    expect(captions.length).toBe(0);
+  });
+
+  it('does not render caption titles', () => {
+    const { container } = render(<MediaCarousel items={mockItems} />);
+    const captionTitles = container.querySelectorAll('.media-carousel__caption-title');
+    expect(captionTitles.length).toBe(0);
   });
 
   it('renders nothing when items array is empty', () => {
