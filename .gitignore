@@ -2,6 +2,7 @@ node_modules/
 dist/
 .astro/
 .env
+.env.development
 .DS_Store
 # Dev audio samples (large binary files, local only)
 public/audio-samples/
