@@ -33,6 +33,7 @@ const { mockSignalRefs } = vi.hoisted(() => ({
     currentTrack: null as import('../../src/components/AudioPlayer/types').Track | null,
     currentTime: null as number | null,
     duration: null as number | null,
+    isPlaying: null as boolean | null,
   },
 }));
 
@@ -45,6 +46,9 @@ vi.mock('../../src/components/AudioPlayer/playlistStore', () => ({
   },
   get duration() {
     return mockSignalRefs.duration;
+  },
+  get isPlaying() {
+    return mockSignalRefs.isPlaying;
   },
 }));
 
@@ -65,6 +69,7 @@ import { signal } from '@preact/signals';
 const mockCurrentTrack = (mockSignalRefs.currentTrack = signal<import('../../src/components/AudioPlayer/types').Track | null>(null));
 const mockCurrentTime = (mockSignalRefs.currentTime = signal(0));
 const mockDuration = (mockSignalRefs.duration = signal(0));
+const mockIsPlaying = (mockSignalRefs.isPlaying = signal(false));
 
 const baseTrack = {
   title: 'The Weight of Water',
@@ -79,6 +84,7 @@ describe('TrackRow', () => {
     mockCurrentTrack.value = null;
     mockCurrentTime.value = 0;
     mockDuration.value = 0;
+    mockIsPlaying.value = false;
   });
 
   it('renders track title, subtitle, and duration', () => {
@@ -262,5 +268,118 @@ describe('TrackRow', () => {
     expect(iconSpan).toBeTruthy();
     expect(iconSpan!.querySelector('svg')).toBeTruthy();
     expect(iconSpan!.querySelector('img')).toBeNull();
+  });
+
+  // --- Play/Pause Overlay Tests ---
+
+  it('does not render overlay when trackId is undefined', () => {
+    const { container } = render(
+      <TrackRow track={baseTrack} onPlay={vi.fn()} />,
+    );
+
+    expect(container.querySelector('.track-row-play-overlay')).toBeNull();
+  });
+
+  it('does not render overlay when trackId is defined but does not match currentTrack', () => {
+    mockCurrentTrack.value = { id: 'other-track', title: 'Other', artist: 'A', audioUrl: 'other.mp3' };
+
+    const { container } = render(
+      <TrackRow track={baseTrack} trackId="track-1" onPlay={vi.fn()} />,
+    );
+
+    expect(container.querySelector('.track-row-play-overlay')).toBeNull();
+  });
+
+  it('renders overlay when trackId matches currentTrack.id', () => {
+    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
+
+    const { container } = render(
+      <TrackRow track={baseTrack} trackId="track-1" onPlay={vi.fn()} />,
+    );
+
+    const overlay = container.querySelector('.track-row-play-overlay');
+    expect(overlay).toBeTruthy();
+    expect(overlay!.classList.contains('absolute')).toBe(true);
+    expect(overlay!.classList.contains('inset-0')).toBe(true);
+    expect(overlay!.classList.contains('rounded-lg')).toBe(true);
+  });
+
+  it('overlay shows pause icon (two rects) when isPlaying is true', () => {
+    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
+    mockIsPlaying.value = true;
+
+    const { container } = render(
+      <TrackRow track={baseTrack} trackId="track-1" onPlay={vi.fn()} />,
+    );
+
+    const overlay = container.querySelector('.track-row-play-overlay');
+    expect(overlay).toBeTruthy();
+    const rects = overlay!.querySelectorAll('rect');
+    expect(rects.length).toBe(2);
+  });
+
+  it('overlay shows play icon (polygon) when isPlaying is false', () => {
+    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
+    mockIsPlaying.value = false;
+
+    const { container } = render(
+      <TrackRow track={baseTrack} trackId="track-1" onPlay={vi.fn()} />,
+    );
+
+    const overlay = container.querySelector('.track-row-play-overlay');
+    expect(overlay).toBeTruthy();
+    const polygon = overlay!.querySelector('polygon');
+    expect(polygon).toBeTruthy();
+  });
+
+  it('clicking the overlay dispatches audio-player:toggle event on document', () => {
+    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
+    mockIsPlaying.value = true;
+
+    const toggleSpy = vi.fn();
+    document.addEventListener('audio-player:toggle', toggleSpy);
+
+    const { container } = render(
+      <TrackRow track={baseTrack} trackId="track-1" onPlay={vi.fn()} />,
+    );
+
+    const overlay = container.querySelector('.track-row-play-overlay') as HTMLElement;
+    fireEvent.click(overlay);
+
+    expect(toggleSpy).toHaveBeenCalledTimes(1);
+
+    document.removeEventListener('audio-player:toggle', toggleSpy);
+  });
+
+  it('clicking the overlay does NOT call the row onPlay prop (stopPropagation)', () => {
+    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
+    mockIsPlaying.value = true;
+
+    const onPlay = vi.fn();
+
+    const { container } = render(
+      <TrackRow track={baseTrack} trackId="track-1" onPlay={onPlay} />,
+    );
+
+    const overlay = container.querySelector('.track-row-play-overlay') as HTMLElement;
+    fireEvent.click(overlay);
+
+    expect(onPlay).not.toHaveBeenCalled();
+  });
+
+  it('overlay disappears when currentTrack changes to a different track', () => {
+    mockCurrentTrack.value = { id: 'track-1', title: 'Test', artist: 'A', audioUrl: 'test.mp3' };
+
+    const { container, rerender } = render(
+      <TrackRow track={baseTrack} trackId="track-1" onPlay={vi.fn()} />,
+    );
+
+    expect(container.querySelector('.track-row-play-overlay')).toBeTruthy();
+
+    // Switch to a different track and rerender to pick up the signal change
+    mockCurrentTrack.value = { id: 'track-2', title: 'Other', artist: 'B', audioUrl: 'other.mp3' };
+    rerender(<TrackRow track={baseTrack} trackId="track-1" onPlay={vi.fn()} />);
+
+    expect(container.querySelector('.track-row-play-overlay')).toBeNull();
   });
 });

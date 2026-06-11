@@ -23,6 +23,7 @@ import {
   currentTrack,
   currentTime,
   duration,
+  isPlaying,
 } from './AudioPlayer/playlistStore';
 import { seekPlayer } from '../scripts/audio-player-events';
 import { getAccentHoverColor } from '../scripts/accent-color';
@@ -244,8 +245,30 @@ export default function TrackRow({
       onClick={onPlay}
     >
       {/* Category icon */}
-      <span class="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 text-text/40 transition-colors group-hover:text-accent overflow-hidden">
+      <span class="relative shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 text-text/40 transition-colors group-hover:text-accent overflow-hidden">
         {icon}
+        {trackId && currentTrack.value?.id === trackId && (
+          <button
+            type="button"
+            class="track-row-play-overlay absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 text-white"
+            onClick={(e: MouseEvent) => {
+              e.stopPropagation();
+              document.dispatchEvent(new CustomEvent('audio-player:toggle'));
+            }}
+            aria-label={isPlaying.value ? 'Pause' : 'Play'}
+          >
+            {isPlaying.value ? (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                <polygon points="7 3 21 12 7 21" />
+              </svg>
+            )}
+          </button>
+        )}
       </span>
 
       {/* Track info */}
