@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Build-time Instagram oEmbed thumbnail fetching: `scripts/fetch-instagram-oembed.mjs` reads gallery items with `type: instagram`, fetches thumbnail URLs from the Instagram oEmbed endpoint, and writes them back into markdown frontmatter. Graceful degradation on failure — never blocks the build. Optional disk caching via `INSTAGRAM_OEMBED_CACHE_DIR` env var (KB-114)
+- Build-time Instagram oEmbed thumbnail fetching: `scripts/fetch-instagram-oembed.mjs` reads gallery items with `type: instagram`, fetches thumbnail URLs from the Instagram oEmbed endpoint, downloads the images to `public/images/gallery/`, and writes local paths into markdown frontmatter. Graceful degradation on failure — never blocks the build. Profile URLs are detected and skipped with clear warnings. Optional disk caching via `INSTAGRAM_OEMBED_CACHE_DIR` env var (KB-114, KB-116)
 
 ### Fixed
 

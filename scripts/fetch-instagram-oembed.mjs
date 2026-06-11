@@ -19,7 +19,9 @@ import matter from 'gray-matter';
 // --- Configuration ---
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const GALLERY_DIR = path.resolve(__dirname, '..', 'src', 'content', 'gallery');
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+const GALLERY_DIR = path.resolve(PROJECT_ROOT, 'src', 'content', 'gallery');
+const THUMBNAILS_DIR = path.resolve(PROJECT_ROOT, 'public', 'images', 'gallery');
 const OEMBED_ENDPOINT = 'https://graph.facebook.com/v18.0/instagram_oembed';
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MAX_RETRIES = 3;
@@ -151,6 +153,81 @@ export function readGalleryFiles(galleryDir) {
 }
 
 /**
+ * Detect whether an Instagram URL is a profile URL (not a specific post).
+ * Profile URLs look like: https://www.instagram.com/sammytoms/
+ * Post URLs look like: https://www.instagram.com/p/ABC123/ or /reel/ABC123/
+ *
+ * @param {string} url
+ * @returns {boolean} true if the URL is a profile URL
+ */
+export function isProfileUrl(url) {
+  // Match URLs like /username/ or /username (with optional trailing slash)
+  // that do NOT contain /p/ or /reel/ in the path
+  try {
+    const parsed = new URL(url);
+    const pathname = parsed.pathname.replace(/\/+$/, ''); // trim trailing slashes
+    // Profile URLs have a single path segment (no /p/ or /reel/)
+    const segments = pathname.split('/').filter(Boolean);
+    if (segments.length === 1) {
+      // Single segment like "sammytoms" — it's a profile URL
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Generate a local thumbnail file path from a gallery markdown filename.
+ * e.g. "sammytoms-01.md" → "public/images/gallery/sammytoms-01.jpg"
+ *
+ * @param {string} filename - The gallery markdown filename (e.g. "sammytoms-01.md")
+ * @param {string} [thumbnailsDir] - Override the thumbnails directory (for testing)
+ * @returns {object} { absolutePath, webPath }
+ */
+export function resolveLocalThumbnailPath(filename, thumbnailsDir) {
+  const dir = thumbnailsDir || THUMBNAILS_DIR;
+  const stem = path.basename(filename, path.extname(filename));
+  const imageName = `${stem}.jpg`;
+  return {
+    absolutePath: path.join(dir, imageName),
+    webPath: `/images/gallery/${imageName}`,
+  };
+}
+
+/**
+ * Download an image from a URL and save it to a local file path.
+ *
+ * @param {string} url - The image URL to download
+ * @param {string} destPath - The absolute file path to save the image
+ * @returns {Promise<boolean>} true if download succeeded, false otherwise
+ */
+export async function downloadImage(url, destPath) {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      console.warn(`     ⚠️  Download failed: HTTP ${response.status} for ${url}`);
+      return false;
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Ensure the destination directory exists
+    const dir = path.dirname(destPath);
+    fs.mkdirSync(dir, { recursive: true });
+
+    fs.writeFileSync(destPath, buffer);
+    return true;
+  } catch (err) {
+    console.warn(`     ⚠️  Download error: ${err.message}`);
+    return false;
+  }
+}
+
+/**
  * Fetch the oEmbed thumbnail for a single Instagram URL.
  * Returns the thumbnail URL string or null on failure.
  */
@@ -161,7 +238,8 @@ export async function fetchThumbnail(instagramUrl, cache, cacheDir) {
     const now = Date.now();
     if (now - cached.timestamp < CACHE_TTL_MS) {
       console.log(`  📦 Cache hit for ${instagramUrl}`);
-      return cached.thumbnailUrl;
+      // Return the local path if previously downloaded, otherwise CDN URL
+      return cached.localPath || cached.thumbnailUrl;
     }
     // Expired — remove from cache
     cache.delete(instagramUrl);
@@ -222,6 +300,15 @@ async function main() {
   for (const item of instagramItems) {
     console.log(`  📸 ${item.filename} (${item.data.instagramUrl})`);
 
+    // Skip profile URLs — they are not specific posts and won't return thumbnails
+    if (isProfileUrl(item.data.instagramUrl)) {
+      console.warn(
+        `     ⏭ Profile URL (not a specific post): ${item.data.instagramUrl} — skipping. Update instagramUrl to a specific post permalink.`,
+      );
+      skipped++;
+      continue;
+    }
+
     try {
       const thumbnailUrl = await fetchThumbnail(
         item.data.instagramUrl,
@@ -230,11 +317,34 @@ async function main() {
       );
 
       if (thumbnailUrl) {
+        // Try to download the image locally
+        const localPath = resolveLocalThumbnailPath(item.filename);
+        const downloaded = await downloadImage(thumbnailUrl, localPath.absolutePath);
+
+        let finalThumbnail;
+        if (downloaded) {
+          finalThumbnail = localPath.webPath;
+          console.log(`     → Downloaded thumbnail: ${localPath.webPath}`);
+          // Update cache with local path
+          cache.set(item.data.instagramUrl, {
+            instagramUrl: item.data.instagramUrl,
+            thumbnailUrl: thumbnailUrl,
+            localPath: localPath.webPath,
+            timestamp: Date.now(),
+          });
+        } else {
+          // Fallback: store the CDN URL (better than nothing)
+          finalThumbnail = thumbnailUrl;
+          console.warn(
+            `     ⚠️  Download failed, falling back to CDN URL: ${thumbnailUrl}`,
+          );
+        }
+
         // Update the frontmatter and write back
-        item.data.thumbnail = thumbnailUrl;
+        item.data.thumbnail = finalThumbnail;
         const output = matter.stringify(item.content, item.data);
         fs.writeFileSync(item.filePath, output, 'utf-8');
-        console.log(`     → Updated thumbnail: ${thumbnailUrl}`);
+        console.log(`     → Updated thumbnail: ${finalThumbnail}`);
         updated++;
       } else {
         console.warn(

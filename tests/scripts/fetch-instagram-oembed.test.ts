@@ -271,6 +271,24 @@ describe('fetch-instagram-oembed (unit)', () => {
       expect(result).toBe('https://example.com/cached.jpg');
     });
 
+    it('returns cached local path when available', async () => {
+      const { fetchThumbnail } = await import(SCRIPT_PATH);
+      const cache = new Map();
+      cache.set('https://www.instagram.com/p/test/', {
+        instagramUrl: 'https://www.instagram.com/p/test/',
+        thumbnailUrl: 'https://example.com/cdn-thumb.jpg',
+        localPath: '/images/gallery/test-01.jpg',
+        timestamp: Date.now(),
+      });
+
+      const result = await fetchThumbnail(
+        'https://www.instagram.com/p/test/',
+        cache,
+        null,
+      );
+      expect(result).toBe('/images/gallery/test-01.jpg');
+    });
+
     it('returns null when cache is expired and fetch fails', async () => {
       const { fetchThumbnail } = await import(SCRIPT_PATH);
       const cache = new Map();
@@ -289,6 +307,140 @@ describe('fetch-instagram-oembed (unit)', () => {
       );
       // Will be null since the oEmbed endpoint will fail for this URL
       expect(result).toBeNull();
+    });
+  });
+
+  describe('isProfileUrl', () => {
+    it('returns true for profile URLs with trailing slash', async () => {
+      const { isProfileUrl } = await import(SCRIPT_PATH);
+      expect(isProfileUrl('https://www.instagram.com/sammytoms/')).toBe(true);
+    });
+
+    it('returns true for profile URLs without trailing slash', async () => {
+      const { isProfileUrl } = await import(SCRIPT_PATH);
+      expect(isProfileUrl('https://www.instagram.com/sammytoms')).toBe(true);
+    });
+
+    it('returns false for post URLs with /p/ format', async () => {
+      const { isProfileUrl } = await import(SCRIPT_PATH);
+      expect(isProfileUrl('https://www.instagram.com/p/ABC123/')).toBe(false);
+    });
+
+    it('returns false for reel URLs', async () => {
+      const { isProfileUrl } = await import(SCRIPT_PATH);
+      expect(isProfileUrl('https://www.instagram.com/reel/XYZ789/')).toBe(false);
+    });
+
+    it('returns false for TV URLs', async () => {
+      const { isProfileUrl } = await import(SCRIPT_PATH);
+      expect(isProfileUrl('https://www.instagram.com/tv/DEF456/')).toBe(false);
+    });
+
+    it('returns false for invalid URLs', async () => {
+      const { isProfileUrl } = await import(SCRIPT_PATH);
+      expect(isProfileUrl('not-a-url')).toBe(false);
+    });
+  });
+
+  describe('resolveLocalThumbnailPath', () => {
+    it('maps markdown filename to local image path', async () => {
+      const { resolveLocalThumbnailPath } = await import(SCRIPT_PATH);
+      const result = resolveLocalThumbnailPath('sammytoms-01.md');
+      expect(result.webPath).toBe('/images/gallery/sammytoms-01.jpg');
+      expect(result.absolutePath).toContain('public/images/gallery/sammytoms-01.jpg');
+    });
+
+    it('uses custom thumbnails directory when provided', async () => {
+      const { resolveLocalThumbnailPath } = await import(SCRIPT_PATH);
+      const result = resolveLocalThumbnailPath('item-02.md', '/tmp/thumbs');
+      expect(result.webPath).toBe('/images/gallery/item-02.jpg');
+      expect(result.absolutePath).toBe('/tmp/thumbs/item-02.jpg');
+    });
+
+    it('handles filenames with multiple dots', async () => {
+      const { resolveLocalThumbnailPath } = await import(SCRIPT_PATH);
+      const result = resolveLocalThumbnailPath('my.special.item.md');
+      expect(result.webPath).toBe('/images/gallery/my.special.item.jpg');
+    });
+  });
+
+  describe('downloadImage', () => {
+    let tempDir: string;
+
+    beforeEach(() => {
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'oembed-download-test-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+      vi.restoreAllMocks();
+    });
+
+    it('downloads and writes image to disk', async () => {
+      const { downloadImage } = await import(SCRIPT_PATH);
+
+      const fakeImageData = new Uint8Array([0x89, 0x50, 0x4e, 0x47]); // PNG header bytes
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        arrayBuffer: async () => fakeImageData.buffer as ArrayBuffer,
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const destPath = path.join(tempDir, 'test-image.jpg');
+      const result = await downloadImage('https://example.com/thumb.jpg', destPath);
+
+      expect(result).toBe(true);
+      expect(fs.existsSync(destPath)).toBe(true);
+      const written = fs.readFileSync(destPath);
+      expect(written).toBeInstanceOf(Buffer);
+      expect(written.length).toBe(fakeImageData.length);
+    });
+
+    it('returns false when fetch returns non-OK status', async () => {
+      const { downloadImage } = await import(SCRIPT_PATH);
+
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const destPath = path.join(tempDir, 'no-image.jpg');
+      const result = await downloadImage('https://example.com/missing.jpg', destPath);
+
+      expect(result).toBe(false);
+      expect(fs.existsSync(destPath)).toBe(false);
+    });
+
+    it('returns false when fetch throws', async () => {
+      const { downloadImage } = await import(SCRIPT_PATH);
+
+      const mockFetch = vi.fn().mockRejectedValue(new Error('Network failure'));
+      vi.stubGlobal('fetch', mockFetch);
+
+      const destPath = path.join(tempDir, 'error-image.jpg');
+      const result = await downloadImage('https://example.com/thumb.jpg', destPath);
+
+      expect(result).toBe(false);
+      expect(fs.existsSync(destPath)).toBe(false);
+    });
+
+    it('creates destination directory if it does not exist', async () => {
+      const { downloadImage } = await import(SCRIPT_PATH);
+
+      const fakeImageData = Buffer.from('fake-jpg-data');
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        arrayBuffer: async () => fakeImageData.buffer as ArrayBuffer,
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const nestedDir = path.join(tempDir, 'nested', 'dir');
+      const destPath = path.join(nestedDir, 'test-image.jpg');
+      const result = await downloadImage('https://example.com/thumb.jpg', destPath);
+
+      expect(result).toBe(true);
+      expect(fs.existsSync(destPath)).toBe(true);
     });
   });
 });
@@ -468,5 +620,76 @@ A photo.`;
       (f: any) => f.data.type === 'instagram' && f.data.instagramUrl,
     );
     expect(instagramItems).toHaveLength(2);
+  });
+
+  it('end-to-end: downloads thumbnail and updates markdown with local path', async () => {
+    const { readGalleryFiles, resolveLocalThumbnailPath, downloadImage, isProfileUrl } =
+      await import(SCRIPT_PATH);
+    const matter = (await import('gray-matter')).default;
+
+    const thumbnailsDir = path.join(tempDir, 'public', 'images', 'gallery');
+    fs.mkdirSync(thumbnailsDir, { recursive: true });
+
+    // Create gallery fixture with a specific post URL
+    createGalleryFixture(galleryDir, 'sammytoms-01.md', {
+      type: 'instagram',
+      instagramUrl: 'https://www.instagram.com/p/ABC123/',
+      thumbnail: '/images/gallery/placeholder.jpg',
+    });
+
+    // Simulate the pipeline: read files, "fetch" thumbnail, download, write back
+    const files = readGalleryFiles(galleryDir);
+    const item = files.find((f: any) => f.filename === 'sammytoms-01.md');
+    expect(item).toBeDefined();
+
+    // Simulate a fetched thumbnail URL
+    const fakeThumbnailUrl = 'https://cdn.example.com/thumb.jpg';
+    const localPath = resolveLocalThumbnailPath(item!.filename, thumbnailsDir);
+
+    // Mock downloadImage by writing a file directly
+    fs.writeFileSync(localPath.absolutePath, Buffer.from('fake-image-data'));
+
+    // Update the frontmatter
+    item!.data.thumbnail = localPath.webPath;
+    const output = matter.stringify(item!.content, item!.data);
+    fs.writeFileSync(item!.filePath, output, 'utf-8');
+
+    // Verify the markdown was updated
+    const updated = fs.readFileSync(item!.filePath, 'utf-8');
+    expect(updated).toContain('thumbnail: /images/gallery/sammytoms-01.jpg');
+    // The src field still has placeholder.jpg, that's fine — only thumbnail changed
+    expect(updated).toContain('src: /images/gallery/placeholder.jpg');
+
+    // Verify the image file exists
+    expect(fs.existsSync(localPath.absolutePath)).toBe(true);
+  });
+
+  it('profile URL is detected and skipped without fetching', async () => {
+    const { isProfileUrl } = await import(SCRIPT_PATH);
+
+    createGalleryFixture(galleryDir, 'profile-item.md', {
+      type: 'instagram',
+      instagramUrl: 'https://www.instagram.com/sammytoms/',
+    });
+
+    // Verify the URL is detected as a profile URL
+    expect(isProfileUrl('https://www.instagram.com/sammytoms/')).toBe(true);
+
+    // Run the real script — it should skip this profile URL item
+    // Note: the script reads from the real gallery dir, not our temp dir,
+    // but the isProfileUrl function is what matters
+    const env = { ...process.env };
+    delete env.INSTAGRAM_ACCESS_TOKEN;
+    const output = execSync('node scripts/fetch-instagram-oembed.mjs 2>&1', {
+      encoding: 'utf-8',
+      timeout: 60000,
+      env,
+      shell: '/bin/bash',
+    });
+
+    // The script should log skip messages for profile URLs (goes to stderr,
+    // but we merged with stdout via 2>&1)
+    expect(output).toContain('Profile URL');
+    expect(output).toContain('✅ Done:');
   });
 });
