@@ -31,13 +31,15 @@ By default, the app resolves audio URLs using `R2_PUBLIC_URL` (defaults to the W
 
 ### Setup
 
-1. Run the setup script to generate short silent MP3 placeholders for every track:
+1. Generate duration-matching synthetic audio for local development:
 
    ```bash
-   bash scripts/setup-dev-audio.sh
+   npm run generate:sample-audio
    ```
 
-   The script auto-discovers all `audioFile` entries in `src/content/releases/*.md` and generates ~3-second silent MP3 files under `public/audio-samples/`. It is idempotent — re-running overwrites existing files without error.
+   This script reads release frontmatter from `src/content/releases/*.md` and generates synthetic MP3 files matching each track's stated duration under `public/audio-samples/`. Each track gets unique ambient tones for realistic waveform visualization. The script is idempotent — re-running skips files with correct durations.
+
+   > **Legacy:** The older `bash scripts/setup-dev-audio.sh` generates 3-second silent placeholders. `npm run generate:sample-audio` is preferred as it produces duration-accurate files with audio content.
 
 2. Add the following to your `.env` (or `.env.local`) to point the audio player at the generated placeholders:
 
@@ -59,6 +61,8 @@ By default, the app resolves audio URLs using `R2_PUBLIC_URL` (defaults to the W
 | `npm run preview` | Preview production build locally |
 | `npm run lint`    | Run ESLint on source files       |
 | `npm run format`  | Format all files with Prettier   |
+| `npm run generate:sample-audio` | Generate duration-matching synthetic MP3s for local dev |
+| `npm run generate:waveforms` | Generate waveform peak JSON from audio files |
 
 ## Directory Structure
 

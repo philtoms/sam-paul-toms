@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Publish date audit: all 6 project `publishDate` values flagged as unverified (invented during scaffold). Added `dateStatus` field to each file and created `docs/publish-date-audit.md` report for content owner review (KB-089)
 - Release date audit: all 4 release `releaseDate` values flagged as unverified (invented during scaffold). Added `dateStatus` field to each file and created `docs/release-date-audit.md` report for content owner review (KB-092)
 - Streaming URL audit: removed all 39 `example-` placeholder streaming URLs and 14 fake Bandcamp URLs from 4 release files. None of the releases (Gravity, Echoes EP, Midnight Sessions, Neon Lights) exist on any streaming platform. Added anti-regression test (KB-095)
+- `generate:sample-audio` script — generates duration-matching synthetic MP3 files from release frontmatter using ffmpeg, replacing the 3-second silent placeholders from `setup-dev-audio.sh`. Idempotent, per-track frequency variation, ±1s duration verification via ffprobe (KB-097)
 
 ## [1.0.0] - 2026-05-20
 
