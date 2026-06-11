@@ -75,6 +75,7 @@ const projects = defineCollection({
     slug: z.string(),
     summary: z.string(),
     publishDate: z.date(),
+    dateStatus: z.string().optional(),
     image: z.string(),
     video: z.string().url().optional(),
   }),

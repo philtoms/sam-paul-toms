@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Populated real project content: accurate summaries for all 6 projects based on works catalogue evidence, corrected Solace from incorrect 'meditation/mindfulness' to dramatic film score (KB-087)
 - Expanded project summaries for The Bon-Bons and Void and Vista from narrow catalogue-track descriptions to full project-level descriptions (KB-090)
 - Audited YouTube video URLs for all project content files — only "A Life On The Farm" has a verified URL; remaining 5 projects (Heimat, Solace, The Solent, The Bon-Bons, Void and Vista) have no videos available on the Sam Paul Toms Music channel (KB-088)
+- Publish date audit: all 6 project `publishDate` values flagged as unverified (invented during scaffold). Added `dateStatus` field to each file and created `docs/publish-date-audit.md` report for content owner review (KB-089)
 
 ## [1.0.0] - 2026-05-20
 
