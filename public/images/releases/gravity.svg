@@ -1,5 +1,107 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
-  <rect width="600" height="600" fill="#2c003e"/>
-  <text x="300" y="300" font-family="system-ui, sans-serif" font-size="40" font-weight="700" fill="#e0e0e0" text-anchor="middle">Gravity</text>
-  <text x="300" y="360" font-family="system-ui, sans-serif" font-size="16" fill="#888" text-anchor="middle">Sam</text>
+  <defs>
+    <!-- Deep purple background gradient -->
+    <radialGradient id="bgGrad" cx="0.5" cy="0.5" r="0.7">
+      <stop offset="0%" stop-color="#1a0025"/>
+      <stop offset="100%" stop-color="#2c003e"/>
+    </radialGradient>
+
+    <!-- Central gravity well glow -->
+    <radialGradient id="wellGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#e8d5f5" stop-opacity="0.15"/>
+      <stop offset="30%" stop-color="#9b72cf" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#2c003e" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ring gradient: warm purple -->
+    <radialGradient id="ringGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#d4a8e8" stop-opacity="0"/>
+      <stop offset="85%" stop-color="#d4a8e8" stop-opacity="0"/>
+      <stop offset="93%" stop-color="#d4a8e8" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#d4a8e8" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Subtle filter for soft glow -->
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="gentleGlow">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="600" fill="url(#bgGrad)"/>
+
+  <!-- Central atmospheric glow -->
+  <rect width="600" height="600" fill="url(#wellGlow)"/>
+
+  <!-- Concentric gravity rings — emanating from center, each slightly warped -->
+  <!-- Outer rings: very subtle, barely visible -->
+  <circle cx="300" cy="300" r="265" fill="none" stroke="#9b72cf" stroke-width="0.4" opacity="0.12"/>
+  <circle cx="300" cy="300" r="240" fill="none" stroke="#b088cc" stroke-width="0.5" opacity="0.14"/>
+  <circle cx="300" cy="300" r="215" fill="none" stroke="#9b72cf" stroke-width="0.4" opacity="0.16"/>
+  <circle cx="300" cy="300" r="190" fill="none" stroke="#c4a0dd" stroke-width="0.6" opacity="0.18"/>
+  <circle cx="300" cy="300" r="165" fill="none" stroke="#b088cc" stroke-width="0.5" opacity="0.2"/>
+
+  <!-- Mid rings: slightly more visible, gentle distortion -->
+  <ellipse cx="300" cy="300" rx="140" ry="138" fill="none" stroke="#c4a0dd" stroke-width="0.6" opacity="0.22"/>
+  <ellipse cx="300" cy="300" rx="118" ry="115" fill="none" stroke="#d4b8e8" stroke-width="0.7" opacity="0.25"/>
+  <ellipse cx="300" cy="300" rx="96" ry="98" fill="none" stroke="#c4a0dd" stroke-width="0.6" opacity="0.28"/>
+
+  <!-- Inner rings: stronger presence, gravity intensifying -->
+  <ellipse cx="300" cy="300" rx="76" ry="74" fill="none" stroke="#d4b8e8" stroke-width="0.8" opacity="0.32"/>
+  <ellipse cx="300" cy="300" rx="58" ry="60" fill="none" stroke="#e0c8f0" stroke-width="0.9" opacity="0.35"/>
+  <ellipse cx="300" cy="300" rx="42" ry="41" fill="none" stroke="#d4b8e8" stroke-width="1" opacity="0.4"/>
+
+  <!-- Innermost rings: bright, tight -->
+  <ellipse cx="300" cy="300" rx="28" ry="29" fill="none" stroke="#e8d5f5" stroke-width="1.2" opacity="0.45"/>
+  <ellipse cx="300" cy="300" rx="16" ry="15" fill="none" stroke="#f0e0fa" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Central point of gravity — the piano's fundamental note -->
+  <circle cx="300" cy="300" r="5" fill="#f5eaff" opacity="0.9" filter="url(#softGlow)"/>
+  <circle cx="300" cy="300" r="2" fill="#ffffff"/>
+
+  <!-- Subtle particle drift — sparse, as if being pulled inward -->
+  <g fill="#c4a0dd" opacity="0.3">
+    <!-- Left side particles -->
+    <circle cx="95" cy="180" r="1.2"/>
+    <circle cx="140" cy="420" r="0.8"/>
+    <circle cx="60" cy="300" r="1"/>
+    <circle cx="180" cy="150" r="0.6"/>
+    <circle cx="120" cy="350" r="1.4"/>
+
+    <!-- Right side particles -->
+    <circle cx="510" cy="200" r="1"/>
+    <circle cx="470" cy="430" r="0.8"/>
+    <circle cx="540" cy="320" r="1.2"/>
+    <circle cx="440" cy="160" r="0.7"/>
+    <circle cx="500" cy="380" r="0.9"/>
+
+    <!-- Top/bottom particles -->
+    <circle cx="250" cy="70" r="1"/>
+    <circle cx="380" cy="50" r="0.8"/>
+    <circle cx="320" cy="540" r="1.1"/>
+    <circle cx="220" cy="530" r="0.7"/>
+  </g>
+
+  <!-- Faint trajectory lines — particles spiraling inward -->
+  <g stroke="#b088cc" fill="none" opacity="0.08" stroke-width="0.5">
+    <path d="M80 170 Q200 200, 280 270"/>
+    <path d="M530 190 Q420 230, 320 275"/>
+    <path d="M130 440 Q220 380, 280 320"/>
+    <path d="M490 450 Q400 380, 320 330"/>
+  </g>
+
+  <!-- Title: minimal, centered below -->
+  <text x="300" y="510" font-family="system-ui, sans-serif" font-size="28" font-weight="300" fill="#d4b8e8" text-anchor="middle" letter-spacing="12">GRAVITY</text>
+  <text x="300" y="540" font-family="system-ui, sans-serif" font-size="12" font-weight="400" fill="#8a6aa0" text-anchor="middle" letter-spacing="4">SAM</text>
+
+  <!-- Single thin accent line -->
+  <line x1="260" y1="555" x2="340" y2="555" stroke="#9b72cf" stroke-width="0.5" opacity="0.3"/>
 </svg>

@@ -1,5 +1,158 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
-  <rect width="600" height="600" fill="#16213e"/>
-  <text x="300" y="300" font-family="system-ui, sans-serif" font-size="40" font-weight="700" fill="#e0e0e0" text-anchor="middle">Echoes</text>
-  <text x="300" y="360" font-family="system-ui, sans-serif" font-size="16" fill="#888" text-anchor="middle">Sam</text>
+  <defs>
+    <!-- Background gradient: deep blue to dark indigo -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d1b2a"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+
+    <!-- Warm accent gradient: amber to coral -->
+    <linearGradient id="warmAccent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e8a838"/>
+      <stop offset="50%" stop-color="#d4783a"/>
+      <stop offset="100%" stop-color="#c4534e"/>
+    </linearGradient>
+
+    <!-- Cool accent gradient: teal to blue -->
+    <linearGradient id="coolAccent" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1b6b93"/>
+      <stop offset="100%" stop-color="#4fc3f7"/>
+    </linearGradient>
+
+    <!-- Organic warm glow -->
+    <radialGradient id="warmGlow" cx="0.35" cy="0.45" r="0.45">
+      <stop offset="0%" stop-color="#e8a838" stop-opacity="0.3"/>
+      <stop offset="60%" stop-color="#d4783a" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#16213e" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Cool digital glow -->
+    <radialGradient id="coolGlow" cx="0.7" cy="0.55" r="0.4">
+      <stop offset="0%" stop-color="#4fc3f7" stop-opacity="0.2"/>
+      <stop offset="70%" stop-color="#1b6b93" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#16213e" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Soft blur filter for glow effects -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="600" fill="url(#bg)"/>
+
+  <!-- Atmospheric glows -->
+  <rect width="600" height="600" fill="url(#warmGlow)"/>
+  <rect width="600" height="600" fill="url(#coolGlow)"/>
+
+  <!-- Layer 1: Organic acoustic wave (bottom, flowing curves) -->
+  <path d="M0 420 Q75 380, 150 410 T300 390 T450 420 T600 400 L600 600 L0 600 Z"
+        fill="#d4783a" fill-opacity="0.12"/>
+  <path d="M0 450 Q100 410, 200 440 T400 420 T600 450 L600 600 L0 600 Z"
+        fill="#e8a838" fill-opacity="0.08"/>
+  <path d="M0 480 Q80 450, 180 470 T380 455 T600 475 L600 600 L0 600 Z"
+        fill="#c4534e" fill-opacity="0.06"/>
+
+  <!-- Layer 2: Digital geometric lines (top area, representing electronic) -->
+  <g stroke="#4fc3f7" fill="none" opacity="0.4">
+    <!-- Horizontal scan lines -->
+    <line x1="50" y1="120" x2="250" y2="120" stroke-width="0.5"/>
+    <line x1="80" y1="135" x2="220" y2="135" stroke-width="0.5"/>
+    <line x1="350" y1="100" x2="550" y2="100" stroke-width="0.5"/>
+    <line x1="370" y1="115" x2="520" y2="115" stroke-width="0.5"/>
+    <line x1="380" y1="130" x2="500" y2="130" stroke-width="0.5"/>
+  </g>
+
+  <!-- Geometric shapes: triangles and rectangles (digital precision) -->
+  <g opacity="0.15">
+    <polygon points="420,60 460,130 380,130" fill="#4fc3f7"/>
+    <polygon points="480,80 510,140 450,140" fill="#1b6b93"/>
+    <rect x="100" y="70" width="40" height="40" fill="none" stroke="#4fc3f7" stroke-width="1"/>
+    <rect x="110" y="80" width="20" height="20" fill="#4fc3f7" opacity="0.3"/>
+  </g>
+
+  <!-- Central design: Waveform visualization blending organic and digital -->
+  <g transform="translate(300, 300)">
+    <!-- Circular echo rings -->
+    <circle r="180" fill="none" stroke="#e8a838" stroke-width="0.5" opacity="0.2"/>
+    <circle r="150" fill="none" stroke="#d4783a" stroke-width="0.8" opacity="0.15"/>
+    <circle r="120" fill="none" stroke="#4fc3f7" stroke-width="0.5" opacity="0.2"/>
+    <circle r="90" fill="none" stroke="#e8a838" stroke-width="1" opacity="0.15"/>
+    <circle r="60" fill="none" stroke="#d4783a" stroke-width="1.2" opacity="0.2"/>
+
+    <!-- Waveform bars: left side (warm/organic, varying heights) -->
+    <g fill="url(#warmAccent)" opacity="0.7">
+      <rect x="-140" y="-35" width="8" height="70" rx="4"/>
+      <rect x="-125" y="-55" width="8" height="110" rx="4"/>
+      <rect x="-110" y="-80" width="8" height="160" rx="4"/>
+      <rect x="-95" y="-65" width="8" height="130" rx="4"/>
+      <rect x="-80" y="-95" width="8" height="190" rx="4"/>
+      <rect x="-65" y="-75" width="8" height="150" rx="4"/>
+      <rect x="-50" y="-105" width="8" height="210" rx="4"/>
+      <rect x="-35" y="-85" width="8" height="170" rx="4"/>
+    </g>
+
+    <!-- Waveform bars: center (blending zone, mixed heights) -->
+    <g opacity="0.6">
+      <rect x="-18" y="-100" width="8" height="200" rx="4" fill="#d4783a"/>
+      <rect x="-3" y="-110" width="8" height="220" rx="4" fill="#c4864e"/>
+      <rect x="12" y="-100" width="8" height="200" rx="4" fill="#7ba8b8"/>
+    </g>
+
+    <!-- Waveform bars: right side (cool/digital, precise heights) -->
+    <g fill="url(#coolAccent)" opacity="0.7">
+      <rect x="28" y="-85" width="8" height="170" rx="4"/>
+      <rect x="43" y="-105" width="8" height="210" rx="4"/>
+      <rect x="58" y="-75" width="8" height="150" rx="4"/>
+      <rect x="73" y="-95" width="8" height="190" rx="4"/>
+      <rect x="88" y="-65" width="8" height="130" rx="4"/>
+      <rect x="103" y="-80" width="8" height="160" rx="4"/>
+      <rect x="118" y="-55" width="8" height="110" rx="4"/>
+      <rect x="133" y="-35" width="8" height="70" rx="4"/>
+    </g>
+
+    <!-- Central bright dot — the meeting point -->
+    <circle r="8" fill="#fff" opacity="0.6" filter="url(#glow)"/>
+    <circle r="3" fill="#fff" opacity="0.9"/>
+  </g>
+
+  <!-- Scattered particles: acoustic (warm dots) -->
+  <g fill="#e8a838" opacity="0.4">
+    <circle cx="80" cy="250" r="2"/>
+    <circle cx="130" cy="200" r="1.5"/>
+    <circle cx="60" cy="320" r="1"/>
+    <circle cx="170" cy="280" r="2.5"/>
+    <circle cx="200" cy="230" r="1.5"/>
+    <circle cx="110" cy="370" r="1"/>
+  </g>
+
+  <!-- Scattered particles: digital (cool dots) -->
+  <g fill="#4fc3f7" opacity="0.4">
+    <circle cx="430" cy="240" r="1.5"/>
+    <circle cx="480" cy="200" r="2"/>
+    <circle cx="520" cy="280" r="1"/>
+    <circle cx="500" cy="320" r="2"/>
+    <circle cx="440" cy="360" r="1.5"/>
+    <circle cx="550" cy="250" r="1"/>
+  </g>
+
+  <!-- Title text -->
+  <text x="300" y="500" font-family="system-ui, sans-serif" font-size="36" font-weight="700" fill="#f0e6d3" text-anchor="middle" letter-spacing="6">ECHOES</text>
+  <text x="300" y="530" font-family="system-ui, sans-serif" font-size="14" font-weight="400" fill="#a89b8c" text-anchor="middle" letter-spacing="3">SAM</text>
+
+  <!-- Subtle bottom line accent -->
+  <line x1="220" y1="545" x2="380" y2="545" stroke="url(#warmAccent)" stroke-width="1" opacity="0.4"/>
 </svg>
