@@ -250,7 +250,7 @@ export default function TrackRow({
         {trackId && currentTrack.value?.id === trackId && (
           <button
             type="button"
-            class="track-row-play-overlay absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 text-white"
+            class="track-row-play-overlay absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 text-accent"
             onClick={(e: MouseEvent) => {
               e.stopPropagation();
               document.dispatchEvent(new CustomEvent('audio-player:toggle'));

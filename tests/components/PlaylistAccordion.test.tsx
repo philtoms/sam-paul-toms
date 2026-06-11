@@ -62,6 +62,36 @@ const mockPlayableTracksMap = {
 
 const mockAllTracks = [...mockPlayableTracksMap['test-section']];
 
+describe('PlaylistAccordion — play overlay accent color regression', () => {
+  it('overlay icons use accent color (text-accent) not white', () => {
+    const cssContent = readFileSync(
+      resolve(__dirname, '../../src/components/PlaylistAccordion.css'),
+      'utf-8',
+    );
+
+    // The TrackRow component uses text-accent Tailwind class on the overlay.
+    // We verify the CSS file doesn't contain any white color overrides for
+    // .track-row-play-overlay, and that the hover rule uses the accent color.
+    const overlayRules = cssContent.match(
+      /\.track-row-play-overlay[^{]*\{[^}]*\}/gs,
+    );
+    expect(overlayRules).not.toBeNull();
+
+    // Ensure none of the overlay rules set color to white
+    for (const rule of overlayRules!) {
+      expect(rule).not.toMatch(/color:\s*(#fff(fff)?|white)/);
+    }
+
+    // Verify hover background uses accent color, not plain black
+    const hoverMatch = cssContent.match(
+      /\.track-row-play-overlay:hover\s*\{[^}]*\}/s,
+    );
+    expect(hoverMatch).not.toBeNull();
+    expect(hoverMatch![0]).toContain('var(--color-accent)');
+    expect(hoverMatch![0]).not.toContain('#000');
+  });
+});
+
 describe('PlaylistAccordion — header text alignment regression', () => {
   it('accordion-header rule in PlaylistAccordion.css includes text-align: left', () => {
     const cssContent = readFileSync(

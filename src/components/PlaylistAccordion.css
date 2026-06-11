@@ -68,5 +68,5 @@
 }
 
 .track-row-play-overlay:hover {
-  background-color: color-mix(in srgb, #000 65%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 25%, transparent);
 }
