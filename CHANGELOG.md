@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Projects section on homepage: responsive grid of project cards sourced from a new `projects` content collection, replacing the YouTube embed section (KB-086)
 - Project modal (Preact) — clicking a project card opens a detail modal with image, summary, date, and optional YouTube video embed, following the AboutModal pattern (KB-086)
 - Populated real project content: accurate summaries for all 6 projects based on works catalogue evidence, corrected Solace from incorrect 'meditation/mindfulness' to dramatic film score (KB-087)
+- Expanded project summaries for The Bon-Bons and Void and Vista from narrow catalogue-track descriptions to full project-level descriptions (KB-090)
 
 ## [1.0.0] - 2026-05-20
 
