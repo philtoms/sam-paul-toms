@@ -11,6 +11,11 @@ export default defineConfig({
   srcDir: './src',
   vite: {
     plugins: [tailwindCss()],
+    build: {
+      rollupOptions: {
+        external: ['resend'],
+      },
+    },
   },
   integrations: [preact(), sitemap()],
 });
