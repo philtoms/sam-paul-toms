@@ -102,16 +102,20 @@ export default function ContactModal() {
     name: '',
     email: '',
     message: '',
+    fax: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccess, setShowSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isValidEmail = (email: string): boolean => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const handleSubmit = (e: Event) => {
+  const handleSubmit = async (e: Event) => {
     e.preventDefault();
+    setSubmitError('');
     const newErrors: Record<string, string> = {};
 
     if (!formState.name.trim()) {
@@ -129,10 +133,31 @@ export default function ContactModal() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Simulate successful submission (no backend yet)
-      setFormState({ name: '', email: '', message: '' });
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      setIsSubmitting(true);
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: formState.name,
+            email: formState.email,
+            message: formState.message,
+            fax: formState.fax,
+          }),
+        });
+        const data = await response.json();
+        if (data.ok) {
+          setFormState({ name: '', email: '', message: '', fax: '' });
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 3000);
+        } else {
+          setSubmitError(data.error || 'Something went wrong.');
+        }
+      } catch {
+        setSubmitError('Something went wrong. Please try again later.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -190,6 +215,25 @@ export default function ContactModal() {
           onSubmit={handleSubmit}
           class="space-y-6"
         >
+          {/* Honeypot — visually hidden, traps bots. Do NOT use display:none. */}
+          <div class="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true">
+            <label for="modal-contact-fax">Fax</label>
+            <input
+              type="text"
+              id="modal-contact-fax"
+              name="fax"
+              tabindex={-1}
+              autocomplete="off"
+              value={formState.fax}
+              onInput={(e) =>
+                setFormState({
+                  ...formState,
+                  fax: (e.target as HTMLInputElement).value,
+                })
+              }
+            />
+          </div>
+
           <div>
             <label
               for="modal-contact-name"
@@ -273,10 +317,15 @@ export default function ContactModal() {
 
           <button
             type="submit"
-            class="bg-accent text-white rounded-lg px-6 py-3 font-medium hover:brightness-110 transition-all duration-200 cursor-pointer"
+            disabled={isSubmitting}
+            class="bg-accent text-white rounded-lg px-6 py-3 font-medium hover:brightness-110 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Send Message
+            {isSubmitting ? 'Sending...' : 'Send Message'}
           </button>
+
+          {submitError && (
+            <p class="text-red-400 text-sm">{submitError}</p>
+          )}
 
           {showSuccess && (
             <p class="text-green-400 text-sm">

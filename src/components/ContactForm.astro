@@ -1,9 +1,21 @@
 ---
-// ContactForm.astro — Static form with client-side validation only.
-// Backend submission handling will be wired up in a future task.
+// ContactForm.astro — Static form with client-side validation.
+// Submits to /api/contact via fetch.
 ---
 
 <form aria-label="Contact form" id="contact-form" class="space-y-6">
+  <!-- Honeypot — visually hidden, traps bots. Do NOT use display:none. -->
+  <div class="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true">
+    <label for="contact-fax">Fax</label>
+    <input
+      type="text"
+      id="contact-fax"
+      name="fax"
+      tabindex="-1"
+      autocomplete="off"
+    />
+  </div>
+
   <div>
     <label for="contact-name" class="block text-white/70 text-sm font-medium mb-2">
       Name
@@ -51,10 +63,13 @@
 
   <button
     type="submit"
+    id="contact-submit"
     class="bg-accent text-white rounded-lg px-6 py-3 font-medium hover:brightness-110 transition-all duration-200 cursor-pointer"
   >
     Send Message
   </button>
+
+  <p id="contact-error" class="text-red-400 text-sm hidden"></p>
 
   <p id="contact-success" class="text-green-400 text-sm hidden">
     Message sent! We'll get back to you soon.
@@ -66,7 +81,10 @@
   const nameInput = document.getElementById('contact-name') as HTMLInputElement;
   const emailInput = document.getElementById('contact-email') as HTMLInputElement;
   const messageInput = document.getElementById('contact-message') as HTMLTextAreaElement;
+  const faxInput = document.getElementById('contact-fax') as HTMLInputElement;
+  const submitBtn = document.getElementById('contact-submit') as HTMLButtonElement;
   const successMsg = document.getElementById('contact-success') as HTMLParagraphElement;
+  const errorMsg = document.getElementById('contact-error') as HTMLParagraphElement;
 
   function showError(field: string, message: string) {
     const el = form.querySelector(`[data-error="${field}"]`) as HTMLParagraphElement;
@@ -81,13 +99,15 @@
       (el as HTMLParagraphElement).textContent = '';
       el.classList.add('hidden');
     });
+    errorMsg.textContent = '';
+    errorMsg.classList.add('hidden');
   }
 
   function isValidEmail(email: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     clearErrors();
 
@@ -112,12 +132,38 @@
     }
 
     if (valid) {
-      // Simulate successful submission (no backend yet)
-      form.reset();
-      successMsg.classList.remove('hidden');
-      setTimeout(() => {
-        successMsg.classList.add('hidden');
-      }, 3000);
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: nameInput.value,
+            email: emailInput.value,
+            message: messageInput.value,
+            fax: faxInput?.value ?? '',
+          }),
+        });
+        const data = await response.json();
+        if (data.ok) {
+          form.reset();
+          successMsg.classList.remove('hidden');
+          setTimeout(() => {
+            successMsg.classList.add('hidden');
+          }, 3000);
+        } else {
+          errorMsg.textContent = data.error || 'Something went wrong.';
+          errorMsg.classList.remove('hidden');
+        }
+      } catch {
+        errorMsg.textContent = 'Something went wrong. Please try again later.';
+        errorMsg.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message';
+      }
     }
   });
 </script>

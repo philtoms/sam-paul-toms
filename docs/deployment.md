@@ -289,6 +289,7 @@ git push
 | **R2 Operations**    | 1M Class A, 10M Class B per month    | Well within free tier               |
 | **R2 Egress**        | **Free** — no egress fees            | Key advantage over AWS S3           |
 | **Custom domain**    | ~$12/year                            | If not using `.pages.dev` subdomain |
+| **Resend (email)**   | 100 emails/day, 3,000/month          | Contact form delivery                |
 
 **Total hosting cost: $0/month** (free tier) + domain registration if applicable.
 

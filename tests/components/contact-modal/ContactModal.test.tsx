@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/preact';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
@@ -12,6 +12,7 @@ describe('ContactModal', () => {
 
   afterEach(() => {
     document.body.classList.remove('overflow-hidden');
+    vi.restoreAllMocks();
   });
 
   it('renders modal overlay when contact-modal:open is dispatched', async () => {
@@ -180,5 +181,120 @@ describe('ContactModal', () => {
 
     const htmlBlock = htmlBlockMatch![0];
     expect(htmlBlock).toContain('scrollbar-gutter: stable');
+  });
+});
+
+describe('ContactModal form submission', () => {
+  beforeEach(() => {
+    document.body.classList.remove('overflow-hidden');
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('calls fetch with correct endpoint and body on valid submission', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ ok: true }),
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    render(<ContactModal />);
+
+    // Open the modal
+    document.dispatchEvent(new CustomEvent('contact-modal:open'));
+    await waitFor(() => {
+      expect(screen.getByText('Get In Touch')).toBeInTheDocument();
+    });
+
+    // Fill in the form fields
+    const nameInput = document.getElementById('modal-contact-name') as HTMLInputElement;
+    const emailInput = document.getElementById('modal-contact-email') as HTMLInputElement;
+    const messageInput = document.getElementById('modal-contact-message') as HTMLTextAreaElement;
+
+    fireEvent.input(nameInput, { target: { value: 'Test User' } });
+    fireEvent.input(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.input(messageInput, { target: { value: 'Hello from the test!' } });
+
+    // Submit the form
+    const submitBtn = screen.getByText('Send Message');
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    const [url, options] = mockFetch.mock.calls[0];
+    expect(url).toBe('/api/contact');
+    expect(options.method).toBe('POST');
+    expect(options.headers).toEqual({ 'Content-Type': 'application/json' });
+
+    const body = JSON.parse(options.body);
+    expect(body.name).toBe('Test User');
+    expect(body.email).toBe('test@example.com');
+    expect(body.message).toBe('Hello from the test!');
+    // Honeypot field should be included (empty)
+    expect(body).toHaveProperty('fax');
+  });
+
+  it('shows success message after successful submission', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ ok: true }),
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    render(<ContactModal />);
+
+    document.dispatchEvent(new CustomEvent('contact-modal:open'));
+    await waitFor(() => {
+      expect(screen.getByText('Get In Touch')).toBeInTheDocument();
+    });
+
+    const nameInput = document.getElementById('modal-contact-name') as HTMLInputElement;
+    const emailInput = document.getElementById('modal-contact-email') as HTMLInputElement;
+    const messageInput = document.getElementById('modal-contact-message') as HTMLTextAreaElement;
+
+    fireEvent.input(nameInput, { target: { value: 'Sam' } });
+    fireEvent.input(emailInput, { target: { value: 'sam@example.com' } });
+    fireEvent.input(messageInput, { target: { value: 'Hi there!' } });
+
+    const submitBtn = screen.getByText('Send Message');
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText("Message sent! We'll get back to you soon.")).toBeInTheDocument();
+    });
+  });
+
+  it('shows error message after failed submission', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ ok: false, error: 'Failed to send message.' }),
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    render(<ContactModal />);
+
+    document.dispatchEvent(new CustomEvent('contact-modal:open'));
+    await waitFor(() => {
+      expect(screen.getByText('Get In Touch')).toBeInTheDocument();
+    });
+
+    const nameInput = document.getElementById('modal-contact-name') as HTMLInputElement;
+    const emailInput = document.getElementById('modal-contact-email') as HTMLInputElement;
+    const messageInput = document.getElementById('modal-contact-message') as HTMLTextAreaElement;
+
+    fireEvent.input(nameInput, { target: { value: 'Sam' } });
+    fireEvent.input(emailInput, { target: { value: 'sam@example.com' } });
+    fireEvent.input(messageInput, { target: { value: 'Hi!' } });
+
+    const submitBtn = screen.getByText('Send Message');
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to send message.')).toBeInTheDocument();
+    });
   });
 });

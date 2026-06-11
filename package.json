@@ -29,6 +29,7 @@
     "astro": "^5.18.1",
     "howler": "^2.2.4",
     "preact": "^10.29.2",
+    "resend": "^6.12.4",
     "tailwindcss": "^4.3.0",
     "typescript": "^5.9.3"
   },

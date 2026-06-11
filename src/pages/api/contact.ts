@@ -1,0 +1,85 @@
+import type { APIRoute } from 'astro';
+import { z } from 'zod';
+import { Resend } from 'resend';
+
+const contactSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Name is required.')
+    .max(200, 'Name must be 200 characters or fewer.'),
+  email: z
+    .string()
+    .min(1, 'Email is required.')
+    .email('Please enter a valid email address.')
+    .max(200, 'Email must be 200 characters or fewer.'),
+  message: z
+    .string()
+    .min(1, 'Message is required.')
+    .max(5000, 'Message must be 5,000 characters or fewer.'),
+  fax: z.string().optional(),
+});
+
+export const POST: APIRoute = async ({ request }) => {
+  // Parse JSON body
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response(JSON.stringify({ ok: false, error: 'Invalid request body.' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Honeypot check — if the hidden "fax" field is filled, silently accept
+  if (
+    typeof body === 'object' &&
+    body !== null &&
+    'fax' in body &&
+    typeof (body as Record<string, unknown>).fax === 'string' &&
+    ((body as Record<string, unknown>).fax as string).trim() !== ''
+  ) {
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Server-side validation
+  const result = contactSchema.safeParse(body);
+  if (!result.success) {
+    const firstError = result.error.issues[0]?.message ?? 'Validation failed.';
+    return new Response(JSON.stringify({ ok: false, error: firstError }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { name, email, message } = result.data;
+
+  // Send email via Resend
+  const resend = new Resend(import.meta.env.RESEND_API_KEY);
+
+  try {
+    await resend.emails.send({
+      from: 'noreply@sampaultoms.uk',
+      to: import.meta.env.CONTACT_RECIPIENT_EMAIL,
+      subject: `Contact form: ${name}`,
+      text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+      replyTo: email,
+    });
+
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch {
+    return new Response(
+      JSON.stringify({ ok: false, error: 'Failed to send message. Please try again later.' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+  }
+};
