@@ -113,11 +113,16 @@ Set these in **Pages** → **your project** → **Settings** → **Environment v
 
 | Variable        | Value                     | Notes                            |
 | --------------- | ------------------------- | -------------------------------- |
-| `R2_PUBLIC_URL` | `https://pub-xxxx.r2.dev` | Your R2 public URL from step 2   |
-| `SITE_URL`      | `https://sam.music`       | Your production domain           |
-| `NODE_VERSION`  | `18`                      | Ensures correct Node.js in build |
+| `R2_PUBLIC_URL`             | `https://pub-xxxx.r2.dev` | Your R2 public URL from step 2                                  |
+| `SITE_URL`                  | `https://sam.music`       | Your production domain                                           |
+| `NODE_VERSION`              | `18`                      | Ensures correct Node.js in build                                 |
+| `RESEND_API_KEY`            | `re_xxxxxxxxxxxx`         | API key for Resend email delivery (contact form)                 |
+| `CONTACT_RECIPIENT_EMAIL`   | `you@example.com`        | Email address that receives contact form submissions             |
+| `CONTACT_FROM_EMAIL`        | `noreply@yourdomain.com` | Verified sender address for contact form emails (Resend requires a verified domain) |
+| `PUBLIC_TURNSTILE_SITE_KEY` | `0x4AAAAAAAA...`          | Cloudflare Turnstile site key (client-side, safe to expose; leave blank to disable) |
+| `TURNSTILE_SECRET_KEY`      | `0x4AAAAAAAA...`          | Cloudflare Turnstile secret key (server-side verification; leave blank to disable) |
 
-> **Important:** Set these for **both** Production and Preview environments.
+> **Important:** Set these for **both** Production and Preview environments. `RESEND_API_KEY`, `CONTACT_RECIPIENT_EMAIL`, `CONTACT_FROM_EMAIL`, and `TURNSTILE_SECRET_KEY` are server-side secrets — never prefix with `PUBLIC_`. `PUBLIC_TURNSTILE_SITE_KEY` is intentionally public (it's rendered in the browser). The Turnstile variables are optional — if either is empty, the contact form falls back to honeypot-only spam protection.
 
 ### Alternative: Direct Upload
 
@@ -220,6 +225,10 @@ Before going live, verify:
 - [ ] Audio files uploaded to R2 in the expected folder structure (`releases/{slug}/{filename}.mp3`)
 - [ ] Pages project created and linked to git repository (or direct upload configured)
 - [ ] Environment variables set in Pages dashboard: `R2_PUBLIC_URL`, `SITE_URL`, `NODE_VERSION`
+- [ ] Resend API key (`RESEND_API_KEY`) configured and contact form sends email successfully
+- [ ] Verified sender domain configured for `CONTACT_FROM_EMAIL` in Resend dashboard
+- [ ] Contact form recipient email (`CONTACT_RECIPIENT_EMAIL`) set to desired inbox
+- [ ] Cloudflare Turnstile keys configured (optional — form works without them using honeypot fallback)
 - [ ] Custom domain configured (if applicable)
 - [ ] `public/robots.txt` Sitemap URL matches production domain
 - [ ] `SITE_URL` in Pages env vars matches production domain
@@ -289,7 +298,8 @@ git push
 | **R2 Operations**    | 1M Class A, 10M Class B per month    | Well within free tier               |
 | **R2 Egress**        | **Free** — no egress fees            | Key advantage over AWS S3           |
 | **Custom domain**    | ~$12/year                            | If not using `.pages.dev` subdomain |
-| **Resend (email)**   | 100 emails/day, 3,000/month          | Contact form delivery                |
+| **Resend (email)**       | 100 emails/day, 3,000/month      | Contact form delivery                           |
+| **Cloudflare Turnstile** | Unlimited verifications            | CAPTCHA/bot protection for contact form (optional) |
 
 **Total hosting cost: $0/month** (free tier) + domain registration if applicable.
 
