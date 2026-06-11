@@ -86,7 +86,6 @@ describe('Release content files', () => {
     const { data } = loadRelease('midnight-sessions.md');
     expect(data.type).toBe('album');
     expect(data.tracks).toHaveLength(6);
-    expect(data.streamingLinks).toBeDefined();
   });
 
   it('echoes-ep is an EP with 4 tracks', () => {
@@ -105,5 +104,28 @@ describe('Release content files', () => {
     const { data } = loadRelease('gravity.md');
     expect(data.type).toBe('single');
     expect(data.tracks).toHaveLength(1);
+  });
+
+  it('has no example- placeholder streaming URLs', () => {
+    for (const filename of releaseFiles) {
+      const { data } = loadRelease(filename);
+      const tracks = data.tracks as Array<Record<string, unknown>>;
+      for (let i = 0; i < tracks.length; i++) {
+        const track = tracks[i];
+        for (const key of ['spotifyUrl', 'appleMusicUrl', 'youtubeMusicUrl', 'bandcampUrl']) {
+          if (track[key]) {
+            expect(track[key]).not.toContain('example-');
+          }
+        }
+      }
+      if (data.streamingLinks) {
+        const links = data.streamingLinks as Record<string, unknown>;
+        for (const key of ['spotify', 'appleMusic', 'youtubeMusic', 'bandcamp']) {
+          if (links[key]) {
+            expect(links[key]).not.toContain('example-');
+          }
+        }
+      }
+    }
   });
 });

@@ -12,11 +12,6 @@ tracks:
   - title: Gravity
     duration: "6:14"
     audioFile: releases/gravity/01-gravity.mp3
-    spotifyUrl: https://open.spotify.com/track/example-gravity
-    bandcampUrl: https://sam.bandcamp.com/track/gravity
-streamingLinks:
-  spotify: https://open.spotify.com/album/example-gravity-single
-  bandcamp: https://sam.bandcamp.com/track/gravity
 ---
 
 Gravity is a meditation on weight — the weight of memory, of expectation, of holding on and letting go. It was recorded in a single take on a restored 1960s Steinway, with only light processing added afterward.

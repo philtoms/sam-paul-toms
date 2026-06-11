@@ -60,9 +60,7 @@ Single with 1 track. Furthest future date relative to the scaffold date (May 202
 
 ### Note on Streaming URLs
 
-**All 4 releases have `example-` placeholder URLs in every Spotify, Apple Music, and YouTube Music link** — both at the track level and the album/EP/single level. This is the strongest single indicator that the entire content (including dates) was scaffold-generated. If any of these releases were real, at minimum the Spotify or Apple Music URLs would point to actual resources.
-
-The Bandcamp URLs (`sam.bandcamp.com`) are the only ones that look plausible, but they were likely generated as part of the scaffold template rather than copied from an actual Bandcamp page.
+**All streaming URLs have been audited and removed (KB-095).** The original files contained 39 `example-` placeholder URLs across Spotify, Apple Music, and YouTube Music fields, plus 14 Bandcamp URLs (`sam.bandcamp.com`). A thorough search of all major streaming platforms confirmed that none of the 4 releases (Gravity, Echoes, Midnight Sessions, Neon Lights) exist as real releases by Sam Paul Toms. The artist's only streaming release is "A Life On the Farm (Original Motion Picture Soundtrack)" (Apple Music, Spotify, YouTube). All Bandcamp URLs returned 404 — the artist has no Bandcamp page. All placeholder and fake streaming URLs were removed in KB-095. An anti-regression test was added to prevent future `example-` placeholder URLs from being re-introduced.
 
 ## Action Items
 
