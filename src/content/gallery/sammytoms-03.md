@@ -2,7 +2,7 @@
 title: "Film Score Preview — The Last Horizon"
 type: video
 src: https://www.youtube.com/watch?v=xlt63O1YvSM
-thumbnail: /images/gallery/placeholder.jpg
+thumbnail: /images/gallery/sammytoms-03-yt-thumb.jpg
 alt: "Preview of the film score for The Last Horizon"
 order: 3
 ---

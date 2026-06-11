@@ -1,7 +1,7 @@
 ---
 title: "Soundtrack Spotlight — Echoes of Home"
 type: image
-src: /images/gallery/placeholder.jpg
+src: /images/releases/echoes-ep.svg
 alt: "Album artwork for Echoes of Home soundtrack by Sam Paul Toms"
 order: 6
 ---
