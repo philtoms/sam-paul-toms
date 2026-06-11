@@ -57,21 +57,16 @@ export const POST: APIRoute = async ({ request }) => {
 
   const { name, email, message } = result.data;
 
-  // Send email via Resend
+  // Send notification email to Sam via Resend
   const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
   try {
     await resend.emails.send({
-      from: 'noreply@sampaultoms.uk',
+      from: import.meta.env.CONTACT_FROM_EMAIL,
       to: import.meta.env.CONTACT_RECIPIENT_EMAIL,
       subject: `Contact form: ${name}`,
       text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
       replyTo: email,
-    });
-
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
     });
   } catch {
     return new Response(
@@ -82,4 +77,23 @@ export const POST: APIRoute = async ({ request }) => {
       },
     );
   }
+
+  // Send auto-reply to the submitter (best-effort — failure does not affect the response)
+  try {
+    await resend.emails.send({
+      from: import.meta.env.CONTACT_FROM_EMAIL,
+      to: email,
+      subject: 'Thank you for your message',
+      text: `Hi ${name},\n\nThank you for getting in touch via the contact form on sam.music. I've received your message and will get back to you as soon as possible.\n\nBest,\nSam`,
+      replyTo: import.meta.env.CONTACT_RECIPIENT_EMAIL,
+    });
+  } catch {
+    // Auto-reply failure is non-critical — log but don't change the response
+    console.error('Failed to send auto-reply email:', { name, email });
+  }
+
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
 };

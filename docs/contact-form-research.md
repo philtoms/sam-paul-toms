@@ -235,6 +235,18 @@ Both set via Cloudflare Pages dashboard → Settings → Environment variables.
 3. Create an API key with "Send" permission
 4. Add `RESEND_API_KEY` to Cloudflare Pages env vars
 
+### Auto-Reply (KB-106)
+
+On valid submissions, the API route sends a second "Thank you for your message" auto-reply to the submitter's email address. Key details:
+
+- **From:** `CONTACT_FROM_EMAIL` (same verified sender as the notification email)
+- **To:** the submitter's email
+- **Reply-To:** `CONTACT_RECIPIENT_EMAIL` (so the submitter can reply directly to Sam)
+- **Best-effort:** If the auto-reply fails, the API still returns `{ ok: true }` — the primary goal is Sam receiving the message
+- **No auto-reply for spam:** Honeypot-triggered submissions send zero emails (no notification, no auto-reply)
+- **Plain text only:** No HTML template — keeps it simple and lightweight
+- **Environment variable:** `CONTACT_FROM_EMAIL` controls the sender address for both emails. In development, use `onboarding@resend.dev`
+
 ---
 
 ## 6. Open Questions for Owner
@@ -243,7 +255,7 @@ Both set via Cloudflare Pages dashboard → Settings → Environment variables.
 2. **Sending domain** — Do you want to verify `sam.music` as a sending domain in Resend? This ensures emails come from `noreply@sam.music` (professional). Alternative: use Resend's default `onboarding@resend.dev` for testing.
 3. **WhatsApp link** — Would you like a supplementary "Message on WhatsApp" link alongside the form? This is a simple `wa.me` link with no backend — it can be added to the contact section as an alternative contact method. This would be a separate task. **Update (KB-107):** Implemented. The WhatsApp link is now rendered inside the ContactModal, conditionally shown when `PUBLIC_WHATSAPP_PHONE` env var is set.
 4. **Spam protection level** — Start with honeypot + server-side validation (recommended), or go straight to Cloudflare Turnstile CAPTCHA? Honeypot catches most bots; Turnstile can be added later if needed.
-5. **Auto-reply** — Should the form send an automatic "thanks for your message" reply to the sender? This is a simple addition with Resend but wasn't in the original scope.
+5. **Auto-reply** — ~~Should the form send an automatic "thanks for your message" reply to the sender?~~ **Implemented in KB-106.** The API route sends a plain-text auto-reply to the submitter after the notification email to Sam succeeds.
 6. **Notification beyond email** — Any interest in push notifications (e.g., to a phone) for new messages? This would require a separate service (Pushover, Telegram bot, etc.) and is out of scope for the initial implementation.
 
 ---
