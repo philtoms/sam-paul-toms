@@ -25,16 +25,16 @@ services:
   umami:
     image: ghcr.io/umami-software/umami:postgresql-latest
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       DATABASE_URL: postgresql://umami:umami@db:5432/umami
-      UMAMI_APP_SECRET: "<replace-with-generated-secret>"
+      UMAMI_APP_SECRET: '<replace-with-generated-secret>'
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/heartbeat"]
+      test: ['CMD-SHELL', 'curl -f http://localhost:3000/api/heartbeat']
       interval: 30s
       timeout: 5s
       retries: 3
@@ -49,7 +49,7 @@ services:
       - umami-db:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U umami"]
+      test: ['CMD-SHELL', 'pg_isready -U umami']
       interval: 30s
       timeout: 5s
       retries: 3
@@ -100,17 +100,17 @@ For production use, replace the default PostgreSQL credentials (`umami:umami`) w
 3. **Change the password immediately** after first login (Settings → Profile)
 4. Add a new website:
    - Go to Settings → Websites → Add website
-   - Enter your site's domain (e.g., `sam.music`)
+   - Enter your site's domain (e.g., `sampaultoms.com`)
    - Note the **Website ID** (a UUID) — you'll need it for the site integration
 
 ## Site Integration
 
 The Astro site uses two environment variables to configure Umami tracking:
 
-| Variable                    | Description                                              | Example                                     |
-| --------------------------- | -------------------------------------------------------- | ------------------------------------------- |
-| `PUBLIC_UMAMI_WEBSITE_ID`   | UUID from the Umami dashboard                            | `a1b2c3d4-e5f6-7890-abcd-ef1234567890`     |
-| `PUBLIC_UMAMI_SRC`          | Full URL to the Umami tracking script                    | `https://analytics.example.com/script.js`   |
+| Variable                  | Description                           | Example                                   |
+| ------------------------- | ------------------------------------- | ----------------------------------------- |
+| `PUBLIC_UMAMI_WEBSITE_ID` | UUID from the Umami dashboard         | `a1b2c3d4-e5f6-7890-abcd-ef1234567890`    |
+| `PUBLIC_UMAMI_SRC`        | Full URL to the Umami tracking script | `https://analytics.example.com/script.js` |
 
 The `PUBLIC_` prefix is required — Astro only exposes `PUBLIC_*` environment variables to client-side code via `import.meta.env`.
 

@@ -236,6 +236,87 @@ describe('ContactModal form submission', () => {
     expect(body.message).toBe('Hello from the test!');
     // Honeypot field should be included (empty)
     expect(body).toHaveProperty('fax');
+    // When PUBLIC_TURNSTILE_SITE_KEY is not configured, no turnstileToken
+    expect(body).not.toHaveProperty('turnstileToken');
+  });
+
+  it('includes turnstileToken in body when site key is configured and widget fires callback', async () => {
+    // This test requires a dynamic re-import because TURNSTILE_SITE_KEY is
+    // evaluated at module scope from import.meta.env.PUBLIC_TURNSTILE_SITE_KEY.
+    // We must reset modules, stub the env var, and re-import the component.
+
+    // Mock window.turnstile before importing so the component can render the widget
+    (window as any).turnstile = {
+      render: vi.fn().mockReturnValue('mock-widget-id'),
+      reset: vi.fn(),
+      remove: vi.fn(),
+    };
+
+    vi.stubEnv('PUBLIC_TURNSTILE_SITE_KEY', 'test-site-key-123');
+    vi.resetModules();
+
+    // Re-import the events module (also module-scoped)
+    const eventsMod = await import('../../../src/scripts/contact-modal-events');
+    const { CONTACT_MODAL_OPEN: OPEN, CONTACT_MODAL_CLOSE: CLOSE } = eventsMod;
+
+    // Dynamic re-import picks up the stubbed env var
+    const mod = await import('../../../src/components/ContactModal');
+    const ContactModalWithTurnstile = mod.default;
+
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ ok: true }),
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    render(<ContactModalWithTurnstile />);
+
+    // Open the modal
+    document.dispatchEvent(new CustomEvent(OPEN));
+    await waitFor(() => {
+      expect(screen.getByText('Get In Touch')).toBeInTheDocument();
+    });
+
+    // Wait for the Turnstile useEffect to run and call window.turnstile.render
+    await waitFor(() => {
+      expect((window as any).turnstile.render).toHaveBeenCalled();
+    });
+
+    // Simulate the Turnstile widget firing its callback with a token
+    const renderCalls = (window as any).turnstile.render.mock.calls;
+    const callback = renderCalls[0][1].callback;
+    callback('mock-turnstile-token-xyz');
+
+    // Wait for Preact to flush the state update
+    await new Promise((r) => setTimeout(r, 0));
+
+    // Fill in the form fields
+    const nameInput = document.getElementById('modal-contact-name') as HTMLInputElement;
+    const emailInput = document.getElementById('modal-contact-email') as HTMLInputElement;
+    const messageInput = document.getElementById('modal-contact-message') as HTMLTextAreaElement;
+
+    fireEvent.input(nameInput, { target: { value: 'Turnstile User' } });
+    fireEvent.input(emailInput, { target: { value: 'turnstile@example.com' } });
+    fireEvent.input(messageInput, { target: { value: 'Testing Turnstile token!' } });
+
+    // Submit the form
+    const submitBtn = screen.getByText('Send Message');
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    const [url, options] = mockFetch.mock.calls[0];
+    const body = JSON.parse(options.body);
+    expect(body.name).toBe('Turnstile User');
+    expect(body.email).toBe('turnstile@example.com');
+    expect(body.message).toBe('Testing Turnstile token!');
+    expect(body).toHaveProperty('turnstileToken', 'mock-turnstile-token-xyz');
+
+    // Cleanup
+    delete (window as any).turnstile;
+    vi.unstubAllEnvs();
   });
 
   it('shows success message after successful submission', async () => {

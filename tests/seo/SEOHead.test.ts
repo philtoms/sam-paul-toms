@@ -2,13 +2,13 @@ import { describe, it, expect } from 'vitest';
 import { generateSEOTags } from '../../src/scripts/seo-helpers';
 import type { SEOProps } from '../../src/scripts/seo-helpers';
 
-const siteUrl = 'https://sam.music';
+const siteUrl = 'https://sampaultoms.com';
 
 describe('generateSEOTags', () => {
   const baseProps: SEOProps = {
     title: 'Sam Paul Toms',
     description: 'Official music portfolio of Sam Paul Toms.',
-    canonicalUrl: 'https://sam.music/',
+    canonicalUrl: 'https://sampaultoms.com/',
     siteUrl,
   };
 
@@ -36,7 +36,7 @@ describe('generateSEOTags', () => {
       (t) => t.type === 'link' && t.attrs?.rel === 'canonical',
     );
     expect(link).toBeDefined();
-    expect(link!.attrs!.href).toBe('https://sam.music/');
+    expect(link!.attrs!.href).toBe('https://sampaultoms.com/');
   });
 
   it('renders OG tags with correct values', () => {
@@ -121,9 +121,11 @@ describe('generateSEOTags', () => {
     });
     const ogImage = tags.find((t) => t.attrs?.property === 'og:image');
     const twitterImage = tags.find((t) => t.attrs?.name === 'twitter:image');
-    expect(ogImage!.attrs!.content).toBe('https://sam.music/images/art.svg');
+    expect(ogImage!.attrs!.content).toBe(
+      'https://sampaultoms.com/images/art.svg',
+    );
     expect(twitterImage!.attrs!.content).toBe(
-      'https://sam.music/images/art.svg',
+      'https://sampaultoms.com/images/art.svg',
     );
   });
 

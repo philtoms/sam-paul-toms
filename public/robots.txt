@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sam.music/sitemap-index.xml
+Sitemap: https://sampaultoms.com/sitemap-index.xml

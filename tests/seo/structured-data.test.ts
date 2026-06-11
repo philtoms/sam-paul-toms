@@ -7,7 +7,7 @@ import {
 } from '../../src/scripts/structured-data';
 import type { ReleaseData, TrackData } from '../../src/scripts/structured-data';
 
-const siteUrl = 'https://sam.music/';
+const siteUrl = 'https://sampaultoms.com/';
 
 const sampleRelease: ReleaseData = {
   title: 'Midnight Sessions',
@@ -52,13 +52,13 @@ describe('durationToISO8601', () => {
 describe('resolveAbsoluteUrl', () => {
   it('resolves a relative path with leading slash', () => {
     expect(resolveAbsoluteUrl('/images/art.svg', siteUrl)).toBe(
-      'https://sam.music/images/art.svg',
+      'https://sampaultoms.com/images/art.svg',
     );
   });
 
   it('resolves a relative path without leading slash', () => {
     expect(resolveAbsoluteUrl('images/art.svg', siteUrl)).toBe(
-      'https://sam.music/images/art.svg',
+      'https://sampaultoms.com/images/art.svg',
     );
   });
 
@@ -91,8 +91,12 @@ describe('generateMusicAlbumSchema', () => {
       name: 'Sam',
     });
     expect(schema.datePublished).toBe('2025-11-15');
-    expect(schema.image).toBe('https://sam.music/images/releases/midnight-sessions.svg');
-    expect(schema.description).toBe('A late-night journey through ambient textures.');
+    expect(schema.image).toBe(
+      'https://sampaultoms.com/images/releases/midnight-sessions.svg',
+    );
+    expect(schema.description).toBe(
+      'A late-night journey through ambient textures.',
+    );
   });
 
   it('includes albumReleaseType mapped correctly for album', () => {
@@ -207,7 +211,9 @@ describe('generateMusicRecordingSchema', () => {
       siteUrl,
       'midnight-sessions',
     ) as Record<string, unknown>;
-    expect(schema.url).toBe('https://sam.music/releases/midnight-sessions');
+    expect(schema.url).toBe(
+      'https://sampaultoms.com/releases/midnight-sessions',
+    );
   });
 
   it('image is resolved to absolute URL', () => {
@@ -218,7 +224,7 @@ describe('generateMusicRecordingSchema', () => {
       'midnight-sessions',
     ) as Record<string, unknown>;
     expect(schema.image).toBe(
-      'https://sam.music/images/releases/midnight-sessions.svg',
+      'https://sampaultoms.com/images/releases/midnight-sessions.svg',
     );
   });
 });

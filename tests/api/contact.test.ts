@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock Resend before importing the route
 const mockSend = vi.fn();
@@ -293,5 +293,174 @@ describe('POST /api/contact', () => {
     // Verify the auto-reply (second call) has replyTo set to Sam's email
     const autoReplyCall = mockSend.mock.calls[1][0];
     expect(autoReplyCall.replyTo).toBe('hello@sampaultoms.uk');
+  });
+});
+
+describe('POST /api/contact — Turnstile verification', () => {
+  let originalFetch: typeof globalThis.fetch;
+
+  beforeEach(() => {
+    mockSend.mockReset();
+    mockSend.mockResolvedValue({ id: 'email-id-123' });
+    originalFetch = globalThis.fetch;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    vi.unstubAllEnvs();
+  });
+
+  it('succeeds when Turnstile verification passes', async () => {
+    vi.stubEnv('TURNSTILE_SECRET_KEY', 'test-secret-key');
+
+    // Mock global fetch for the Turnstile siteverify call
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ success: true }),
+    });
+
+    const response = await POST(
+      mockContext(
+        makeRequest({
+          name: 'Sam',
+          email: 'sam@example.com',
+          message: 'Hello!',
+          turnstileToken: 'valid-turnstile-token',
+        }),
+      ) as any,
+    );
+
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.ok).toBe(true);
+
+    // Turnstile siteverify was called
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ secret: 'test-secret-key', response: 'valid-turnstile-token' }),
+      }),
+    );
+
+    // Email was sent
+    expect(mockSend).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns 400 when Turnstile verification fails', async () => {
+    vi.stubEnv('TURNSTILE_SECRET_KEY', 'test-secret-key');
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ success: false }),
+    });
+
+    const response = await POST(
+      mockContext(
+        makeRequest({
+          name: 'Sam',
+          email: 'sam@example.com',
+          message: 'Hello!',
+          turnstileToken: 'invalid-turnstile-token',
+        }),
+      ) as any,
+    );
+
+    expect(response.status).toBe(400);
+    const data = await response.json();
+    expect(data.ok).toBe(false);
+    expect(data.error).toBe('Bot verification failed. Please try again.');
+
+    // No email sent
+    expect(mockSend).not.toHaveBeenCalled();
+  });
+
+  it('skips Turnstile verification when secret key is not set', async () => {
+    // No TURNSTILE_SECRET_KEY stubbed — it's empty/undefined
+
+    const response = await POST(
+      mockContext(
+        makeRequest({
+          name: 'Sam',
+          email: 'sam@example.com',
+          message: 'Hello!',
+          turnstileToken: 'some-token',
+        }),
+      ) as any,
+    );
+
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.ok).toBe(true);
+
+    // Email was sent (no Turnstile check)
+    expect(mockSend).toHaveBeenCalledTimes(1);
+  });
+
+  it('proceeds normally when token sent but secret key is missing', async () => {
+    // No TURNSTILE_SECRET_KEY stubbed
+
+    const response = await POST(
+      mockContext(
+        makeRequest({
+          name: 'Sam',
+          email: 'sam@example.com',
+          message: 'Hello!',
+          turnstileToken: 'orphaned-token',
+        }),
+      ) as any,
+    );
+
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.ok).toBe(true);
+    expect(mockSend).toHaveBeenCalledTimes(1);
+  });
+
+  it('proceeds normally when secret key is set but no token sent', async () => {
+    vi.stubEnv('TURNSTILE_SECRET_KEY', 'test-secret-key');
+
+    // No Turnstile token in the request body — widget may have failed to load
+
+    const response = await POST(
+      mockContext(
+        makeRequest({
+          name: 'Sam',
+          email: 'sam@example.com',
+          message: 'Hello!',
+        }),
+      ) as any,
+    );
+
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.ok).toBe(true);
+
+    // Email was sent (graceful skip — no token to verify)
+    expect(mockSend).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns 400 when Turnstile verification fetch throws a network error', async () => {
+    vi.stubEnv('TURNSTILE_SECRET_KEY', 'test-secret-key');
+
+    // Simulate network error during Turnstile verification
+    globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+
+    const response = await POST(
+      mockContext(
+        makeRequest({
+          name: 'Sam',
+          email: 'sam@example.com',
+          message: 'Hello!',
+          turnstileToken: 'some-token',
+        }),
+      ) as any,
+    );
+
+    expect(response.status).toBe(400);
+    const data = await response.json();
+    expect(data.ok).toBe(false);
+    expect(data.error).toBe('Bot verification failed. Please try again.');
+    expect(mockSend).not.toHaveBeenCalled();
   });
 });

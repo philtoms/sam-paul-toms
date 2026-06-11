@@ -53,17 +53,17 @@ By default, the app resolves audio URLs using `R2_PUBLIC_URL` (defaults to the W
 
 ## Scripts
 
-| Command           | Description                      |
-| ----------------- | -------------------------------- |
-| `npm run test`    | Run Vitest test suite            |
-| `npm run dev`     | Start Astro dev server           |
-| `npm run build`   | Build for production             |
-| `npm run preview` | Preview production build locally |
-| `npm run lint`    | Run ESLint on source files       |
-| `npm run format`  | Format all files with Prettier   |
+| Command                         | Description                                             |
+| ------------------------------- | ------------------------------------------------------- |
+| `npm run test`                  | Run Vitest test suite                                   |
+| `npm run dev`                   | Start Astro dev server                                  |
+| `npm run build`                 | Build for production                                    |
+| `npm run preview`               | Preview production build locally                        |
+| `npm run lint`                  | Run ESLint on source files                              |
+| `npm run format`                | Format all files with Prettier                          |
 | `npm run generate:sample-audio` | Generate duration-matching synthetic MP3s for local dev |
-| `npm run generate:waveforms` | Generate waveform peak JSON from audio files |
-| `npm run fetch:oembed` | Fetch Instagram oEmbed thumbnails for gallery items |
+| `npm run generate:waveforms`    | Generate waveform peak JSON from audio files            |
+| `npm run fetch:oembed`          | Fetch Instagram oEmbed thumbnails for gallery items     |
 
 ## Directory Structure
 
@@ -145,7 +145,7 @@ addToQueue({
 Copy `.env.example` to `.env` and configure:
 
 - `R2_PUBLIC_URL` — Base URL for Cloudflare R2 object storage (audio files, artwork)
-- `SITE_URL` — Production site URL for canonical tags, sitemap, and structured data (defaults to `https://sam.music`)
+- `SITE_URL` — Production site URL for canonical tags, sitemap, and structured data (defaults to `https://sampaultoms.com`)
 - `PUBLIC_UMAMI_WEBSITE_ID` / `PUBLIC_UMAMI_SRC` — Umami analytics (leave blank to disable)
 
 ## Deployment
@@ -240,7 +240,7 @@ The `@astrojs/sitemap` integration automatically generates `sitemap-index.xml` a
 ```js
 // astro.config.mjs
 export default defineConfig({
-  site: 'https://sam.music', // update for production domain
+  site: 'https://sampaultoms.com', // update for production domain
   integrations: [sitemap()],
 });
 ```
@@ -253,7 +253,7 @@ Located at `public/robots.txt`. Allows all crawlers and references the sitemap:
 User-agent: *
 Allow: /
 
-Sitemap: https://sam.music/sitemap-index.xml
+Sitemap: https://sampaultoms.com/sitemap-index.xml
 ```
 
 ## Background

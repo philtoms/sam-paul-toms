@@ -7,13 +7,19 @@ import { Resend } from 'resend';
  * Returns true if verification succeeds, false otherwise.
  * Catches network errors and returns false so the form degrades gracefully.
  */
-async function verifyTurnstile(token: string, secretKey: string): Promise<boolean> {
+async function verifyTurnstile(
+  token: string,
+  secretKey: string,
+): Promise<boolean> {
   try {
-    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret: secretKey, response: token }),
-    });
+    const response = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: secretKey, response: token }),
+      },
+    );
     const data = await response.json();
     return data.success === true;
   } catch {
@@ -45,10 +51,13 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     body = await request.json();
   } catch {
-    return new Response(JSON.stringify({ ok: false, error: 'Invalid request body.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ ok: false, error: 'Invalid request body.' }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
   }
 
   // Honeypot check — if the hidden "fax" field is filled, silently accept
@@ -81,10 +90,16 @@ export const POST: APIRoute = async ({ request }) => {
   // If either is missing, we skip verification and rely on honeypot-only protection.
   const turnstileSecretKey = import.meta.env.TURNSTILE_SECRET_KEY;
   if (turnstileSecretKey && result.data.turnstileToken) {
-    const isValid = await verifyTurnstile(result.data.turnstileToken, turnstileSecretKey);
+    const isValid = await verifyTurnstile(
+      result.data.turnstileToken,
+      turnstileSecretKey,
+    );
     if (!isValid) {
       return new Response(
-        JSON.stringify({ ok: false, error: 'Bot verification failed. Please try again.' }),
+        JSON.stringify({
+          ok: false,
+          error: 'Bot verification failed. Please try again.',
+        }),
         {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
@@ -106,7 +121,10 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch {
     return new Response(
-      JSON.stringify({ ok: false, error: 'Failed to send message. Please try again later.' }),
+      JSON.stringify({
+        ok: false,
+        error: 'Failed to send message. Please try again later.',
+      }),
       {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
@@ -120,7 +138,7 @@ export const POST: APIRoute = async ({ request }) => {
       from: import.meta.env.CONTACT_FROM_EMAIL,
       to: email,
       subject: 'Thank you for your message',
-      text: `Hi ${name},\n\nThank you for getting in touch via the contact form on sam.music. I've received your message and will get back to you as soon as possible.\n\nBest,\nSam`,
+      text: `Hi ${name},\n\nThank you for getting in touch via the contact form on sampaultoms.com. I've received your message and will get back to you as soon as possible.\n\nBest,\nSam`,
       replyTo: import.meta.env.CONTACT_RECIPIENT_EMAIL,
     });
   } catch {

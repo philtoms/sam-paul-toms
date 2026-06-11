@@ -23,7 +23,7 @@ tracks:
     icon: 'images/A Life On The Farm.jpeg'
     subtitle: 'A Life On The Farm (Original Motion Picture Soundtrack)'
     audioFile: 'works/documentary/A Life on the Farm - Lights, Camera, Carson!.mp3'
-  - title: "Workin' the Cows.mp3"
+  - title: "Workin' the Cows"
     duration: '01:12'
     icon: 'images/A Life On The Farm.jpeg'
     subtitle: 'A Life On The Farm (Original Motion Picture Soundtrack)'

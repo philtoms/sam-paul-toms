@@ -1,6 +1,7 @@
 ---
 title: 'About Sam'
-photo: '/images/bio/sam-portrait.svg'
+# photo: '/images/bio/sam-portrait.svg'
+photo: '/images/bio/spt.png'
 photoAlt: 'Sam performing live'
 genreTags:
   - Electronic

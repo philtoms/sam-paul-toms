@@ -22,12 +22,38 @@ import {
  * reserves scrollbar space so that toggling `overflow-hidden` on `<body>`
  * does not cause a horizontal layout shift when the modal opens/closes.
  */
+// Turnstile site key — resolved at build time by Astro.
+// If empty/undefined, all Turnstile logic is skipped entirely.
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
+
+// Extend Window to include Turnstile API
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (container: string | HTMLElement, options: TurnstileRenderOptions) => string;
+      reset: (widgetId: string) => void;
+      remove: (widgetId: string) => void;
+    };
+  }
+}
+
+interface TurnstileRenderOptions {
+  sitekey: string;
+  callback: (token: string) => void;
+  theme?: string;
+}
+
 export default function ContactModal() {
   const whatsappPhone = import.meta.env.PUBLIC_WHATSAPP_PHONE;
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const previousFocusRef = useRef<Element | null>(null);
   const modalPanelRef = useRef<HTMLDivElement | null>(null);
+
+  // Turnstile state
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
+  const turnstileWidgetIdRef = useRef<string | null>(null);
 
   /** Open the modal with animation */
   const open = useCallback(() => {
@@ -98,6 +124,58 @@ export default function ContactModal() {
     };
   }, []);
 
+  /** Turnstile widget — only rendered when PUBLIC_TURNSTILE_SITE_KEY is configured */
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || !isOpen || !isVisible) return;
+
+    let widgetId: string | null = null;
+
+    const renderWidget = () => {
+      if (!window.turnstile || !turnstileContainerRef.current) return;
+      widgetId = window.turnstile.render(turnstileContainerRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        callback: (token: string) => setTurnstileToken(token),
+        theme: 'dark',
+      });
+      turnstileWidgetIdRef.current = widgetId;
+    };
+
+    // If Turnstile script is already loaded, render immediately
+    if (window.turnstile) {
+      renderWidget();
+    } else {
+      // Check if the script tag is already in the document
+      const existing = document.querySelector(
+        'script[src*="challenges.cloudflare.com/turnstile"]',
+      );
+      if (existing) {
+        // Script tag present but may not have loaded yet — wait for it
+        existing.addEventListener('load', renderWidget);
+      } else {
+        // Inject the Turnstile script
+        const script = document.createElement('script');
+        script.src =
+          'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback';
+        script.async = true;
+        script.defer = true;
+        script.addEventListener('load', renderWidget);
+        document.head.appendChild(script);
+      }
+    }
+
+    return () => {
+      // Remove the widget on close / unmount
+      if (widgetId && window.turnstile) {
+        try {
+          window.turnstile.remove(widgetId);
+        } catch {
+          // Widget may already be gone
+        }
+        turnstileWidgetIdRef.current = null;
+      }
+    };
+  }, [isOpen, isVisible]);
+
   /** Form validation & submission */
   const [formState, setFormState] = useState({
     name: '',
@@ -144,6 +222,7 @@ export default function ContactModal() {
             email: formState.email,
             message: formState.message,
             fax: formState.fax,
+            ...(turnstileToken ? { turnstileToken } : {}),
           }),
         });
         const data = await response.json();
@@ -158,6 +237,15 @@ export default function ContactModal() {
         setSubmitError('Something went wrong. Please try again later.');
       } finally {
         setIsSubmitting(false);
+        // Reset Turnstile widget so a fresh token is generated for the next attempt
+        if (turnstileWidgetIdRef.current && window.turnstile) {
+          try {
+            window.turnstile.reset(turnstileWidgetIdRef.current);
+          } catch {
+            // Widget may have been removed
+          }
+        }
+        setTurnstileToken('');
       }
     }
   };
@@ -315,6 +403,11 @@ export default function ContactModal() {
               <p class="text-red-400 text-sm mt-1">{errors.message}</p>
             )}
           </div>
+
+          {/* Turnstile widget — only rendered when site key is configured */}
+          {TURNSTILE_SITE_KEY && (
+            <div ref={turnstileContainerRef} />
+          )}
 
           <button
             type="submit"

@@ -16,8 +16,16 @@ if (!release) {
   return Astro.redirect('/releases');
 }
 
-const { title, artist, releaseDate, type, artwork, description, tracks, streamingLinks } =
-  release.data;
+const {
+  title,
+  artist,
+  releaseDate,
+  type,
+  artwork,
+  description,
+  tracks,
+  streamingLinks,
+} = release.data;
 
 const playableTracks: Track[] = tracks.map((track, i) =>
   buildTrackFromContent(track, slug!, i, artist, artwork),
@@ -37,7 +45,7 @@ const typeBadge: Record<string, string> = {
 
 const { Content } = await render(release);
 
-const siteUrl = Astro.site?.href || 'https://sam.music/';
+const siteUrl = Astro.site?.href || 'https://sampaultoms.com/';
 const albumSchema = generateMusicAlbumSchema(release.data, siteUrl);
 
 const ogType = type === 'single' ? 'music.song' : 'music.album';
@@ -74,22 +82,30 @@ const metaDescription = description || `Listen to ${title} by Sam Paul Toms.`;
       <span class="text-xs font-semibold tracking-wider text-accent mb-2">
         {typeBadge[type]}
       </span>
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">{title}</h1>
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+        {title}
+      </h1>
       <p class="text-lg text-text/70 mb-1">{artist}</p>
       <p class="text-sm text-text/40 mb-6">{formattedDate}</p>
 
-      {description && (
-        <p class="text-text/60 leading-relaxed mb-6 max-w-lg">{description}</p>
-      )}
+      {
+        description && (
+          <p class="text-text/60 leading-relaxed mb-6 max-w-lg">
+            {description}
+          </p>
+        )
+      }
 
-      {streamingLinks && (
-        <div class="mb-4">
-          <h2 class="text-xs font-semibold tracking-wider text-text/40 uppercase mb-3">
-            Listen Now
-          </h2>
-          <StreamingLinks links={streamingLinks} />
-        </div>
-      )}
+      {
+        streamingLinks && (
+          <div class="mb-4">
+            <h2 class="text-xs font-semibold tracking-wider text-text/40 uppercase mb-3">
+              Listen Now
+            </h2>
+            <StreamingLinks links={streamingLinks} />
+          </div>
+        )
+      }
     </div>
   </div>
 

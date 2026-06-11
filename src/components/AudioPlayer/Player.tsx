@@ -14,7 +14,10 @@ import {
 import * as audioEngine from './audioEngine';
 import * as waveformRenderer from './waveformRenderer';
 import { getWaveformPeaksUrl } from '../../scripts/audio-helpers';
-import { init as initYouTubeWatcher, destroy as destroyYouTubeWatcher } from '../../scripts/youtube-audio-pause';
+import {
+  init as initYouTubeWatcher,
+  destroy as destroyYouTubeWatcher,
+} from '../../scripts/youtube-audio-pause';
 import type { Track } from './types';
 import './Player.css';
 
@@ -325,9 +328,7 @@ export default function Player() {
             {track?.title ?? '—'}
           </span>
           <span class="audio-player-track-info__artist">
-            {track?.subtitle
-              ? `${track.artist}: ${track.subtitle}`
-              : (track?.artist ?? '')}
+            {track?.subtitle ?? ''}
           </span>
         </div>
       </div>

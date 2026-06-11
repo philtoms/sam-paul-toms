@@ -12,13 +12,13 @@
 
 Two form variants exist, both with identical fields and client-side validation but no backend:
 
-| Aspect | `ContactModal.tsx` | `ContactForm.astro` |
-|--------|-------------------|---------------------|
-| **Type** | Preact component (interactive) | Static Astro component |
-| **Fields** | `name`, `email`, `message` | `name`, `email`, `message` |
-| **Validation** | Preact state + `isValidEmail()` regex | Inline `<script>` with same regex |
-| **Submission** | `handleSubmit` prevents default, validates, resets form, shows success for 3s | Same behaviour — validates, resets, shows success |
-| **Network calls** | None — simulated only | None — simulated only |
+| Aspect            | `ContactModal.tsx`                                                            | `ContactForm.astro`                               |
+| ----------------- | ----------------------------------------------------------------------------- | ------------------------------------------------- |
+| **Type**          | Preact component (interactive)                                                | Static Astro component                            |
+| **Fields**        | `name`, `email`, `message`                                                    | `name`, `email`, `message`                        |
+| **Validation**    | Preact state + `isValidEmail()` regex                                         | Inline `<script>` with same regex                 |
+| **Submission**    | `handleSubmit` prevents default, validates, resets form, shows success for 3s | Same behaviour — validates, resets, shows success |
+| **Network calls** | None — simulated only                                                         | None — simulated only                             |
 
 ### Server infrastructure
 
@@ -43,18 +43,18 @@ Both forms need their submission logic changed to:
 
 ### Comparison Matrix
 
-| Option | Free Tier | Setup Effort | Cloudflare Workers Compatible | New npm Deps | New Env Vars | Spam Protection | Data Privacy | Best For |
-|--------|-----------|-------------|-------------------------------|-------------|-------------|-----------------|-------------|----------|
-| **Resend** | 100 emails/day (3,000/mo) | Low | Yes (fetch-based) | `resend` (lightweight) | `RESEND_API_KEY` | Via your API route | Excellent (you control flow) | Solo dev email delivery |
-| **SendGrid** | 100 emails/day | Low–Medium | Partial (Node.js deps) | `@sendgrid/mail` (heavier tree) | `SENDGRID_API_KEY` | Via your API route | Excellent | Larger-scale email ops |
-| **Mailgun** | No true free tier (~$0.80/1k) | Medium | Partial (depends on `axios`) | `mailgun.js` | `MAILGUN_API_KEY`, `MAILGUN_DOMAIN` | Via your API route | Excellent | Domain-level email infra |
-| **Cloudflare Email Workers** | Free (receive only) | High | Native | None | Email Routing config | Built-in | Excellent | Inbound email processing |
-| **WhatsApp (Twilio API)** | ~$0.005/msg (no free tier) | High | Partial | `twilio` (heavy) | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER` | Via your API route | Moderate (phone exposure risk) | Real-time notification |
-| **WhatsApp (wa.me link)** | Free | Trivial | N/A (no backend) | None | None | None | Poor (phone in URL) | Quick chat fallback |
-| **Formspree** | 50 submissions/mo | Trivial | N/A (external POST) | None | `FORMSPREE_FORM_ID` | Built-in (spam filtering) | Moderate (3rd-party stored) | Zero-backend forms |
-| **Getform** | 50 submissions/mo | Trivial | N/A (external POST) | None | `GETFORM_API_KEY` | Built-in | Moderate | Zero-backend forms |
-| **Basin** | 100 submissions/mo | Trivial | N/A (external POST) | None | `BASIN_FORM_ID` | Built-in | Moderate | Zero-backend forms |
-| **Astro API route + Resend** | 100 emails/day (3,000/mo) | Low | Yes | `resend` | `RESEND_API_KEY` | Honeypot + rate limit (custom) | Excellent | Full control, minimal deps |
+| Option                       | Free Tier                     | Setup Effort | Cloudflare Workers Compatible | New npm Deps                    | New Env Vars                                                     | Spam Protection                | Data Privacy                   | Best For                   |
+| ---------------------------- | ----------------------------- | ------------ | ----------------------------- | ------------------------------- | ---------------------------------------------------------------- | ------------------------------ | ------------------------------ | -------------------------- |
+| **Resend**                   | 100 emails/day (3,000/mo)     | Low          | Yes (fetch-based)             | `resend` (lightweight)          | `RESEND_API_KEY`                                                 | Via your API route             | Excellent (you control flow)   | Solo dev email delivery    |
+| **SendGrid**                 | 100 emails/day                | Low–Medium   | Partial (Node.js deps)        | `@sendgrid/mail` (heavier tree) | `SENDGRID_API_KEY`                                               | Via your API route             | Excellent                      | Larger-scale email ops     |
+| **Mailgun**                  | No true free tier (~$0.80/1k) | Medium       | Partial (depends on `axios`)  | `mailgun.js`                    | `MAILGUN_API_KEY`, `MAILGUN_DOMAIN`                              | Via your API route             | Excellent                      | Domain-level email infra   |
+| **Cloudflare Email Workers** | Free (receive only)           | High         | Native                        | None                            | Email Routing config                                             | Built-in                       | Excellent                      | Inbound email processing   |
+| **WhatsApp (Twilio API)**    | ~$0.005/msg (no free tier)    | High         | Partial                       | `twilio` (heavy)                | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER` | Via your API route             | Moderate (phone exposure risk) | Real-time notification     |
+| **WhatsApp (wa.me link)**    | Free                          | Trivial      | N/A (no backend)              | None                            | None                                                             | None                           | Poor (phone in URL)            | Quick chat fallback        |
+| **Formspree**                | 50 submissions/mo             | Trivial      | N/A (external POST)           | None                            | `FORMSPREE_FORM_ID`                                              | Built-in (spam filtering)      | Moderate (3rd-party stored)    | Zero-backend forms         |
+| **Getform**                  | 50 submissions/mo             | Trivial      | N/A (external POST)           | None                            | `GETFORM_API_KEY`                                                | Built-in                       | Moderate                       | Zero-backend forms         |
+| **Basin**                    | 100 submissions/mo            | Trivial      | N/A (external POST)           | None                            | `BASIN_FORM_ID`                                                  | Built-in                       | Moderate                       | Zero-backend forms         |
+| **Astro API route + Resend** | 100 emails/day (3,000/mo)     | Low          | Yes                           | `resend`                        | `RESEND_API_KEY`                                                 | Honeypot + rate limit (custom) | Excellent                      | Full control, minimal deps |
 
 ### Detailed Notes per Option
 
@@ -84,9 +84,9 @@ Both forms need their submission logic changed to:
 #### Cloudflare Email Workers
 
 - Cloudflare's Email Routing lets you receive emails at your domain and process them with a Worker.
-- **Not applicable for outbound email:** Email Workers are for receiving and processing inbound email. To *send* email from a contact form, you still need an outbound email API (Resend, SendGrid, etc.).
+- **Not applicable for outbound email:** Email Workers are for receiving and processing inbound email. To _send_ email from a contact form, you still need an outbound email API (Resend, SendGrid, etc.).
 - **Setup complexity:** Requires domain MX records on Cloudflare, Email Routing configuration, and a dedicated Worker.
-- **Verdict:** Rejected for this use case — it solves inbound routing, not outbound sending. Could be useful *in addition* to an email API for features like auto-reply, but that's out of scope.
+- **Verdict:** Rejected for this use case — it solves inbound routing, not outbound sending. Could be useful _in addition_ to an email API for features like auto-reply, but that's out of scope.
 
 #### WhatsApp — Twilio API
 
@@ -126,12 +126,12 @@ Both forms need their submission logic changed to:
 
 Regardless of the delivery option, the API endpoint needs spam protection:
 
-| Technique | Effort | Effectiveness | Notes |
-|-----------|--------|--------------|-------|
-| **Honeypot field** | Low | Medium | Add a hidden `fax` or `website` field; if filled, silently reject. Trivial to add to both form variants. |
-| **Rate limiting** | Medium | High | Cloudflare provides rate limiting at the edge. Could also implement simple IP-based throttling in the API route using Cloudflare KV or in-memory. |
-| **Cloudflare Turnstile** | Medium | High | Cloudflare's privacy-preserving CAPTCHA alternative. Free, invisible to most users. Requires adding a Turnstile widget to the form and verifying server-side. |
-| **Server-side validation** | Low | Medium | Validate email format, message length limits, reject suspicious patterns on the server, not just client-side. |
+| Technique                  | Effort | Effectiveness | Notes                                                                                                                                                         |
+| -------------------------- | ------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Honeypot field**         | Low    | Medium        | Add a hidden `fax` or `website` field; if filled, silently reject. Trivial to add to both form variants.                                                      |
+| **Rate limiting**          | Medium | High          | Cloudflare provides rate limiting at the edge. Could also implement simple IP-based throttling in the API route using Cloudflare KV or in-memory.             |
+| **Cloudflare Turnstile**   | Medium | High          | Cloudflare's privacy-preserving CAPTCHA alternative. Free, invisible to most users. Requires adding a Turnstile widget to the form and verifying server-side. |
+| **Server-side validation** | Low    | Medium        | Validate email format, message length limits, reject suspicious patterns on the server, not just client-side.                                                 |
 
 **Recommendation:** Start with **honeypot field + server-side validation** for the MVP. Add **Cloudflare Turnstile** in a follow-up if spam becomes a problem. Rate limiting can be handled by Cloudflare's built-in features at the account level.
 
@@ -167,20 +167,20 @@ The trade-off is data privacy (messages stored on Basin's servers) and an extern
 
 ### Files to create
 
-| File | Purpose |
-|------|---------|
+| File                       | Purpose                                                                             |
+| -------------------------- | ----------------------------------------------------------------------------------- |
 | `src/pages/api/contact.ts` | Astro API endpoint — receives POST, validates, sends email via Resend, returns JSON |
-| `.env.local` (development) | Add `RESEND_API_KEY=re_xxx` |
-| `.env.example` | Document `RESEND_API_KEY` and `CONTACT_RECIPIENT_EMAIL` |
+| `.env.local` (development) | Add `RESEND_API_KEY=re_xxx`                                                         |
+| `.env.example`             | Document `RESEND_API_KEY` and `CONTACT_RECIPIENT_EMAIL`                             |
 
 ### Files to modify
 
-| File | Change |
-|------|--------|
-| `src/components/ContactModal.tsx` | Replace simulated `handleSubmit` with `fetch('/api/contact', ...)` call, handle success/error responses |
-| `src/components/ContactForm.astro` | Replace simulated submission in `<script>` with same `fetch` call |
-| `package.json` | Add `resend` dependency |
-| `.env.example` | Add `RESEND_API_KEY` and `CONTACT_RECIPIENT_EMAIL` entries |
+| File                               | Change                                                                                                  |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `src/components/ContactModal.tsx`  | Replace simulated `handleSubmit` with `fetch('/api/contact', ...)` call, handle success/error responses |
+| `src/components/ContactForm.astro` | Replace simulated submission in `<script>` with same `fetch` call                                       |
+| `package.json`                     | Add `resend` dependency                                                                                 |
+| `.env.example`                     | Add `RESEND_API_KEY` and `CONTACT_RECIPIENT_EMAIL` entries                                              |
 
 ### API route shape (`src/pages/api/contact.ts`)
 
@@ -195,6 +195,7 @@ Response 500: { ok: false, error: "Failed to send message" }
 ```
 
 Logic:
+
 1. Parse JSON body from request
 2. Validate: name required, email required + valid format, message required + max length
 3. Check honeypot field (`fax`) — if filled, return 200 silently (don't alert bots)
@@ -221,17 +222,17 @@ if (data.ok) {
 
 ### Environment variables to add
 
-| Variable | Where | Purpose |
-|----------|-------|---------|
-| `RESEND_API_KEY` | Server only (no `PUBLIC_` prefix) | Resend API authentication |
-| `CONTACT_RECIPIENT_EMAIL` | Server only | Email address to deliver contact messages to |
+| Variable                  | Where                             | Purpose                                      |
+| ------------------------- | --------------------------------- | -------------------------------------------- |
+| `RESEND_API_KEY`          | Server only (no `PUBLIC_` prefix) | Resend API authentication                    |
+| `CONTACT_RECIPIENT_EMAIL` | Server only                       | Email address to deliver contact messages to |
 
 Both set via Cloudflare Pages dashboard → Settings → Environment variables.
 
 ### Resend account setup
 
 1. Sign up at resend.com (free)
-2. Add and verify the sending domain (e.g., `sam.music`)
+2. Add and verify the sending domain (e.g., `sampaultoms.com`)
 3. Create an API key with "Send" permission
 4. Add `RESEND_API_KEY` to Cloudflare Pages env vars
 
@@ -251,8 +252,8 @@ On valid submissions, the API route sends a second "Thank you for your message" 
 
 ## 6. Open Questions for Owner
 
-1. **Destination email address** — What email should contact form messages be delivered to? (e.g., `hello@sam.music`, `sam@personal.com`). This will be the `CONTACT_RECIPIENT_EMAIL` env var.
-2. **Sending domain** — Do you want to verify `sam.music` as a sending domain in Resend? This ensures emails come from `noreply@sam.music` (professional). Alternative: use Resend's default `onboarding@resend.dev` for testing.
+1. **Destination email address** — What email should contact form messages be delivered to? (e.g., `hello@sampaultoms.com`, `sam@personal.com`). This will be the `CONTACT_RECIPIENT_EMAIL` env var.
+2. **Sending domain** — Do you want to verify `sampaultoms.com` as a sending domain in Resend? This ensures emails come from `noreply@sampaultoms.com` (professional). Alternative: use Resend's default `onboarding@resend.dev` for testing.
 3. **WhatsApp link** — Would you like a supplementary "Message on WhatsApp" link alongside the form? This is a simple `wa.me` link with no backend — it can be added to the contact section as an alternative contact method. This would be a separate task. **Update (KB-107):** Implemented. The WhatsApp link is now rendered inside the ContactModal, conditionally shown when `PUBLIC_WHATSAPP_PHONE` env var is set.
 4. **Spam protection level** — Start with honeypot + server-side validation (recommended), or go straight to Cloudflare Turnstile CAPTCHA? Honeypot catches most bots; Turnstile can be added later if needed.
 5. **Auto-reply** — ~~Should the form send an automatic "thanks for your message" reply to the sender?~~ **Implemented in KB-106.** The API route sends a plain-text auto-reply to the submitter after the notification email to Sam succeeds.
@@ -262,10 +263,10 @@ On valid submissions, the API route sends a second "Thank you for your message" 
 
 ## 7. Cost Summary (Primary Recommendation)
 
-| Item | Cost |
-|------|------|
-| Resend free tier | $0/month (up to 3,000 emails) |
+| Item                       | Cost                                                      |
+| -------------------------- | --------------------------------------------------------- |
+| Resend free tier           | $0/month (up to 3,000 emails)                             |
 | Cloudflare Pages Functions | $0/month (included in Pages free tier, 100k requests/day) |
-| **Total** | **$0/month** |
+| **Total**                  | **$0/month**                                              |
 
 This is consistent with the project's existing $0/month hosting cost documented in `docs/deployment.md`.

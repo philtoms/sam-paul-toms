@@ -1,6 +1,8 @@
 ---
 // ContactForm.astro — Static form with client-side validation.
 // Submits to /api/contact via fetch.
+
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 ---
 
 <form aria-label="Contact form" id="contact-form" class="space-y-6">
@@ -61,6 +63,18 @@
     <p class="text-red-400 text-sm mt-1 hidden" data-error="message"></p>
   </div>
 
+  {turnstileSiteKey && (
+    <div id="contact-turnstile" data-sitekey={turnstileSiteKey}></div>
+  )}
+  {turnstileSiteKey && (
+    <script
+      is:inline
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+      async
+      defer
+    ></script>
+  )}
+
   <button
     type="submit"
     id="contact-submit"
@@ -86,6 +100,43 @@
   const successMsg = document.getElementById('contact-success') as HTMLParagraphElement;
   const errorMsg = document.getElementById('contact-error') as HTMLParagraphElement;
 
+  // Turnstile state — only used when the widget container exists
+  const turnstileContainer = document.getElementById('contact-turnstile');
+  let turnstileToken = '';
+  let turnstileWidgetId: string | null = null;
+
+  // Render Turnstile widget once the script has loaded
+  if (turnstileContainer) {
+    const siteKey = turnstileContainer.getAttribute('data-sitekey') || '';
+
+    const tryRender = () => {
+      const w = (window as any).turnstile;
+      if (!w || !turnstileContainer) return;
+      turnstileWidgetId = w.render(turnstileContainer, {
+        sitekey: siteKey || '',
+        callback: (token: string) => { turnstileToken = token; },
+        theme: 'dark',
+      });
+    };
+
+    if ((window as any).turnstile) {
+      tryRender();
+    } else {
+      // Poll briefly for the external Turnstile script to load
+      let attempts = 0;
+      const poll = setInterval(() => {
+        attempts++;
+        if ((window as any).turnstile) {
+          clearInterval(poll);
+          tryRender();
+        } else if (attempts > 50) {
+          // Give up after ~5 seconds
+          clearInterval(poll);
+        }
+      }, 100);
+    }
+  }
+
   function showError(field: string, message: string) {
     const el = form.querySelector(`[data-error="${field}"]`) as HTMLParagraphElement;
     if (el) {
@@ -105,6 +156,17 @@
 
   function isValidEmail(email: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function resetTurnstile() {
+    if (turnstileWidgetId && (window as any).turnstile) {
+      try {
+        (window as any).turnstile.reset(turnstileWidgetId);
+      } catch {
+        // Widget may have been removed
+      }
+    }
+    turnstileToken = '';
   }
 
   form.addEventListener('submit', async (e) => {
@@ -136,15 +198,20 @@
       submitBtn.textContent = 'Sending...';
 
       try {
+        const body: Record<string, string> = {
+          name: nameInput.value,
+          email: emailInput.value,
+          message: messageInput.value,
+          fax: faxInput?.value ?? '',
+        };
+        if (turnstileToken) {
+          body.turnstileToken = turnstileToken;
+        }
+
         const response = await fetch('/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: nameInput.value,
-            email: emailInput.value,
-            message: messageInput.value,
-            fax: faxInput?.value ?? '',
-          }),
+          body: JSON.stringify(body),
         });
         const data = await response.json();
         if (data.ok) {
@@ -163,6 +230,7 @@
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Send Message';
+        resetTurnstile();
       }
     }
   });
