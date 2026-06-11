@@ -241,7 +241,7 @@ Both set via Cloudflare Pages dashboard → Settings → Environment variables.
 
 1. **Destination email address** — What email should contact form messages be delivered to? (e.g., `hello@sam.music`, `sam@personal.com`). This will be the `CONTACT_RECIPIENT_EMAIL` env var.
 2. **Sending domain** — Do you want to verify `sam.music` as a sending domain in Resend? This ensures emails come from `noreply@sam.music` (professional). Alternative: use Resend's default `onboarding@resend.dev` for testing.
-3. **WhatsApp link** — Would you like a supplementary "Message on WhatsApp" link alongside the form? This is a simple `wa.me` link with no backend — it can be added to the contact section as an alternative contact method. This would be a separate task.
+3. **WhatsApp link** — Would you like a supplementary "Message on WhatsApp" link alongside the form? This is a simple `wa.me` link with no backend — it can be added to the contact section as an alternative contact method. This would be a separate task. **Update (KB-107):** Implemented. The WhatsApp link is now rendered inside the ContactModal, conditionally shown when `PUBLIC_WHATSAPP_PHONE` env var is set.
 4. **Spam protection level** — Start with honeypot + server-side validation (recommended), or go straight to Cloudflare Turnstile CAPTCHA? Honeypot catches most bots; Turnstile can be added later if needed.
 5. **Auto-reply** — Should the form send an automatic "thanks for your message" reply to the sender? This is a simple addition with Resend but wasn't in the original scope.
 6. **Notification beyond email** — Any interest in push notifications (e.g., to a phone) for new messages? This would require a separate service (Pushover, Telegram bot, etc.) and is out of scope for the initial implementation.

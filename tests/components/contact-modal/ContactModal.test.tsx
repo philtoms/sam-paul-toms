@@ -298,3 +298,49 @@ describe('ContactModal form submission', () => {
     });
   });
 });
+
+describe('ContactModal WhatsApp link', () => {
+  beforeEach(() => {
+    document.body.classList.remove('overflow-hidden');
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('does not render WhatsApp link when PUBLIC_WHATSAPP_PHONE is not set', async () => {
+    render(<ContactModal />);
+
+    document.dispatchEvent(new CustomEvent('contact-modal:open'));
+    await waitFor(() => {
+      expect(screen.getByText('Get In Touch')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('Message on WhatsApp')).not.toBeInTheDocument();
+  });
+
+  it('renders WhatsApp link when PUBLIC_WHATSAPP_PHONE is set', async () => {
+    vi.stubEnv('PUBLIC_WHATSAPP_PHONE', '447123456789');
+
+    // Re-import to pick up the stubbed env var
+    const { default: ContactModalWithWA } = await import(
+      '../../../src/components/ContactModal'
+    );
+
+    render(<ContactModalWithWA />);
+
+    document.dispatchEvent(new CustomEvent('contact-modal:open'));
+    await waitFor(() => {
+      expect(screen.getByText('Get In Touch')).toBeInTheDocument();
+    });
+
+    const link = screen.getByText('Message on WhatsApp').closest('a')!;
+    expect(link).not.toBeNull();
+    expect(link.getAttribute('href')).toContain('wa.me/447123456789');
+    expect(link.getAttribute('href')).toContain(
+      'text=Hi%20Sam%2C%20I%20reached%20out%20via%20your%20website.',
+    );
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+  });
+});
