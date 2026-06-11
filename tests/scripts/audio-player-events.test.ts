@@ -12,11 +12,13 @@ import {
   addToQueue,
   seekPlayer,
   togglePlayer,
+  fadeAndPausePlayer,
   AUDIO_PLAYER_PLAY,
   AUDIO_PLAYER_PAUSE,
   AUDIO_PLAYER_ADD,
   AUDIO_PLAYER_SEEK,
   AUDIO_PLAYER_TOGGLE,
+  AUDIO_PLAYER_FADE_PAUSE,
 } from '../../src/scripts/audio-player-events';
 import type { Track } from '../../src/components/AudioPlayer/types';
 
@@ -124,6 +126,20 @@ describe('audio-player-events', () => {
       expect(AUDIO_PLAYER_ADD).toBe('audio-player:add');
       expect(AUDIO_PLAYER_SEEK).toBe('audio-player:seek');
       expect(AUDIO_PLAYER_TOGGLE).toBe('audio-player:toggle');
+      expect(AUDIO_PLAYER_FADE_PAUSE).toBe('audio-player:fade-pause');
+    });
+  });
+
+  describe('fadeAndPausePlayer', () => {
+    it('dispatches audio-player:fade-pause event on document', () => {
+      const dispatchSpy = vi.spyOn(document, 'dispatchEvent');
+
+      fadeAndPausePlayer();
+
+      expect(dispatchSpy).toHaveBeenCalledTimes(1);
+      const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
+      expect(event.type).toBe(AUDIO_PLAYER_FADE_PAUSE);
+      expect(event.detail).toBeNull();
     });
   });
 });

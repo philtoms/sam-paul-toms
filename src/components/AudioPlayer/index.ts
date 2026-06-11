@@ -14,4 +14,5 @@ export const AUDIO_PLAYER_EVENTS = {
   PAUSE: 'audio-player:pause',
   ADD: 'audio-player:add',
   SEEK: 'audio-player:seek',
+  FADE_PAUSE: 'audio-player:fade-pause',
 } as const;

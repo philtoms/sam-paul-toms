@@ -186,7 +186,7 @@ export default function ProjectModal() {
               style="padding-bottom: 56.25%"
             >
               <iframe
-                src={`https://www.youtube.com/embed/${videoId}`}
+                src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1`}
                 title={`${projectData.title} — video`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen=""

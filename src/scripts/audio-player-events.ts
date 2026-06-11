@@ -14,6 +14,7 @@ export const AUDIO_PLAYER_PAUSE = 'audio-player:pause';
 export const AUDIO_PLAYER_ADD = 'audio-player:add';
 export const AUDIO_PLAYER_SEEK = 'audio-player:seek';
 export const AUDIO_PLAYER_TOGGLE = 'audio-player:toggle';
+export const AUDIO_PLAYER_FADE_PAUSE = 'audio-player:fade-pause';
 
 /** Event detail interfaces */
 export interface PlayEventDetail {
@@ -94,4 +95,13 @@ export function seekPlayer(trackId: string, fraction: number): void {
  */
 export function togglePlayer(): void {
   document.dispatchEvent(new CustomEvent(AUDIO_PLAYER_TOGGLE));
+}
+
+/**
+ * Dispatch an event to smoothly fade out and pause the audio player.
+ * Used when a YouTube video starts playing to avoid competing audio.
+ * The Player component handles this by calling audioEngine.fadeAndPause().
+ */
+export function fadeAndPausePlayer(): void {
+  document.dispatchEvent(new CustomEvent(AUDIO_PLAYER_FADE_PAUSE));
 }

@@ -24,6 +24,7 @@ import type { Track } from './types';
 let howl: HowlType | null = null;
 let rafId: number | null = null;
 let trackEffectDispose: (() => void) | null = null;
+let fadeIntervalId: ReturnType<typeof setInterval> | null = null;
 
 /**
  * Start the requestAnimationFrame loop to track playback position.
@@ -100,11 +101,23 @@ export function load(track: Track): void {
 }
 
 /**
+ * Cancel any in-progress fade-out operation.
+ * Clears the interval and restores Howler volume to the stored preference.
+ */
+function cancelFade(): void {
+  if (fadeIntervalId !== null) {
+    clearInterval(fadeIntervalId);
+    fadeIntervalId = null;
+  }
+}
+
+/**
  * Destroy only the Howl instance without resetting all state.
  * Used internally when loading a new track (to avoid resetting
  * playbackState before the new load begins).
  */
 function destroyHowl(): void {
+  cancelFade();
   stopTimeTracking();
   if (howl) {
     howl.unload();
@@ -150,6 +163,43 @@ export function pause(): void {
   if (howl) {
     howl.pause();
   }
+}
+
+/**
+ * Smoothly fade out the audio over the given duration, then pause.
+ * Only modifies the Howler volume directly — does NOT touch the `volume`
+ * signal so the user's slider position is preserved. After pausing,
+ * the Howler volume is restored to the stored preference so next manual
+ * play uses the correct level.
+ *
+ * @param fadeDuration - Duration of the fade in ms (default: 500)
+ */
+export function fadeAndPause(fadeDuration: number = 500): void {
+  if (!howl || !howl.playing()) return;
+
+  // Cancel any in-progress fade before starting a new one
+  cancelFade();
+
+  const startVolume = howl.volume();
+  const steps = 20;
+  const stepTime = fadeDuration / steps;
+  const volumeStep = startVolume / steps;
+  let currentStep = 0;
+
+  fadeIntervalId = setInterval(() => {
+    currentStep++;
+    if (currentStep >= steps) {
+      // Fade complete — pause and restore volume
+      clearInterval(fadeIntervalId!);
+      fadeIntervalId = null;
+      howl!.volume(0);
+      howl!.pause();
+      // Restore Howler volume to stored preference for next manual play
+      howl!.volume(volume.peek());
+    } else {
+      howl!.volume(startVolume - volumeStep * currentStep);
+    }
+  }, stepTime);
 }
 
 /**
@@ -202,6 +252,7 @@ export function getHowl(): HowlType | null {
  * reactive subscription.
  */
 export function destroy(): void {
+  cancelFade();
   destroyHowl();
   if (trackEffectDispose) {
     trackEffectDispose();

@@ -14,6 +14,7 @@ import {
 import * as audioEngine from './audioEngine';
 import * as waveformRenderer from './waveformRenderer';
 import { getWaveformPeaksUrl } from '../../scripts/audio-helpers';
+import { init as initYouTubeWatcher, destroy as destroyYouTubeWatcher } from '../../scripts/youtube-audio-pause';
 import type { Track } from './types';
 import './Player.css';
 
@@ -120,6 +121,7 @@ export default function Player() {
   /** Initialize audio engine and waveform renderer on mount */
   useEffect(() => {
     audioEngine.initReactiveSubscription();
+    initYouTubeWatcher();
 
     // Set up body padding to prevent content hidden behind fixed bar
     document.body.classList.add('audio-player-body-padding');
@@ -130,6 +132,7 @@ export default function Player() {
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);
       }
+      destroyYouTubeWatcher();
       audioEngine.destroy();
       waveformRenderer.destroy();
       if (bodyPaddingRef.current) {
@@ -233,11 +236,16 @@ export default function Player() {
       audioEngine.togglePlay();
     };
 
+    const handleFadePause = () => {
+      audioEngine.fadeAndPause();
+    };
+
     document.addEventListener('audio-player:play', handlePlay);
     document.addEventListener('audio-player:pause', handlePause);
     document.addEventListener('audio-player:add', handleAdd);
     document.addEventListener('audio-player:seek', handleSeek);
     document.addEventListener('audio-player:toggle', handleToggle);
+    document.addEventListener('audio-player:fade-pause', handleFadePause);
 
     return () => {
       document.removeEventListener('audio-player:play', handlePlay);
@@ -245,6 +253,7 @@ export default function Player() {
       document.removeEventListener('audio-player:add', handleAdd);
       document.removeEventListener('audio-player:seek', handleSeek);
       document.removeEventListener('audio-player:toggle', handleToggle);
+      document.removeEventListener('audio-player:fade-pause', handleFadePause);
     };
   }, []);
 

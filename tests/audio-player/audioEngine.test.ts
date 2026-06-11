@@ -2,12 +2,19 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Track } from '../../src/components/AudioPlayer/types';
 
 // Create mock that can be both a constructor and have tracked calls
+let mockVolumeValue = 0.8;
+
 const mockHowlInstance = {
   play: vi.fn(),
   pause: vi.fn(),
   stop: vi.fn(),
   seek: vi.fn(() => 0),
-  volume: vi.fn(),
+  volume: vi.fn((v?: number) => {
+    if (v !== undefined) {
+      mockVolumeValue = v;
+    }
+    return mockVolumeValue;
+  }),
   unload: vi.fn(),
   playing: vi.fn(() => false),
   duration: vi.fn(() => 180),
@@ -387,6 +394,96 @@ describe('audioEngine', () => {
           src: ['https://example.com/audio/song.mp3?v=1'],
         }),
       );
+    });
+  });
+
+  describe('fadeAndPause', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      audioEngine.load(mockTrack);
+      mockHowlInstance.playing.mockReturnValue(true);
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('calls howl.pause() after fade completes', () => {
+      mockVolumeValue = 0.8;
+      audioEngine.fadeAndPause(500);
+
+      // Advance through all 20 steps (25ms each × 20 = 500ms)
+      vi.advanceTimersByTime(500);
+
+      expect(mockHowlInstance.pause).toHaveBeenCalled();
+    });
+
+    it('is a no-op when no track is loaded (after destroy)', () => {
+      audioEngine.destroy();
+      mockHowlInstance.playing.mockReturnValue(true);
+
+      expect(() => audioEngine.fadeAndPause()).not.toThrow();
+      expect(mockHowlInstance.pause).not.toHaveBeenCalled();
+    });
+
+    it('is a no-op when howl is not playing', () => {
+      mockHowlInstance.playing.mockReturnValue(false);
+
+      audioEngine.fadeAndPause();
+
+      expect(mockHowlInstance.pause).not.toHaveBeenCalled();
+    });
+
+    it('does NOT modify the volume signal', () => {
+      playlistStore.volume.value = 0.6;
+      const volumeBefore = playlistStore.volume.value;
+
+      mockVolumeValue = 0.6;
+      audioEngine.fadeAndPause(500);
+      vi.advanceTimersByTime(500);
+
+      expect(playlistStore.volume.value).toBe(volumeBefore);
+    });
+
+    it('restores howler volume after pause', () => {
+      playlistStore.volume.value = 0.7;
+      mockVolumeValue = 0.7;
+
+      audioEngine.fadeAndPause(500);
+      vi.advanceTimersByTime(500);
+
+      // After fade completes, howl.volume should be called with the stored preference
+      expect(mockHowlInstance.volume).toHaveBeenLastCalledWith(0.7);
+    });
+
+    it('cancels previous fade on consecutive calls', () => {
+      mockVolumeValue = 0.8;
+
+      audioEngine.fadeAndPause(500);
+      vi.advanceTimersByTime(250); // halfway through first fade
+
+      const pauseCountBefore = mockHowlInstance.pause.mock.calls.length;
+
+      audioEngine.fadeAndPause(500);
+      vi.advanceTimersByTime(500);
+
+      // Only the second fade should complete (one pause call from second fade)
+      // The first fade was cancelled so it should not have paused yet
+      expect(mockHowlInstance.pause).toHaveBeenCalledTimes(pauseCountBefore + 1);
+    });
+
+    it('destroy() cancels an active fade', () => {
+      mockVolumeValue = 0.8;
+      audioEngine.fadeAndPause(500);
+      vi.advanceTimersByTime(250); // halfway through
+
+      audioEngine.destroy();
+
+      // Advance past the original fade duration — no pause should happen
+      vi.advanceTimersByTime(500);
+      // destroy() already called unload(), so no additional pause from fade
+      // The key assertion is that the fade interval was cleared
+      expect(mockHowlInstance.pause).not.toHaveBeenCalled();
     });
   });
 });

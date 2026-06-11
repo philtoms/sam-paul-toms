@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Music player now fades out and pauses when a YouTube video starts playing, preventing competing audio sources (KB-101)
+
 ### Changed
 
 - Removed published date display from project cards grid and project detail modal (KB-102)
