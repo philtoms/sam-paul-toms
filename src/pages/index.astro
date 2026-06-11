@@ -6,6 +6,7 @@ import SocialLinksBar from '../components/SocialLinksBar.astro';
 import PlaylistAccordion from '../components/PlaylistAccordion';
 import YouTubeEmbed from '../components/YouTubeEmbed.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
+import MediaCarousel from '../components/MediaCarousel';
 import { getCollection, render } from 'astro:content';
 import { buildTrackFromContent } from '../scripts/audio-helpers';
 import type { Track } from '../components/AudioPlayer/types';
@@ -70,6 +71,12 @@ const youtubeUrl = 'https://www.youtube.com/watch?v=xlt63O1YvSM';
 // Fetch projects for the project grid
 const projectsEntries = await getCollection('projects');
 
+// Fetch gallery items for the media carousel
+const galleryEntries = await getCollection('gallery');
+const galleryItems = galleryEntries
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((entry) => entry.data);
+
 // Bio summary
 const bioSummary =
   'Sam Paul Toms is an award-nominated London-based composer, producer, and multi-instrumentalist. Specializing in emotive music for media, Sam Paul Toms has created scores for dramatic and documentary film, idents, trailers, and more.';
@@ -100,6 +107,11 @@ const bioSummary =
           </div>
         </CompactBio>
       </div>
+    </section>
+
+    {/* Media Carousel */}
+    <section class="section">
+      <MediaCarousel client:visible items={galleryItems} />
     </section>
 
     {/* Playlist Accordion */}

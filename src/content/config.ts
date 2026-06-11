@@ -82,4 +82,17 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { releases, about, works, projects };
+const gallery = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/gallery' }),
+  schema: z.object({
+    title: z.string(),
+    type: z.enum(['image', 'video', 'instagram']),
+    src: z.string(),
+    thumbnail: z.string().optional(),
+    alt: z.string().optional(),
+    order: z.number(),
+    instagramUrl: z.string().url().optional(),
+  }),
+});
+
+export const collections = { releases, about, works, projects, gallery };
