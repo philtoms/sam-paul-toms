@@ -667,17 +667,12 @@ A photo.`;
   it('profile URL is detected and skipped without fetching', async () => {
     const { isProfileUrl } = await import(SCRIPT_PATH);
 
-    createGalleryFixture(galleryDir, 'profile-item.md', {
-      type: 'instagram',
-      instagramUrl: 'https://www.instagram.com/sammytoms/',
-    });
-
-    // Verify the URL is detected as a profile URL
+    // Verify isProfileUrl still correctly detects profile URLs
     expect(isProfileUrl('https://www.instagram.com/sammytoms/')).toBe(true);
+    expect(isProfileUrl('https://www.instagram.com/p/ABC123/')).toBe(false);
 
-    // Run the real script — it should skip this profile URL item
-    // Note: the script reads from the real gallery dir, not our temp dir,
-    // but the isProfileUrl function is what matters
+    // Run the real script — since KB-118, all gallery items use post permalinks
+    // so no "Profile URL" skip messages should appear
     const env = { ...process.env };
     delete env.INSTAGRAM_ACCESS_TOKEN;
     const output = execSync('node scripts/fetch-instagram-oembed.mjs 2>&1', {
@@ -687,9 +682,9 @@ A photo.`;
       shell: '/bin/bash',
     });
 
-    // The script should log skip messages for profile URLs (goes to stderr,
-    // but we merged with stdout via 2>&1)
-    expect(output).toContain('Profile URL');
+    // Script completes successfully
     expect(output).toContain('✅ Done:');
+    // No profile URLs in the gallery, so no skip messages
+    expect(output).not.toContain('Profile URL');
   });
 });

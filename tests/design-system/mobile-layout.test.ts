@@ -57,12 +57,16 @@ describe('Mobile Layout (≤430px) — KB-084', () => {
       expect(mobileMediaMatch).not.toBeNull();
     });
 
-    it('desktop ::before remains background-position: 0 85%', () => {
-      // The desktop rule (outside media query) should still have 0 85%
+    it('desktop ::before does not set a specific background-position (uses CSS default)', () => {
+      // Desktop rule should exist but have no explicit background-position
+      // (the background-position values are commented out intentionally)
       const desktopBeforeMatch = playerCss.match(
-        /\.audio-player-bar--expanded::before\s*\{[^}]*background-position:\s*0\s+85%/,
+        /\.audio-player-bar--expanded::before\s*\{([^}]*)\}/,
       );
       expect(desktopBeforeMatch).not.toBeNull();
+      // The desktop rule should not contain an active background-position declaration
+      // (it's commented out)
+      expect(desktopBeforeMatch![1]).not.toMatch(/^[^/*]*background-position:/m);
     });
   });
 });
@@ -192,7 +196,7 @@ describe('Mobile Player Grid — KB-085', () => {
     );
     expect(mobileBlockMatch).not.toBeNull();
     const areas = mobileBlockMatch![1].trim();
-    const secondRowMatch = areas.match(/'time-start\s+waveform\s+volume\s+time-end'/);
+    const secondRowMatch = areas.match(/'time-start\s+waveform\s+time-end\s+volume'/);
     expect(secondRowMatch).not.toBeNull();
   });
 

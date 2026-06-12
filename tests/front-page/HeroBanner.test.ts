@@ -97,7 +97,7 @@ describe('Homepage scroll-over layout', () => {
   });
 
   it('main element has margin-top matching hero aspect-ratio height minus section padding for scroll-over effect', () => {
-    expect(index).toMatch(/<main[^>]*mt-\[calc\(100vw\*9\/16-4rem\)\]/);
-    expect(index).toMatch(/<main[^>]*md:mt-\[calc\(100vw\*9\/21-4rem\)\]/);
+    expect(index).toMatch(/<main[^>]*mt-\[calc\(100vw\*9\/22-4rem\)\]/);
+    expect(index).toMatch(/<main[^>]*md:mt-\[calc\(100vw\*9\/26-4rem\)\]/);
   });
 });

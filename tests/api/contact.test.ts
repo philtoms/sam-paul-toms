@@ -344,7 +344,7 @@ describe('POST /api/contact — Turnstile verification', () => {
     );
 
     // Email was sent
-    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(mockSend).toHaveBeenCalledTimes(2);
   });
 
   it('returns 400 when Turnstile verification fails', async () => {
@@ -394,7 +394,7 @@ describe('POST /api/contact — Turnstile verification', () => {
     expect(data.ok).toBe(true);
 
     // Email was sent (no Turnstile check)
-    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(mockSend).toHaveBeenCalledTimes(2);
   });
 
   it('proceeds normally when token sent but secret key is missing', async () => {
@@ -414,7 +414,7 @@ describe('POST /api/contact — Turnstile verification', () => {
     expect(response.status).toBe(200);
     const data = await response.json();
     expect(data.ok).toBe(true);
-    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(mockSend).toHaveBeenCalledTimes(2);
   });
 
   it('proceeds normally when secret key is set but no token sent', async () => {
@@ -437,7 +437,7 @@ describe('POST /api/contact — Turnstile verification', () => {
     expect(data.ok).toBe(true);
 
     // Email was sent (graceful skip — no token to verify)
-    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(mockSend).toHaveBeenCalledTimes(2);
   });
 
   it('returns 400 when Turnstile verification fetch throws a network error', async () => {

@@ -82,6 +82,7 @@ const mockTrack = {
   id: '1',
   title: 'Test Song',
   artist: 'Test Artist',
+  subtitle: 'Test Artist',
   audioUrl: 'https://example.com/test.mp3',
   artworkUrl: 'https://example.com/artwork.jpg',
 };

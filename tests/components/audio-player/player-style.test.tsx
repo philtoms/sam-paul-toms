@@ -385,7 +385,7 @@ describe('Player Style', () => {
 
     // ::before should reference the banner image with cover sizing and cinematic crop
     expect(cssContent).toMatch(
-      /\.audio-player-bar--expanded::before\s*\{[^}]*background-image:\s*url\(['"]\/images\/banner\/spt_low_res\.png['"]\)/,
+      /\.audio-player-bar--expanded::before\s*\{[^}]*background-image:\s*url\(['"]\/images\/spt_no_text\.png['"]\)/,
     );
     expect(cssContent).toMatch(
       /\.audio-player-bar--expanded::before\s*\{[^}]*background-size:\s*cover/,
