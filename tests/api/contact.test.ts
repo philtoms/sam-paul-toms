@@ -294,6 +294,62 @@ describe('POST /api/contact', () => {
     const autoReplyCall = mockSend.mock.calls[1][0];
     expect(autoReplyCall.replyTo).toBe('hello@sampaultoms.uk');
   });
+
+  it('uses PUBLIC_ARTIST_NAME in auto-reply sign-off', async () => {
+    vi.stubEnv('PUBLIC_ARTIST_NAME', 'Alex');
+
+    await POST(
+      mockContext(
+        makeRequest({
+          name: 'Eve',
+          email: 'eve@example.com',
+          message: 'Hello!',
+        }),
+      ) as any,
+    );
+
+    const autoReplyCall = mockSend.mock.calls[1][0];
+    expect(autoReplyCall.text).toContain('Best,\nAlex');
+    expect(autoReplyCall.text).not.toContain('Best,\nSam');
+  });
+
+  it('derives site hostname from SITE_URL in auto-reply', async () => {
+    vi.stubEnv('SITE_URL', 'https://customdomain.com');
+
+    await POST(
+      mockContext(
+        makeRequest({
+          name: 'Frank',
+          email: 'frank@example.com',
+          message: 'Hello!',
+        }),
+      ) as any,
+    );
+
+    const autoReplyCall = mockSend.mock.calls[1][0];
+    expect(autoReplyCall.text).toContain('customdomain.com');
+    expect(autoReplyCall.text).not.toContain('sampaultoms.com');
+  });
+
+  it('falls back to Sam and sampaultoms.com when env vars are not set', async () => {
+    // Reset any env vars from previous tests
+    vi.stubEnv('PUBLIC_ARTIST_NAME', '');
+    vi.stubEnv('SITE_URL', '');
+
+    await POST(
+      mockContext(
+        makeRequest({
+          name: 'Grace',
+          email: 'grace@example.com',
+          message: 'Hello!',
+        }),
+      ) as any,
+    );
+
+    const autoReplyCall = mockSend.mock.calls[1][0];
+    expect(autoReplyCall.text).toContain('Best,\nSam');
+    expect(autoReplyCall.text).toContain('sampaultoms.com');
+  });
 });
 
 describe('POST /api/contact — Turnstile verification', () => {

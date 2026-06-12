@@ -156,15 +156,15 @@ The following artist-specific strings are hardcoded in source code and **must** 
 
 ### Contact Form
 
-| File | Line | Hardcoded Value | Change To |
-|------|------|----------------|-----------|
-| `src/pages/api/contact.ts` | 141 | Auto-reply text: `"getting in touch via the contact form on sampaultoms.com"` and signs as `"Sam"` | New domain and artist name |
+| File | Line | Hardcoded Value | Status |
+|------|------|----------------|--------|
+| `src/pages/api/contact.ts` | ~141 | Auto-reply sign-off `"Sam"` and domain `"sampaultoms.com"` | **Resolved** — uses `PUBLIC_ARTIST_NAME` env var and derives hostname from `SITE_URL` |
 
 ### WhatsApp Link
 
-| File | Line | Hardcoded Value | Change To |
-|------|------|----------------|-----------|
-| `src/components/ContactModal.tsx` | ~207 | WhatsApp message: `"Hi%20Sam%2C%20I%20reached%20out%20via%20your%20website."` | New artist name |
+| File | Line | Hardcoded Value | Status |
+|------|------|----------------|--------|
+| `src/components/ContactModal.tsx` | ~439 | WhatsApp greeting `"Hi%20Sam"` | **Resolved** — uses `PUBLIC_ARTIST_NAME` env var |
 
 ### Search Pattern
 
@@ -230,8 +230,8 @@ Follow these steps in order to fork this template for a new artist:
 - [ ] Update `og:site_name` in `src/components/SEOHead.astro` and `src/scripts/seo-helpers.ts`
 - [ ] Update default title/description in `src/layouts/BaseLayout.astro`
 - [ ] Update nav links in `src/layouts/ReleasesLayout.astro` and release pages
-- [ ] Update auto-reply text in `src/pages/api/contact.ts`
-- [ ] Update WhatsApp message in `src/components/ContactModal.tsx`
+- [ ] ~~Update auto-reply text in `src/pages/api/contact.ts`~~ — now configured via `PUBLIC_ARTIST_NAME` and `SITE_URL` env vars
+- [ ] ~~Update WhatsApp message in `src/components/ContactModal.tsx`~~ — now configured via `PUBLIC_ARTIST_NAME` env var
 - [ ] Update `public/robots.txt` sitemap URL
 
 ### 7. Infrastructure

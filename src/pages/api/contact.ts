@@ -134,11 +134,19 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Send auto-reply to the submitter (best-effort — failure does not affect the response)
   try {
+    const artistName = import.meta.env.PUBLIC_ARTIST_NAME || 'Sam';
+    let siteHost = 'sampaultoms.com';
+    try {
+      siteHost = new URL(import.meta.env.SITE_URL || 'https://sampaultoms.com').hostname;
+    } catch {
+      // Fall back to default hostname if SITE_URL is malformed
+    }
+
     await resend.emails.send({
       from: import.meta.env.CONTACT_FROM_EMAIL,
       to: email,
       subject: 'Thank you for your message',
-      text: `Hi ${name},\n\nThank you for getting in touch via the contact form on sampaultoms.com. I've received your message and will get back to you as soon as possible.\n\nBest,\nSam`,
+      text: `Hi ${name},\n\nThank you for getting in touch via the contact form on ${siteHost}. I've received your message and will get back to you as soon as possible.\n\nBest,\n${artistName}`,
       replyTo: import.meta.env.CONTACT_RECIPIENT_EMAIL,
     });
   } catch {

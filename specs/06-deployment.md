@@ -71,6 +71,7 @@ All environment variables are documented in `.env.example`. Organized by categor
 | Variable | Required | Scope | Default | Description |
 |----------|----------|-------|---------|-------------|
 | `PUBLIC_WHATSAPP_PHONE` | ❌ | Public | — | Phone number for WhatsApp link in contact modal. International format without `+` or spaces (e.g., `447123456789`). Leave blank to hide |
+| `PUBLIC_ARTIST_NAME` | ❌ | Public | `Sam` | Artist name used in contact form auto-reply sign-off and WhatsApp greeting message. Falls back to `Sam` when not set |
 
 ### Theme
 

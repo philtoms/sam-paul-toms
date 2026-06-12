@@ -45,6 +45,7 @@ interface TurnstileRenderOptions {
 
 export default function ContactModal() {
   const whatsappPhone = import.meta.env.PUBLIC_WHATSAPP_PHONE;
+  const artistName = import.meta.env.PUBLIC_ARTIST_NAME || 'Sam';
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const previousFocusRef = useRef<Element | null>(null);
@@ -436,7 +437,7 @@ export default function ContactModal() {
               <hr class="flex-1 border-white/10" />
             </div>
             <a
-              href={`https://wa.me/${whatsappPhone}?text=Hi%20Sam%2C%20I%20reached%20out%20via%20your%20website.`}
+              href={`https://wa.me/${whatsappPhone}?text=Hi%20${encodeURIComponent(artistName)}%2C%20I%20reached%20out%20via%20your%20website.`}
               target="_blank"
               rel="noopener noreferrer"
               class="flex items-center justify-center gap-2 border border-white/20 rounded-lg px-6 py-3 font-medium text-white/70 hover:text-white hover:border-white/40 transition-all duration-200 text-center"

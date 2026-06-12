@@ -418,10 +418,42 @@ describe('ContactModal WhatsApp link', () => {
     const link = screen.getByText('Message on WhatsApp').closest('a')!;
     expect(link).not.toBeNull();
     expect(link.getAttribute('href')).toContain('wa.me/447123456789');
+    // Default artist name fallback is "Sam"
     expect(link.getAttribute('href')).toContain(
       'text=Hi%20Sam%2C%20I%20reached%20out%20via%20your%20website.',
     );
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+
+    vi.unstubAllEnvs();
+  });
+
+  it('uses PUBLIC_ARTIST_NAME in WhatsApp greeting', async () => {
+    vi.stubEnv('PUBLIC_WHATSAPP_PHONE', '447123456789');
+    vi.stubEnv('PUBLIC_ARTIST_NAME', 'Alex');
+    vi.resetModules();
+
+    const eventsMod = await import('../../../src/scripts/contact-modal-events');
+    const { CONTACT_MODAL_OPEN: OPEN } = eventsMod;
+
+    const mod = await import('../../../src/components/ContactModal');
+    const ContactModalCustomArtist = mod.default;
+
+    render(<ContactModalCustomArtist />);
+
+    document.dispatchEvent(new CustomEvent(OPEN));
+    await waitFor(() => {
+      expect(screen.getByText('Get In Touch')).toBeInTheDocument();
+    });
+
+    const link = screen.getByText('Message on WhatsApp').closest('a')!;
+    expect(link).not.toBeNull();
+    expect(link.getAttribute('href')).toContain('wa.me/447123456789');
+    expect(link.getAttribute('href')).toContain(
+      'text=Hi%20Alex%2C%20I%20reached%20out%20via%20your%20website.',
+    );
+    expect(link.getAttribute('href')).not.toContain('Hi%20Sam');
+
+    vi.unstubAllEnvs();
   });
 });
