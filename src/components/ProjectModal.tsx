@@ -120,7 +120,7 @@ export default function ProjectModal() {
 
   return (
     <div
-      class={`fixed inset-0 z-60 flex items-center justify-center p-4 transition-opacity duration-200 ${
+      class={`fixed inset-0 z-60 flex items-center justify-center p-0 md:p-4 transition-opacity duration-200 ${
         isVisible
           ? 'opacity-100 pointer-events-auto'
           : 'opacity-0 pointer-events-none'
@@ -137,7 +137,7 @@ export default function ProjectModal() {
         ref={modalPanelRef}
         tabindex={-1}
         onClick={(e) => e.stopPropagation()}
-        class="relative bg-bg-elevated rounded-lg shadow-xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto outline-none"
+        class="relative bg-bg-elevated rounded-none md:rounded-lg shadow-xl max-w-3xl w-full p-4 md:p-6 max-h-[90vh] overflow-y-auto outline-none"
       >
         {/* Close button */}
         <div class="flex items-center justify-end mb-4">
@@ -173,10 +173,10 @@ export default function ProjectModal() {
         )}
 
         {/* Title */}
-        <h2 class="text-3xl font-bold text-white mt-6">{projectData.title}</h2>
+        <h2 class="text-xl md:text-3xl font-bold text-white mt-4 md:mt-6">{projectData.title}</h2>
 
         {/* Summary */}
-        <p class="text-white/80 leading-relaxed mt-4">{projectData.summary}</p>
+        <p class="text-sm md:text-base text-white/80 leading-relaxed mt-3 md:mt-4">{projectData.summary}</p>
 
         {/* YouTube video embed — only if video URL provided */}
         {videoId && (

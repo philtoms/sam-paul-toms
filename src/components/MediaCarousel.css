@@ -9,12 +9,11 @@
 .media-carousel__viewport {
   display: flex;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   gap: var(--space-4);
   padding: var(--space-4) 0;
   scrollbar-width: none;
+  box-sizing: border-box;
 
   /* Edge fading via CSS mask */
   -webkit-mask-image: linear-gradient(
@@ -40,7 +39,7 @@
 .media-carousel__card {
   flex: 0 0 80%;
   max-width: 560px;
-  scroll-snap-align: center;
+  aspect-ratio: 1357 / 1539;
   border-radius: 0;
   overflow: hidden;
   position: relative;
@@ -65,11 +64,13 @@
   z-index: 1;
 }
 
-/* Media content containers */
+/* Media content containers — inset to fit inside polaroid frame window */
 .media-carousel__media {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
+  position: absolute;
+  top: 5.5%;
+  left: 5.5%;
+  right: 5.5%;
+  bottom: 20%;
   overflow: hidden;
   background-color: var(--color-bg);
 }

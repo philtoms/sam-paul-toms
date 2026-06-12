@@ -13,12 +13,7 @@ import sys
 from pathlib import Path
 from PIL import Image
 
-IMAGES = [
-    Path("public/images/carousel/polaroid1.png"),
-    Path("public/images/carousel/polaroid2.png"),
-    Path("public/images/carousel/polaroid3.png"),
-    Path("public/images/carousel/polaroid4.png"),
-]
+IMAGES = sorted(Path("public/images/carousel").glob("polaroid*.png"))
 
 THRESHOLD = 10  # pixels with R,G,B all below this become transparent
 
@@ -61,7 +56,7 @@ def main() -> None:
     for path in IMAGES:
         convert_image(path)
 
-    print("\nDone. All four polaroid frames converted.")
+    print(f"\nDone. {len(IMAGES)} polaroid frame(s) converted.")
 
 
 if __name__ == "__main__":
