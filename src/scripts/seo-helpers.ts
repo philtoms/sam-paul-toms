@@ -4,6 +4,9 @@
  */
 import { resolveAbsoluteUrl } from '../scripts/structured-data';
 
+/** Default site name — single source of truth for the fallback value. */
+export const DEFAULT_SITE_NAME = 'Sam Paul Toms';
+
 export interface SEOProps {
   title: string;
   description: string;
@@ -13,6 +16,7 @@ export interface SEOProps {
   structuredData?: object | object[];
   noindex?: boolean;
   siteUrl?: string;
+  siteName?: string;
 }
 
 /**
@@ -34,6 +38,7 @@ export function generateSEOTags(props: SEOProps): Array<{
     structuredData,
     noindex,
     siteUrl = '',
+    siteName = DEFAULT_SITE_NAME,
   } = props;
 
   const tags: Array<{
@@ -61,7 +66,7 @@ export function generateSEOTags(props: SEOProps): Array<{
     tags.push({ type: 'meta', attrs: { property: 'og:url', content: canonical } });
   }
   tags.push({ type: 'meta', attrs: { property: 'og:type', content: type } });
-  tags.push({ type: 'meta', attrs: { property: 'og:site_name', content: 'Sam Paul Toms' } });
+  tags.push({ type: 'meta', attrs: { property: 'og:site_name', content: siteName } });
 
   if (image) {
     const absoluteImage = siteUrl ? resolveAbsoluteUrl(image, siteUrl) : image;

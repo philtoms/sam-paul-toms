@@ -146,6 +146,7 @@ Copy `.env.example` to `.env` and configure:
 
 - `R2_PUBLIC_URL` — Base URL for Cloudflare R2 object storage (audio files, artwork)
 - `SITE_URL` — Production site URL for canonical tags, sitemap, and structured data (defaults to `https://sampaultoms.com`)
+- `PUBLIC_SITE_NAME` — Site name used in page titles, `og:site_name`, navigation, and descriptions (defaults to `"Sam Paul Toms"`)
 - `PUBLIC_UMAMI_WEBSITE_ID` / `PUBLIC_UMAMI_SRC` — Umami analytics (leave blank to disable)
 
 ## Deployment

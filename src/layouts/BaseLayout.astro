@@ -5,6 +5,7 @@ import Player from '../components/AudioPlayer/Player';
 import ContactModal from '../components/ContactModal';
 import AboutModal from '../components/AboutModal';
 import ProjectModal from '../components/ProjectModal';
+import { DEFAULT_SITE_NAME } from '../scripts/seo-helpers';
 
 interface PressQuote {
   text: string;
@@ -27,9 +28,11 @@ interface Props {
   aboutPressQuotes?: PressQuote[];
 }
 
+const siteName = import.meta.env.PUBLIC_SITE_NAME || DEFAULT_SITE_NAME;
+
 const {
-  title = 'Sam Paul Toms',
-  description = 'Official music portfolio of Sam Paul Toms — listen to tracks, albums, and EPs.',
+  title = siteName,
+  description = `Official music portfolio of ${siteName} — listen to tracks, albums, and EPs.`,
   image,
   canonicalUrl,
   type = 'website',
@@ -61,6 +64,7 @@ const accentColor = import.meta.env.PUBLIC_ACCENT_COLOR || '#eab308';
       type={type}
       structuredData={structuredData}
       noindex={noindex}
+      siteName={siteName}
     />
   </head>
   <body class="bg-bg text-text antialiased min-h-screen">

@@ -134,25 +134,25 @@ The following artist-specific strings are hardcoded in source code and **must** 
 
 ### SEO / Meta Tags
 
-| File | Line | Hardcoded Value | Change To |
-|------|------|----------------|-----------|
-| `src/components/SEOHead.astro` | 30 | `og:site_name` = `"Sam Paul Toms"` | New artist/site name |
-| `src/scripts/seo-helpers.ts` | 64 | `og:site_name` = `"Sam Paul Toms"` | New artist/site name |
+| File | Line | Hardcoded Value | Status |
+|------|------|----------------|--------|
+| `src/components/SEOHead.astro` | 30 | `og:site_name` = `"Sam Paul Toms"` | ✅ Resolved via `PUBLIC_SITE_NAME` env var |
+| `src/scripts/seo-helpers.ts` | 64 | `og:site_name` = `"Sam Paul Toms"` | ✅ Resolved via `PUBLIC_SITE_NAME` env var |
 
-> **Template-ization gap:** `og:site_name` is hardcoded in two places. Ideally this should become a `PUBLIC_SITE_NAME` environment variable, but currently requires editing source code.
+> **Template-ization resolved:** `og:site_name` is now configurable via the `PUBLIC_SITE_NAME` environment variable (defaults to `"Sam Paul Toms"`). Set it in `.env` when forking the template for a new artist.
 
 ### Default Titles & Descriptions
 
-| File | Line(s) | Hardcoded Value | Change To |
-|------|---------|----------------|-----------|
-| `src/layouts/BaseLayout.astro` | 31–32 | Default `title`: `"Sam Paul Toms"`, default `description` | New artist name and description |
-| `src/layouts/ReleasesLayout.astro` | 15 | Default `title`: `"Sam Paul Toms — Releases"` | `"{Artist} — Releases"` |
-| `src/layouts/ReleasesLayout.astro` | 36 | Nav link text: `"Sam Paul Toms"` | New artist name |
-| `src/pages/releases/[slug].astro` | 48, 56, 63 | Fallback URL, title pattern: `"Sam Paul Toms — {title}"`, nav text | New artist name |
-| `src/pages/releases/[slug].astro` | 52 | Meta description: `"Listen to {title} by Sam Paul Toms."` | `"{Artist}"` name |
-| `src/pages/releases/index.astro` | 17–18 | `"Sam Paul Toms — Releases"` title and description | New artist name |
-| `src/pages/index.astro` | 82 | `bioSummary` text | New artist's bio summary |
-| `src/pages/index.astro` | 86–87 | `title`: `"Sam Paul Toms — Composer & Producer"`, `description` | New artist title |
+| File | Line(s) | Hardcoded Value | Status |
+|------|---------|----------------|--------|
+| `src/layouts/BaseLayout.astro` | 31–32 | Default `title`: `"Sam Paul Toms"`, default `description` | ✅ Resolved via `PUBLIC_SITE_NAME` env var |
+| `src/layouts/ReleasesLayout.astro` | 15 | Default `title`: `"Sam Paul Toms — Releases"` | ✅ Resolved via `PUBLIC_SITE_NAME` env var |
+| `src/layouts/ReleasesLayout.astro` | 36 | Nav link text: `"Sam Paul Toms"` | ✅ Resolved via `PUBLIC_SITE_NAME` env var |
+| `src/pages/releases/[slug].astro` | 48 | Fallback URL: `'https://sampaultoms.com/'` | Open — requires `SITE_URL` env var |
+| `src/pages/releases/[slug].astro` | 52, 56, 63 | Meta description, title pattern, nav text: `"Sam Paul Toms"` | ✅ Resolved via `PUBLIC_SITE_NAME` env var |
+| `src/pages/releases/index.astro` | 17–18 | `"Sam Paul Toms — Releases"` title and description | ✅ Resolved via `PUBLIC_SITE_NAME` env var |
+| `src/pages/index.astro` | 82 | `bioSummary` text | ✅ Resolved via `PUBLIC_SITE_NAME` env var |
+| `src/pages/index.astro` | 86–87 | `title`: `"Sam Paul Toms — Composer & Producer"`, `description` | ✅ Resolved via `PUBLIC_SITE_NAME` env var |
 
 ### Contact Form
 
@@ -192,6 +192,7 @@ Follow these steps in order to fork this template for a new artist:
 ### 2. Brand & Theme
 
 - [ ] Set `PUBLIC_ACCENT_COLOR` in `.env` to the artist's brand color
+- [ ] Set `PUBLIC_SITE_NAME` in `.env` to the artist's name (used in titles, meta tags, and navigation)
 - [ ] Replace `public/favicon.svg` with artist's favicon
 - [ ] Replace `public/favicon.ico` with matching ICO
 - [ ] (Optional) Replace fonts in `public/fonts/` and update `--font-display`/`--font-body` in `global.css`

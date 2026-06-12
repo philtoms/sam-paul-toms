@@ -156,4 +156,19 @@ describe('generateSEOTags', () => {
     expect(width).toBeUndefined();
     expect(height).toBeUndefined();
   });
+
+  it('uses custom siteName when provided', () => {
+    const tags = generateSEOTags({
+      ...baseProps,
+      siteName: 'Other Artist',
+    });
+    const ogSiteName = tags.find((t) => t.attrs?.property === 'og:site_name');
+    expect(ogSiteName!.attrs!.content).toBe('Other Artist');
+  });
+
+  it('defaults siteName to DEFAULT_SITE_NAME', () => {
+    const tags = generateSEOTags(baseProps);
+    const ogSiteName = tags.find((t) => t.attrs?.property === 'og:site_name');
+    expect(ogSiteName!.attrs!.content).toBe('Sam Paul Toms');
+  });
 });
