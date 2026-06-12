@@ -9,6 +9,13 @@
 import { useState, useRef, useCallback, useEffect } from 'preact/hooks';
 import './MediaCarousel.css';
 
+const POLAROID_FRAMES = [
+  '/images/carousel/polaroid1.png',
+  '/images/carousel/polaroid2.png',
+  '/images/carousel/polaroid3.png',
+  '/images/carousel/polaroid4.png',
+];
+
 interface GalleryItem {
   title: string;
   type: 'image' | 'video' | 'instagram';
@@ -250,6 +257,12 @@ export default function MediaCarousel({ items }: MediaCarouselProps) {
                 </>
               )}
             </div>
+            <img
+              class="media-carousel__polaroid-frame"
+              src={POLAROID_FRAMES[item.order % POLAROID_FRAMES.length]}
+              aria-hidden="true"
+              alt=""
+            />
           </div>
         ))}
       </div>

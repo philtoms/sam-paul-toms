@@ -92,13 +92,38 @@ describe('MediaCarousel — rendering', () => {
     expect(dots.length).toBe(4);
   });
 
-  it('cards have off-white polaroid border and square edges', () => {
+  it('cards have polaroid frame images instead of CSS borders', () => {
     const { container } = render(<MediaCarousel items={mockItems} />);
     const cards = container.querySelectorAll('.media-carousel__card');
     expect(cards.length).toBe(4);
+    // Each card should contain a polaroid frame <img>
+    cards.forEach((card) => {
+      const frame = card.querySelector('.media-carousel__polaroid-frame');
+      expect(frame).toBeTruthy();
+      expect(frame!.tagName).toBe('IMG');
+    });
     // No caption elements should be present
     const captions = container.querySelectorAll('.media-carousel__caption');
     expect(captions.length).toBe(0);
+  });
+
+  it('each card renders a polaroid frame image with a src from polaroid1-4', () => {
+    const { container } = render(<MediaCarousel items={mockItems} />);
+    const frames = container.querySelectorAll('.media-carousel__polaroid-frame');
+    expect(frames.length).toBe(4);
+    frames.forEach((frame) => {
+      const src = (frame as HTMLImageElement).getAttribute('src');
+      expect(src).toMatch(/\/images\/carousel\/polaroid[1-4]\.png/);
+    });
+  });
+
+  it('polaroid frame image has aria-hidden', () => {
+    const { container } = render(<MediaCarousel items={mockItems} />);
+    const frames = container.querySelectorAll('.media-carousel__polaroid-frame');
+    frames.forEach((frame) => {
+      expect(frame.getAttribute('aria-hidden')).toBe('true');
+      expect(frame.getAttribute('alt')).toBe('');
+    });
   });
 
   it('does not render caption titles', () => {
