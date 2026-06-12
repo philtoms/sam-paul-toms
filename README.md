@@ -259,3 +259,7 @@ Sitemap: https://sampaultoms.com/sitemap-index.xml
 ## Background
 
 See [`docs/initial-research.md`](docs/initial-research.md) for the full research report on platform comparison, design trends, and technology choices.
+
+## Template Specifications
+
+The [`/specs`](specs/README.md) directory contains generalized specification documents that describe the design system, architecture, content model, component API, and deployment process in an artist-agnostic way — useful for forking this template for a new artist site.
