@@ -51,6 +51,9 @@ Test content.
   return contentDir;
 }
 
+// Load exported helpers via dynamic import (ESM — require() is disallowed by lint)
+const { parseDuration, hashToRange } = await import(SCRIPT_PATH);
+
 describe.skipIf(!ffmpegAvailable)('generate-sample-audio', () => {
   let tempDir: string;
 
@@ -63,8 +66,6 @@ describe.skipIf(!ffmpegAvailable)('generate-sample-audio', () => {
   // --- Unit tests for exported helpers ---
 
   describe('parseDuration', () => {
-    const { parseDuration } = require(SCRIPT_PATH);
-
     it('parses "4:12" to 252 seconds', () => {
       expect(parseDuration('4:12')).toBe(252);
     });
@@ -95,8 +96,6 @@ describe.skipIf(!ffmpegAvailable)('generate-sample-audio', () => {
   });
 
   describe('hashToRange', () => {
-    const { hashToRange } = require(SCRIPT_PATH);
-
     it('returns a value within the specified range', () => {
       for (let i = 0; i < 20; i++) {
         const val = hashToRange(`test-${i}`, 100, 400);
@@ -210,9 +209,10 @@ describe.skipIf(!ffmpegAvailable)('generate-sample-audio', () => {
           `node "${SCRIPT_PATH}" "${fakeContentDir}" "${outputDir}"`,
           { encoding: 'utf-8', timeout: 10000, stdio: ['pipe', 'pipe', 'pipe'] },
         );
-      } catch (err: any) {
-        exitCode = err.status ?? 1;
-        stderr = err.stderr ?? '';
+      } catch (err) {
+        const execErr = err as { status?: number; stderr?: string };
+        exitCode = execErr.status ?? 1;
+        stderr = execErr.stderr ?? '';
       }
 
       expect(exitCode).toBe(1);

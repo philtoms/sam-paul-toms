@@ -29,7 +29,9 @@ function makeMalformedRequest(): Request {
   });
 }
 
-const mockContext = (request: Request) => ({ request, site: new URL('http://localhost:4321') });
+type PostContext = Parameters<typeof POST>[0];
+const mockContext = (request: Request): PostContext =>
+  ({ request, site: new URL('http://localhost:4321') }) as unknown as PostContext;
 
 describe('POST /api/contact', () => {
   beforeEach(() => {
@@ -49,7 +51,7 @@ describe('POST /api/contact', () => {
           email: 'sam@example.com',
           message: 'Hello, this is a test.',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(200);
@@ -66,7 +68,7 @@ describe('POST /api/contact', () => {
           email: 'alice@test.com',
           message: 'Test message.',
         }),
-      ) as any,
+      ),
     );
 
     expect(mockSend).toHaveBeenCalledWith(
@@ -87,7 +89,7 @@ describe('POST /api/contact', () => {
           email: '',
           message: '',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(400);
@@ -105,7 +107,7 @@ describe('POST /api/contact', () => {
           email: 'not-an-email',
           message: 'Hello!',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(400);
@@ -122,7 +124,7 @@ describe('POST /api/contact', () => {
           email: 'sam@example.com',
           message: 'x'.repeat(5001),
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(400);
@@ -140,7 +142,7 @@ describe('POST /api/contact', () => {
           message: 'Spam content',
           fax: 'http://spam-site.com',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(200);
@@ -160,7 +162,7 @@ describe('POST /api/contact', () => {
           email: 'sam@example.com',
           message: 'Hello!',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(500);
@@ -170,7 +172,7 @@ describe('POST /api/contact', () => {
   });
 
   it('returns 400 for malformed JSON body', async () => {
-    const response = await POST(mockContext(makeMalformedRequest()) as any);
+    const response = await POST(mockContext(makeMalformedRequest()));
 
     expect(response.status).toBe(400);
     const data = await response.json();
@@ -186,7 +188,7 @@ describe('POST /api/contact', () => {
           email: 'sam@example.com',
           message: 'Hello!',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(400);
@@ -203,7 +205,7 @@ describe('POST /api/contact', () => {
           email: `${'x'.repeat(190)}@example.com`,
           message: 'Hello!',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(400);
@@ -221,7 +223,7 @@ describe('POST /api/contact', () => {
           email: 'bob@example.com',
           message: 'Love your music!',
         }),
-      ) as any,
+      ),
     );
 
     // Two send calls: notification to Sam + auto-reply to submitter
@@ -249,7 +251,7 @@ describe('POST /api/contact', () => {
           message: 'Spam content',
           fax: 'http://spam-site.com',
         }),
-      ) as any,
+      ),
     );
 
     // Zero send calls: no notification, no auto-reply
@@ -269,7 +271,7 @@ describe('POST /api/contact', () => {
           email: 'carol@example.com',
           message: 'Test message.',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(200);
@@ -287,7 +289,7 @@ describe('POST /api/contact', () => {
           email: 'dave@example.com',
           message: 'Great work!',
         }),
-      ) as any,
+      ),
     );
 
     // Verify the auto-reply (second call) has replyTo set to Sam's email
@@ -305,7 +307,7 @@ describe('POST /api/contact', () => {
           email: 'eve@example.com',
           message: 'Hello!',
         }),
-      ) as any,
+      ),
     );
 
     const autoReplyCall = mockSend.mock.calls[1][0];
@@ -323,7 +325,7 @@ describe('POST /api/contact', () => {
           email: 'frank@example.com',
           message: 'Hello!',
         }),
-      ) as any,
+      ),
     );
 
     const autoReplyCall = mockSend.mock.calls[1][0];
@@ -343,7 +345,7 @@ describe('POST /api/contact', () => {
           email: 'grace@example.com',
           message: 'Hello!',
         }),
-      ) as any,
+      ),
     );
 
     const autoReplyCall = mockSend.mock.calls[1][0];
@@ -383,7 +385,7 @@ describe('POST /api/contact — Turnstile verification', () => {
           message: 'Hello!',
           turnstileToken: 'valid-turnstile-token',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(200);
@@ -419,7 +421,7 @@ describe('POST /api/contact — Turnstile verification', () => {
           message: 'Hello!',
           turnstileToken: 'invalid-turnstile-token',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(400);
@@ -442,7 +444,7 @@ describe('POST /api/contact — Turnstile verification', () => {
           message: 'Hello!',
           turnstileToken: 'some-token',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(200);
@@ -464,7 +466,7 @@ describe('POST /api/contact — Turnstile verification', () => {
           message: 'Hello!',
           turnstileToken: 'orphaned-token',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(200);
@@ -485,7 +487,7 @@ describe('POST /api/contact — Turnstile verification', () => {
           email: 'sam@example.com',
           message: 'Hello!',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(200);
@@ -510,7 +512,7 @@ describe('POST /api/contact — Turnstile verification', () => {
           message: 'Hello!',
           turnstileToken: 'some-token',
         }),
-      ) as any,
+      ),
     );
 
     expect(response.status).toBe(400);

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/preact';
+import path from 'node:path';
 import Player from '../../../src/components/AudioPlayer/Player';
 
 // Mock audioEngine module
@@ -25,7 +26,7 @@ vi.mock('../../../src/components/AudioPlayer/waveformRenderer', () => ({
 
 // Mock playlistStore signals
 let mockPlaybackState = 'idle';
-let mockCurrentTrack: any = null;
+let mockCurrentTrack: typeof mockTrack | null = null;
 let mockIsPlaying = false;
 let mockVolume = 0.8;
 let mockCurrentTime = 0;
@@ -236,7 +237,7 @@ describe('Player Style', () => {
     // Inject the Player CSS so jsdom can resolve computed styles
     const cssContent = await import('fs').then((fs) =>
       fs.promises.readFile(
-        require('path').resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
+        path.resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
         'utf-8',
       ),
     );
@@ -266,7 +267,7 @@ describe('Player Style', () => {
     // Inject the Player CSS so jsdom can resolve computed styles
     const cssContent = await import('fs').then((fs) =>
       fs.promises.readFile(
-        require('path').resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
+        path.resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
         'utf-8',
       ),
     );
@@ -297,7 +298,7 @@ describe('Player Style', () => {
     // Inject the Player CSS so jsdom can resolve computed styles
     const cssContent = await import('fs').then((fs) =>
       fs.promises.readFile(
-        require('path').resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
+        path.resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
         'utf-8',
       ),
     );
@@ -352,7 +353,7 @@ describe('Player Style', () => {
     // Inject the Player CSS so jsdom can resolve computed styles
     const cssContent = await import('fs').then((fs) =>
       fs.promises.readFile(
-        require('path').resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
+        path.resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
         'utf-8',
       ),
     );
@@ -378,7 +379,7 @@ describe('Player Style', () => {
     // resolve computed styles on pseudo-elements
     const cssContent = await import('fs').then((fs) =>
       fs.promises.readFile(
-        require('path').resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
+        path.resolve(__dirname, '../../../src/components/AudioPlayer/Player.css'),
         'utf-8',
       ),
     );

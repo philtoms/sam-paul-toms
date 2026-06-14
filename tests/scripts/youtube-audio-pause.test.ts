@@ -22,15 +22,14 @@ describe('youtube-audio-pause', () => {
   let onStateChangeCallback: ((event: PlayerEvent) => void) | null = null;
 
   // Mock YT.Player constructor — must use 'function' keyword so `new` works
-  const mockYTPlayer = vi.fn(function (this: any, _element: HTMLElement, options?: { events?: { onStateChange?: (event: PlayerEvent) => void } }) {
+  const mockYTPlayer = vi.fn(function (_element: HTMLElement, options?: { events?: { onStateChange?: (event: PlayerEvent) => void } }) {
     onStateChangeCallback = options?.events?.onStateChange ?? null;
-    this.destroy = vi.fn();
-    return this;
+    return { destroy: vi.fn() };
   });
 
   /** Helper: set up window.YT mock */
   function setupYTAPI(): void {
-    (window as any).YT = {
+    window.YT = {
       Player: mockYTPlayer,
       PlayerState: {
         UNSTARTED: -1,
@@ -40,7 +39,7 @@ describe('youtube-audio-pause', () => {
         BUFFERING: 3,
         CUED: 5,
       },
-    };
+    } as unknown as typeof YT;
   }
 
   /** Helper: trigger the onYouTubeIframeAPIReady callback to process queued iframes */
@@ -60,8 +59,9 @@ describe('youtube-audio-pause', () => {
 
   afterEach(() => {
     youtubeAudioPause.destroy();
-    delete (window as any).YT;
-    delete (window as any).onYouTubeIframeAPIReady;
+    const w = window as unknown as { YT?: unknown; onYouTubeIframeAPIReady?: () => void };
+    delete w.YT;
+    delete w.onYouTubeIframeAPIReady;
     document.head.querySelectorAll('script[src*="youtube"]').forEach((s) => s.remove());
     document.body.innerHTML = '';
   });

@@ -23,7 +23,7 @@ const mockHowlInstance = {
 let MockHowl: ReturnType<typeof vi.fn>;
 
 vi.mock('howler', () => {
-  MockHowl = vi.fn(function (this: any) {
+  MockHowl = vi.fn(function (this: unknown) {
     return mockHowlInstance;
   });
   return { Howl: MockHowl };
@@ -57,7 +57,7 @@ describe('audioEngine', () => {
     globalThis.cancelAnimationFrame = vi.fn();
 
     vi.doMock('howler', () => {
-      MockHowl = vi.fn(function (this: any) {
+      MockHowl = vi.fn(function (this: unknown) {
         return mockHowlInstance;
       });
       return { Howl: MockHowl };

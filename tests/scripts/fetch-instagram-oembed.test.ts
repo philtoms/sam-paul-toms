@@ -14,6 +14,19 @@ import path from 'node:path';
 import os from 'node:os';
 import { execSync } from 'node:child_process';
 
+/** Shape of a parsed gallery markdown file returned by readGalleryFiles. */
+interface GalleryFile {
+  filename: string;
+  filePath: string;
+  content: string;
+  data: {
+    type?: string;
+    instagramUrl?: string;
+    thumbnail?: string;
+    [key: string]: unknown;
+  };
+}
+
 const SCRIPT_PATH = path.resolve(
   __dirname,
   '../../scripts/fetch-instagram-oembed.mjs',
@@ -108,7 +121,7 @@ describe('fetch-instagram-oembed (unit)', () => {
 
     it('returns empty map when cacheDir is null', async () => {
       const { loadCache } = await import(SCRIPT_PATH);
-      const cache = loadCache(null as any);
+      const cache = loadCache(null);
       expect(cache.size).toBe(0);
     });
 
@@ -207,7 +220,7 @@ describe('fetch-instagram-oembed (unit)', () => {
       cache.set('key', { data: 'value' });
 
       // Should not throw
-      saveCache(null as any, cache);
+      saveCache(null, cache);
     });
   });
 
@@ -518,7 +531,7 @@ A video.`;
 
     const files = readGalleryFiles(galleryDir);
     const instagramItems = files.filter(
-      (f: any) => f.data.type === 'instagram' && f.data.instagramUrl,
+      (f: GalleryFile) => f.data.type === 'instagram' && f.data.instagramUrl,
     );
 
     expect(instagramItems).toHaveLength(0);
@@ -541,7 +554,7 @@ Content without Instagram URL.`;
 
     const files = readGalleryFiles(galleryDir);
     const instagramItems = files.filter(
-      (f: any) => f.data.type === 'instagram' && f.data.instagramUrl,
+      (f: GalleryFile) => f.data.type === 'instagram' && f.data.instagramUrl,
     );
 
     expect(instagramItems).toHaveLength(0);
@@ -617,13 +630,13 @@ A photo.`;
     expect(files).toHaveLength(3);
 
     const instagramItems = files.filter(
-      (f: any) => f.data.type === 'instagram' && f.data.instagramUrl,
+      (f: GalleryFile) => f.data.type === 'instagram' && f.data.instagramUrl,
     );
     expect(instagramItems).toHaveLength(2);
   });
 
   it('end-to-end: downloads thumbnail and updates markdown with local path', async () => {
-    const { readGalleryFiles, resolveLocalThumbnailPath, downloadImage, isProfileUrl } =
+    const { readGalleryFiles, resolveLocalThumbnailPath } =
       await import(SCRIPT_PATH);
     const matter = (await import('gray-matter')).default;
 
@@ -639,11 +652,9 @@ A photo.`;
 
     // Simulate the pipeline: read files, "fetch" thumbnail, download, write back
     const files = readGalleryFiles(galleryDir);
-    const item = files.find((f: any) => f.filename === 'sammytoms-01.md');
+    const item = files.find((f: GalleryFile) => f.filename === 'sammytoms-01.md');
     expect(item).toBeDefined();
 
-    // Simulate a fetched thumbnail URL
-    const fakeThumbnailUrl = 'https://cdn.example.com/thumb.jpg';
     const localPath = resolveLocalThumbnailPath(item!.filename, thumbnailsDir);
 
     // Mock downloadImage by writing a file directly

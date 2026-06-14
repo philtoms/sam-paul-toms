@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/preact';
+import path from 'node:path';
 import Player from '../../src/components/AudioPlayer/Player';
 
 // Mock audioEngine module
@@ -349,7 +350,7 @@ describe('Player', () => {
     // Inject the Player CSS so jsdom can resolve computed styles
     const cssContent = await import('fs').then((fs) =>
       fs.promises.readFile(
-        require('path').resolve(__dirname, '../../src/components/AudioPlayer/Player.css'),
+        path.resolve(__dirname, '../../src/components/AudioPlayer/Player.css'),
         'utf-8',
       ),
     );

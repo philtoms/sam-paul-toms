@@ -246,18 +246,20 @@ describe('ContactModal form submission', () => {
     // We must reset modules, stub the env var, and re-import the component.
 
     // Mock window.turnstile before importing so the component can render the widget
-    (window as any).turnstile = {
+    const turnstileMock = {
       render: vi.fn().mockReturnValue('mock-widget-id'),
       reset: vi.fn(),
       remove: vi.fn(),
     };
+    (window as unknown as { turnstile: typeof turnstileMock }).turnstile =
+      turnstileMock;
 
     vi.stubEnv('PUBLIC_TURNSTILE_SITE_KEY', 'test-site-key-123');
     vi.resetModules();
 
     // Re-import the events module (also module-scoped)
     const eventsMod = await import('../../../src/scripts/contact-modal-events');
-    const { CONTACT_MODAL_OPEN: OPEN, CONTACT_MODAL_CLOSE: CLOSE } = eventsMod;
+    const { CONTACT_MODAL_OPEN: OPEN } = eventsMod;
 
     // Dynamic re-import picks up the stubbed env var
     const mod = await import('../../../src/components/ContactModal');
@@ -279,11 +281,11 @@ describe('ContactModal form submission', () => {
 
     // Wait for the Turnstile useEffect to run and call window.turnstile.render
     await waitFor(() => {
-      expect((window as any).turnstile.render).toHaveBeenCalled();
+      expect(turnstileMock.render).toHaveBeenCalled();
     });
 
     // Simulate the Turnstile widget firing its callback with a token
-    const renderCalls = (window as any).turnstile.render.mock.calls;
+    const renderCalls = turnstileMock.render.mock.calls;
     const callback = renderCalls[0][1].callback;
     callback('mock-turnstile-token-xyz');
 
@@ -307,7 +309,7 @@ describe('ContactModal form submission', () => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
     });
 
-    const [url, options] = mockFetch.mock.calls[0];
+    const [, options] = mockFetch.mock.calls[0];
     const body = JSON.parse(options.body);
     expect(body.name).toBe('Turnstile User');
     expect(body.email).toBe('turnstile@example.com');
@@ -315,7 +317,7 @@ describe('ContactModal form submission', () => {
     expect(body).toHaveProperty('turnstileToken', 'mock-turnstile-token-xyz');
 
     // Cleanup
-    delete (window as any).turnstile;
+    delete (window as unknown as { turnstile?: unknown }).turnstile;
     vi.unstubAllEnvs();
   });
 

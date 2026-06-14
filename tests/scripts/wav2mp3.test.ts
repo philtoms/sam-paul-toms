@@ -134,9 +134,10 @@ describe.skipIf(!ffmpegAvailable)('wav2mp3', () => {
         timeout: 10000,
         stdio: ['pipe', 'pipe', 'pipe'],
       });
-    } catch (err: any) {
-      exitCode = err.status ?? 1;
-      stderr = err.stderr ?? '';
+    } catch (err) {
+      const execErr = err as { status?: number; stderr?: string };
+      exitCode = execErr.status ?? 1;
+      stderr = execErr.stderr ?? '';
     }
 
     expect(exitCode).toBe(1);
@@ -155,9 +156,10 @@ describe.skipIf(!ffmpegAvailable)('wav2mp3', () => {
         timeout: 10000,
         stdio: ['pipe', 'pipe', 'pipe'],
       });
-    } catch (err: any) {
-      exitCode = err.status ?? 1;
-      stderr = err.stderr ?? '';
+    } catch (err) {
+      const execErr = err as { status?: number; stderr?: string };
+      exitCode = execErr.status ?? 1;
+      stderr = execErr.stderr ?? '';
     }
 
     expect(exitCode).toBe(1);
