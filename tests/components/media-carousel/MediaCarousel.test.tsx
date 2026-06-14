@@ -2,11 +2,32 @@
  * MediaCarousel component tests.
  *
  * Tests rendering, navigation (click, keyboard), and media type rendering.
+ *
+ * Clone-based infinite-scroll structure: the component renders
+ *   [spacer, clone-last, ...realItems, clone-first, spacer]
+ * inside its viewport. The spacer divs do not carry the card class, so
+ * querySelectorAll('.media-carousel__card') yields (itemCount + 2) elements:
+ *   [clone-last, realItem0, ..., realItemN, clone-first]
+ * Real items occupy indices 1..itemCount within that NodeList. The
+ * `getRealCards(container)` helper returns the real items via slice(1, -1) so
+ * tests never index into a clone by accident.
+ *
+ * Navigation wraps bidirectionally: goTo() always wraps via
+ * ((realIndex % itemCount) + itemCount) % itemCount, so ArrowLeft at index 0
+ * wraps to the last item and ArrowRight at the last item wraps to index 0.
+ * Both nav buttons are always rendered (infinite scroll, no boundary hiding).
  */
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, fireEvent } from '@testing-library/preact';
 import MediaCarousel from '../../../src/components/MediaCarousel';
+
+/** Returns only real cards, excluding the clone-last and clone-first cards.
+ *  The carousel renders [clone-last, ...realItems, clone-first] as .media-carousel__card elements. */
+function getRealCards(container: HTMLElement): HTMLElement[] {
+  const allCards = container.querySelectorAll('.media-carousel__card');
+  return Array.from(allCards).slice(1, -1) as HTMLElement[];
+}
 
 const mockItems = [
   {
@@ -48,13 +69,13 @@ beforeEach(() => {
 describe('MediaCarousel — rendering', () => {
   it('renders all gallery items passed as props', () => {
     const { container } = render(<MediaCarousel items={mockItems} />);
-    const cards = container.querySelectorAll('.media-carousel__card');
+    const cards = getRealCards(container);
     expect(cards.length).toBe(4);
   });
 
   it('renders image items with correct src and alt', () => {
     const { container } = render(<MediaCarousel items={mockItems} />);
-    const img = container.querySelector('.media-carousel__card img') as HTMLImageElement;
+    const img = getRealCards(container)[0].querySelector('.media-carousel__media img') as HTMLImageElement;
     expect(img).toBeTruthy();
     expect(img.getAttribute('src')).toBe('/images/test.jpg');
     expect(img.getAttribute('alt')).toBe('Test image alt');
@@ -78,10 +99,9 @@ describe('MediaCarousel — rendering', () => {
   it('renders instagram items with thumbnail image', () => {
     const { container } = render(<MediaCarousel items={mockItems} />);
     // Instagram card should use the thumbnail image
-    const cards = container.querySelectorAll('.media-carousel__card');
-    // The third card (index 2) is the Instagram item
-    const instagramCard = cards[2];
-    const img = instagramCard.querySelector('img') as HTMLImageElement;
+    // Real item 2 (index 2 in getRealCards) is the Instagram item
+    const instagramCard = getRealCards(container)[2];
+    const img = instagramCard.querySelector('.media-carousel__media img') as HTMLImageElement;
     expect(img).toBeTruthy();
     expect(img.getAttribute('src')).toBe('/images/gallery/thumb.jpg');
   });
@@ -94,9 +114,9 @@ describe('MediaCarousel — rendering', () => {
 
   it('cards have polaroid frame images instead of CSS borders', () => {
     const { container } = render(<MediaCarousel items={mockItems} />);
-    const cards = container.querySelectorAll('.media-carousel__card');
+    const cards = getRealCards(container);
     expect(cards.length).toBe(4);
-    // Each card should contain a polaroid frame <img>
+    // Each real card should contain a polaroid frame <img>
     cards.forEach((card) => {
       const frame = card.querySelector('.media-carousel__polaroid-frame');
       expect(frame).toBeTruthy();
@@ -109,10 +129,14 @@ describe('MediaCarousel — rendering', () => {
 
   it('each card renders a polaroid frame image with a src from polaroid1-4', () => {
     const { container } = render(<MediaCarousel items={mockItems} />);
-    const frames = container.querySelectorAll('.media-carousel__polaroid-frame');
+    // Query frames only within real cards — clones also render polaroid frames
+    const realCards = getRealCards(container);
+    const frames = realCards
+      .map((card) => card.querySelector('.media-carousel__polaroid-frame'))
+      .filter(Boolean) as HTMLImageElement[];
     expect(frames.length).toBe(4);
     frames.forEach((frame) => {
-      const src = (frame as HTMLImageElement).getAttribute('src');
+      const src = frame.getAttribute('src');
       expect(src).toMatch(/\/images\/carousel\/polaroid[1-4]\.png/);
     });
   });
@@ -145,10 +169,11 @@ describe('MediaCarousel — navigation', () => {
     expect(nextBtn).toBeTruthy();
   });
 
-  it('does not show prev button at initial position (index 0)', () => {
+  it('renders prev button at initial position (index 0)', () => {
     const { container } = render(<MediaCarousel items={mockItems} />);
     const prevBtn = container.querySelector('.media-carousel__nav-btn--prev');
-    expect(prevBtn).toBeFalsy();
+    // Infinite scroll: both nav buttons are always rendered
+    expect(prevBtn).toBeTruthy();
   });
 
   it('clicking next button advances the active index', () => {
@@ -157,12 +182,12 @@ describe('MediaCarousel — navigation', () => {
 
     fireEvent.click(nextBtn);
 
-    // After clicking next, the second card should be active
-    const cards = container.querySelectorAll('.media-carousel__card');
-    expect(cards[0].classList.contains('media-carousel__card--active')).toBe(false);
-    expect(cards[1].classList.contains('media-carousel__card--active')).toBe(true);
+    // After clicking next, the second real card should be active
+    const realCards = getRealCards(container);
+    expect(realCards[0].classList.contains('media-carousel__card--active')).toBe(false);
+    expect(realCards[1].classList.contains('media-carousel__card--active')).toBe(true);
 
-    // The prev button should now appear
+    // The prev button is always rendered (infinite scroll)
     const prevBtn = container.querySelector('.media-carousel__nav-btn--prev');
     expect(prevBtn).toBeTruthy();
   });
@@ -178,23 +203,28 @@ describe('MediaCarousel — navigation', () => {
     const prevBtn = container.querySelector('.media-carousel__nav-btn--prev') as HTMLButtonElement;
     fireEvent.click(prevBtn);
 
-    const cards = container.querySelectorAll('.media-carousel__card');
-    expect(cards[0].classList.contains('media-carousel__card--active')).toBe(true);
-    expect(cards[1].classList.contains('media-carousel__card--active')).toBe(false);
+    const realCards = getRealCards(container);
+    expect(realCards[0].classList.contains('media-carousel__card--active')).toBe(true);
+    expect(realCards[1].classList.contains('media-carousel__card--active')).toBe(false);
   });
 
-  it('does not advance past the last item', () => {
-    // Use a 2-item list to test boundary
+  it('wraps to first item when advancing past the last item', () => {
+    // Use a 2-item list to test wrapping
     const twoItems = mockItems.slice(0, 2);
     const { container } = render(<MediaCarousel items={twoItems} />);
 
-    // Click next to go to last item
+    // Click next to go to the last item (index 1)
     const nextBtn = container.querySelector('.media-carousel__nav-btn--next') as HTMLButtonElement;
     fireEvent.click(nextBtn);
 
-    // Next button should no longer be present
+    // Infinite scroll: the next button is always present
     const nextBtnAfter = container.querySelector('.media-carousel__nav-btn--next');
-    expect(nextBtnAfter).toBeFalsy();
+    expect(nextBtnAfter).toBeTruthy();
+
+    // Click next again — wraps back to index 0
+    fireEvent.click(nextBtnAfter as HTMLButtonElement);
+    const realCards = getRealCards(container);
+    expect(realCards[0].classList.contains('media-carousel__card--active')).toBe(true);
   });
 
   it('arrow key navigation works (right arrow advances)', () => {
@@ -203,8 +233,8 @@ describe('MediaCarousel — navigation', () => {
 
     fireEvent.keyDown(carousel, { key: 'ArrowRight' });
 
-    const cards = container.querySelectorAll('.media-carousel__card');
-    expect(cards[1].classList.contains('media-carousel__card--active')).toBe(true);
+    const realCards = getRealCards(container);
+    expect(realCards[1].classList.contains('media-carousel__card--active')).toBe(true);
   });
 
   it('arrow key navigation works (left arrow goes back)', () => {
@@ -217,18 +247,20 @@ describe('MediaCarousel — navigation', () => {
     // Go back to index 0
     fireEvent.keyDown(carousel, { key: 'ArrowLeft' });
 
-    const cards = container.querySelectorAll('.media-carousel__card');
-    expect(cards[0].classList.contains('media-carousel__card--active')).toBe(true);
+    const realCards = getRealCards(container);
+    expect(realCards[0].classList.contains('media-carousel__card--active')).toBe(true);
   });
 
-  it('left arrow does nothing at index 0', () => {
+  it('left arrow wraps to last item at index 0', () => {
     const { container } = render(<MediaCarousel items={mockItems} />);
     const carousel = container.querySelector('.media-carousel') as HTMLElement;
 
     fireEvent.keyDown(carousel, { key: 'ArrowLeft' });
 
-    const cards = container.querySelectorAll('.media-carousel__card');
-    expect(cards[0].classList.contains('media-carousel__card--active')).toBe(true);
+    const realCards = getRealCards(container);
+    // ArrowLeft at index 0 wraps to the last item (index 3)
+    expect(realCards[0].classList.contains('media-carousel__card--active')).toBe(false);
+    expect(realCards[3].classList.contains('media-carousel__card--active')).toBe(true);
   });
 
   it('clicking a dot navigates to that item', () => {
@@ -238,8 +270,8 @@ describe('MediaCarousel — navigation', () => {
     // Click the third dot (index 2)
     fireEvent.click(dots[2]);
 
-    const cards = container.querySelectorAll('.media-carousel__card');
-    expect(cards[2].classList.contains('media-carousel__card--active')).toBe(true);
+    const realCards = getRealCards(container);
+    expect(realCards[2].classList.contains('media-carousel__card--active')).toBe(true);
 
     // Active dot should also update
     expect(dots[2].classList.contains('media-carousel__dot--active')).toBe(true);
