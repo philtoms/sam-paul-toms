@@ -270,3 +270,7 @@ On valid submissions, the API route sends a second "Thank you for your message" 
 | **Total**                  | **$0/month**                                              |
 
 This is consistent with the project's existing $0/month hosting cost documented in `docs/deployment.md`.
+
+---
+
+→ See [`docs/agentic-inbox-integration-research.md`](./agentic-inbox-integration-research.md) for the agentic-inbox integration investigation (KB-125), which evaluates routing contact submissions into a self-hosted Cloudflare inbox.
