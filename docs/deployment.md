@@ -310,3 +310,16 @@ git push
 - R2 operations: $4.50/million Class A, $0.36/million Class B beyond free tier
 
 For a typical music portfolio with occasional updates, the free tier is more than sufficient.
+
+---
+
+## 9. Optional: Agentic Inbox Integration
+
+Contact-form submissions can optionally be routed into a self-hosted
+[agentic-inbox](https://github.com/cloudflare/agentic-inbox) Worker on the same
+Cloudflare account, giving you a searchable inbox with an AI auto-draft agent —
+all behind Cloudflare Access. This requires **no portfolio code changes**: the
+only portfolio-side change is repointing `CONTACT_RECIPIENT_EMAIL` to the
+agentic-inbox mailbox address; the rest is separate Cloudflare infrastructure
+(Email Routing, the inbox Worker, R2, and an Access policy). See the full
+step-by-step deployment runbook: [`docs/agentic-inbox-deployment.md`](./agentic-inbox-deployment.md).

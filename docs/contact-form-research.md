@@ -274,3 +274,5 @@ This is consistent with the project's existing $0/month hosting cost documented 
 ---
 
 → See [`docs/agentic-inbox-integration-research.md`](./agentic-inbox-integration-research.md) for the agentic-inbox integration investigation (KB-125), which evaluates routing contact submissions into a self-hosted Cloudflare inbox.
+
+→ See [`docs/agentic-inbox-deployment.md`](./agentic-inbox-deployment.md) for the step-by-step deployment runbook (KB-127, Option A) that operationalises the recommendation above with zero portfolio code changes.
