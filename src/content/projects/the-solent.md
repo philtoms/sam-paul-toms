@@ -5,4 +5,5 @@ summary: 'Original soundtrack for the dramatic film The Solent. A brooding, tens
 publishDate: 2024-09-10
 dateStatus: 'UNVERIFIED — no corroborating evidence found. Content owner: confirm or update.'
 image: '/images/projects/the solent.jpeg'
+video: 'https://www.youtube.com/watch?v=SdjNvMMJqoE'
 ---
