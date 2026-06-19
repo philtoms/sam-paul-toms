@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Replaced gallery placeholder images with real Instagram post thumbnails for sammytoms-01, -02, -04, -05; updated `instagramUrl` fields from profile root to specific post permalinks (KB-115)
+- Switched the shared `vitest.config.ts` from `defineConfig` (`vitest/config`) to `getViteConfig` (`astro/config`), booting Astro's vite plugin pipeline so `.astro` files compile inside vitest and the Astro Container API can server-render them; dropped the manual `preact()` plugin (re-added automatically by the `@astrojs/preact` integration). Per-file `// @vitest-environment` annotations continue to drive the environment (KB-138)
+
+### Tests
+
+- Migrated `tests/front-page/YouTubeEmbed.test.ts` and `tests/front-page/CompactBio.test.ts` from source-substring grep to behavioural Astro Container API render-then-assert tests (assert on parsed-DOM attributes like `iframe.getAttribute('src')`), via a new shared `tests/helpers/renderAstro.ts` helper. `HeroBanner` and `mobile-layout` are intentionally kept as source-grep (animation-math / CSS-regex concerns); `ProjectGrid` and `SocialLinksBar` deferred to KB-148 (KB-138)
 
 ### Added
 

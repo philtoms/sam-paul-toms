@@ -1,6 +1,6 @@
 # 09 — Testing
 
-**Last updated:** 2026-06-12
+**Last updated:** 2026-06-19
 
 **Purpose:** Documents the test framework, configuration, directory structure, test categories, and commands.
 
@@ -11,6 +11,9 @@
 | Component | Package | Purpose |
 |-----------|---------|---------|
 | Test runner | Vitest 4 | Fast, Vite-native test framework |
+| Vite config bridge | `astro/config` (`getViteConfig`) | Wraps the user vitest config in Astro's vite plugin pipeline so `.astro` files compile inside vitest |
+| `.astro` rendering | `astro/container` (`experimental_AstroContainer`) | Server-renders `.astro` components to HTML strings inside tests (Container API) |
+| Rendered-HTML parsing | `jsdom` (devDependency) | Parses Container-API HTML strings into a `Document` for behavioural assertions |
 | JSX transform | `@preact/preset-vite` | Compiles TSX for Preact component tests |
 | DOM simulation | `jsdom` (devDependency) | Provides DOM API for component tests |
 | Component testing | `@testing-library/preact` | Queries and interacts with Preact components |
@@ -23,24 +26,29 @@
 ### `vitest.config.ts`
 
 ```typescript
-import { defineConfig } from 'vitest/config';
-import preact from '@preact/preset-vite';
+import { getViteConfig } from 'astro/config';
 
-export default defineConfig({
-  plugins: [preact()],
+// `getViteConfig` boots Astro's own vite plugin pipeline (reading
+// `astro.config.mjs`), so `.astro` files import and compile correctly inside
+// vitest and the Astro Container API can server-render them. The `@astrojs/preact`
+// integration re-adds the Preact plugin automatically, so no manual `preact()`.
+export default getViteConfig({
   test: {
     include: ['tests/**/*.test.{ts,tsx}'],
     setupFiles: ['tests/setup.ts'],
     globals: true,
   },
-});
+} as Parameters<typeof getViteConfig>[0]);
 ```
 
 Key settings:
-- **`plugins: [preact()]`** — enables JSX transformation for `.tsx` test files
+- **`getViteConfig` (from `astro/config`)** — wraps the user config in Astro's vite plugin pipeline by reading `astro.config.mjs`, so `.astro` imports compile correctly inside vitest (replacing the plain `defineConfig` from `vitest/config`). This is what unblocks the Astro Container API for behavioural `.astro` tests.
+- **No manual `preact()` plugin** — the `@astrojs/preact` integration in `astro.config.mjs` re-adds the Preact vite plugin automatically via Astro's config-setup hooks, so the explicit `plugins: [preact()]` of the old config is intentionally omitted (doubling it up risks plugin conflicts).
+- **No default `test.environment`** — left unset so per-file `// @vitest-environment` annotations drive the environment: `jsdom` for Preact `.tsx` component tests, `node` for Astro Container API render tests.
 - **`include`** — matches all test files in `tests/` with `.test.ts` or `.test.tsx` extension
 - **`setupFiles`** — runs `tests/setup.ts` before each test suite
 - **`globals: true`** — `describe`, `it`, `expect`, `vi` are available globally (no imports needed)
+- *(The `as Parameters<typeof getViteConfig>[0]` cast is a typing-only affordance: Astro types `getViteConfig` against plain Vite's `UserConfig`, which does not statically include vitest's `test` key. Vitest reads `test` at runtime regardless.)*
 
 ### `tests/setup.ts`
 
@@ -57,6 +65,10 @@ Imports `@testing-library/jest-dom` matchers so they're available in all test fi
 ```
 tests/
 ├── setup.ts                          # Global test setup (jest-dom matchers)
+│
+├── helpers/                          # Shared test helpers
+│   ├── renderAstro.ts                # Astro Container API render helper (memoised container + jsdom parse)
+│   └── renderAstro.test.ts           # Smoke test for the renderAstro helper
 │
 ├── about/                            # About page and content tests
 │   ├── content.test.ts               # Bio frontmatter validation (title, photo, genreTags, pressQuotes)
@@ -91,13 +103,13 @@ tests/
 │   └── tokens.test.ts                # CSS custom property existence and format validation
 │
 ├── front-page/                       # Homepage integration tests
-│   ├── CompactBio.test.ts            # CompactBio rendering
-│   ├── HeroBanner.test.ts            # HeroBanner rendering
+│   ├── CompactBio.test.ts            # CompactBio behavioural test (Astro Container API)
+│   ├── HeroBanner.test.ts            # HeroBanner rendering (source-grep — animation math)
 │   ├── PlaylistAccordion.test.tsx    # PlaylistAccordion on homepage
 │   ├── ProjectGrid.test.ts           # ProjectGrid rendering
 │   ├── SocialLinksBar.test.ts        # SocialLinksBar rendering
 │   ├── TrackRow.test.tsx             # TrackRow rendering
-│   └── YouTubeEmbed.test.ts          # YouTubeEmbed structure + delegation to src/scripts/youtube
+│   └── YouTubeEmbed.test.ts          # YouTubeEmbed behavioural test (Astro Container API; incl. startTime)
 │
 ├── projects/                         # Project content tests
 │   └── content.test.ts               # Project frontmatter validation
@@ -160,6 +172,33 @@ Tests for Preact island components using `@testing-library/preact`:
 - **`components/project-modal/ProjectModal.test.tsx`** — Modal open/close, video embed
 - **`components/media-carousel/MediaCarousel.test.tsx`** — Carousel navigation, item rendering
 - **`components/PlaylistAccordion.test.tsx`** — Section toggle, track click handling, section-credit rendering, and per-track `credit` threading through to `TrackRow`
+
+### Astro Component (`.astro`) Tests
+
+Behavioural tests for `.astro` components that render the component to a real HTML
+string via the **Astro Container API** (`experimental_AstroContainer` from
+`astro/container`) and then assert on the parsed DOM — mirroring the
+`getAttribute('src')` / `className` / element-presence style of the Preact
+component tests. The shared helper `tests/helpers/renderAstro.ts` memoises one
+container per vitest worker and parses the rendered HTML with the `jsdom`
+*package*.
+
+- **`front-page/YouTubeEmbed.test.ts`** — iframe `src`/`title`/`loading`/`allowfullscreen`, URL-format coverage (`watch`, `youtu.be`, `embed`), the `{videoId && …}` conditional omitting the iframe for an unrecognised URL, and the `startTime` prop (`&start=` appended only for positive values).
+- **`front-page/CompactBio.test.ts`** — `summary` prop rendering, `#about-modal-btn` "Read more" button, default slot rendering, and the `text-lg` bio paragraph.
+
+**Environment requirement:** these tests must carry a `// @vitest-environment node`
+annotation at the top. The Container API must NOT run under a jsdom *test
+environment* — that combination triggers an esbuild `TextEncoder`/`Uint8Array`
+invariant. The `jsdom` *package* is safe to `import` (it only parses the already-
+rendered HTML string) and is not used as the test runtime. The per-file
+`@vitest-environment` annotations drive the environment because `vitest.config.ts`
+sets no default `test.environment`.
+
+**Currently kept as source-grep (not migrated):** `HeroBanner.test.ts` (scroll-
+animation math that does not surface in the DOM) and `design-system/mobile-
+layout.test.ts` (CSS `@media`/`grid-template-areas` rules). `ProjectGrid.test.ts`
+and `SocialLinksBar.test.ts` are tracked for a future behavioural migration
+(see follow-up task KB-148).
 
 ### Front Page Integration Tests
 

@@ -1,65 +1,120 @@
+// @vitest-environment node
 /**
- * YouTubeEmbed component tests.
+ * YouTubeEmbed component tests (behavioural).
  *
- * Validates the YouTubeEmbed component renders a direct iframe embed
- * with proper attributes and a responsive 16:9 wrapper, and that it
- * delegates YouTube ID extraction and embed-URL construction to the
- * shared `src/scripts/youtube.ts` helpers (`extractYouTubeId`,
- * `buildYouTubeEmbedUrl`).
+ * These tests render the `.astro` component via the Astro Container API
+ * (`renderAstro`) and assert on the real, parsed DOM — mirroring the behavioural
+ * style of `tests/components/project-modal/ProjectModal.test.tsx`. Unlike the
+ * previous source-grep approach, this verifies runtime behaviour such as the
+ * `{videoId && …}` conditional omitting the iframe for an unrecognised URL.
  *
- * The byte-identical embed-URL contract (no-`start` fallback, `&start=`
- * appended for a truthy `startTime`, never `&start=0`) is now covered by
- * exact-equality assertions in `tests/scripts/youtube.test.ts`.
+ * No `readFileSync` / source-substring assertions remain in this file.
  */
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { renderAstro } from '../helpers/renderAstro';
+import YouTubeEmbed from '../../src/components/YouTubeEmbed.astro';
 
-const componentPath = resolve(process.cwd(), 'src/components/YouTubeEmbed.astro');
-const component = readFileSync(componentPath, 'utf-8');
+const WATCH_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+const EMBED_BASE = 'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1';
 
-describe('YouTubeEmbed component structure', () => {
-  it('contains the youtube-embed CSS class on the wrapper div', () => {
-    expect(component).toContain('class="youtube-embed');
+describe('YouTubeEmbed rendering', () => {
+  it('renders a youtube-embed wrapper div', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    const wrapper = document.querySelector('div.youtube-embed');
+    expect(wrapper).not.toBeNull();
+    expect(wrapper!.className).toContain('youtube-embed');
   });
 
-  it('renders an iframe element', () => {
-    expect(component).toContain('<iframe');
+  it('renders an iframe element', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    expect(document.querySelector('iframe')).not.toBeNull();
   });
 
-  it('iframe has a title attribute', () => {
-    expect(component).toContain('title={title}');
+  it('builds the embed src from the watch URL (exact equality)', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    const iframe = document.querySelector('iframe');
+    expect(iframe!.getAttribute('src')).toBe(EMBED_BASE);
   });
 
-  it('iframe has allowfullscreen attribute', () => {
-    expect(component).toContain('allowfullscreen');
+  it('uses the provided title attribute', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, title: 'My video' },
+    });
+    expect(document.querySelector('iframe')!.getAttribute('title')).toBe('My video');
   });
 
-  it('uses browser-level lazy loading on the iframe', () => {
-    expect(component).toContain('loading="lazy"');
+  it('defaults the title to "YouTube video" when omitted', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    expect(document.querySelector('iframe')!.getAttribute('title')).toBe('YouTube video');
+  });
+
+  it('renders the allowfullscreen attribute', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    // Astro renders `allowfullscreen=""`; getAttribute returns "" for it.
+    // Assert presence (not null) rather than a specific truthy value.
+    expect(document.querySelector('iframe')!.getAttribute('allowfullscreen')).not.toBeNull();
+  });
+
+  it('uses browser-level lazy loading on the iframe', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    expect(document.querySelector('iframe')!.getAttribute('loading')).toBe('lazy');
   });
 });
 
-describe('YouTubeEmbed delegates YouTube logic to src/scripts/youtube', () => {
-  it('includes the startTime prop on the Props interface', () => {
-    expect(component).toContain('startTime?: number;');
+describe('YouTubeEmbed URL format coverage', () => {
+  // `extractYouTubeId` supports three URL patterns; each must yield the same
+  // 11-char id in the rendered iframe src.
+  const cases: Array<[string, string]> = [
+    ['youtube.com/watch?v=', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
+    ['youtu.be/', 'https://youtu.be/dQw4w9WgXcQ'],
+    ['youtube.com/embed/', 'https://www.youtube.com/embed/dQw4w9WgXcQ'],
+  ];
+
+  for (const [label, url] of cases) {
+    it(`extracts the video id from ${label}`, async () => {
+      const { document } = await renderAstro(YouTubeEmbed, { props: { url } });
+      const src = document.querySelector('iframe')!.getAttribute('src');
+      expect(src).toBe(EMBED_BASE);
+    });
+  }
+});
+
+describe('YouTubeEmbed missing video id', () => {
+  it('renders nothing (no iframe) when the URL has no extractable video id', async () => {
+    // This is the behavioural case source-grep could never test: the
+    // `{videoId && …}` conditional omits the iframe entirely, not just a prop.
+    const { document, html } = await renderAstro(YouTubeEmbed, {
+      props: { url: 'https://example.com/no-video' },
+    });
+    expect(html).toBe('');
+    expect(document.querySelector('iframe')).toBeNull();
+    expect(document.querySelector('div.youtube-embed')).toBeNull();
+  });
+});
+
+describe('YouTubeEmbed startTime prop', () => {
+  it('appends &start=<seconds> to the embed src for a positive startTime (exact equality)', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, startTime: 45 },
+    });
+    expect(document.querySelector('iframe')!.getAttribute('src')).toBe(`${EMBED_BASE}&start=45`);
   });
 
-  it('imports both extractYouTubeId and buildYouTubeEmbedUrl from ../scripts/youtube', () => {
-    expect(component).toMatch(
-      /import\s*\{[^}]*extractYouTubeId[^}]*buildYouTubeEmbedUrl[^}]*\}\s*from\s*['"]\.\.\/scripts\/youtube['"]/,
-    );
+  it('does NOT append start when startTime is omitted', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    const src = document.querySelector('iframe')!.getAttribute('src');
+    expect(src).not.toMatch(/start=/);
+    expect(src).toBe(EMBED_BASE);
   });
 
-  it('builds the embed URL via buildYouTubeEmbedUrl(videoId, startTime)', () => {
-    expect(component).toMatch(/buildYouTubeEmbedUrl\(\s*videoId,\s*startTime\s*\)/);
-  });
-
-  it('does NOT keep a local duplicate of extractYouTubeId', () => {
-    expect(component).not.toMatch(/function\s+extractYouTubeId\s*\(/);
-  });
-
-  it('binds the computed embed URL to the iframe src', () => {
-    expect(component).toContain('src={embedUrl}');
+  it('does NOT append start when startTime is 0', async () => {
+    // The component gates on a truthy `startTime`, so 0 falls through to the
+    // no-`start` branch and renders the plain embed URL.
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, startTime: 0 },
+    });
+    const src = document.querySelector('iframe')!.getAttribute('src');
+    expect(src).not.toMatch(/start=/);
+    expect(src).toBe(EMBED_BASE);
   });
 });

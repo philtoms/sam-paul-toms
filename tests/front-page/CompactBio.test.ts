@@ -1,40 +1,52 @@
+// @vitest-environment node
 /**
- * CompactBio component tests.
+ * CompactBio component tests (behavioural).
  *
- * Validates the CompactBio component's structure and props by checking
- * the component template. Integration tests (against the rendered page)
- * are covered by the homepage test suite after Step 7.
+ * These tests render the `.astro` component via the Astro Container API
+ * (`renderAstro`), passing both a typed prop (`summary`) and a default slot, and
+ * assert on the real, parsed DOM. This is the second exemplar proving the
+ * container-API pattern works for a prop + slot component.
+ *
+ * No `readFileSync` / source-substring assertions remain in this file.
  */
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { renderAstro } from '../helpers/renderAstro';
+import CompactBio from '../../src/components/CompactBio.astro';
 
-const componentPath = resolve(process.cwd(), 'src/components/CompactBio.astro');
-const component = readFileSync(componentPath, 'utf-8');
+describe('CompactBio rendering', () => {
+  async function renderCompactBio(summary = 'A short bio.') {
+    return renderAstro(CompactBio, {
+      props: { summary },
+      slots: { default: '<p data-testid="child">child content</p>' },
+    });
+  }
 
-describe('CompactBio component structure', () => {
-  it('accepts required props: summary', () => {
-    expect(component).toContain('summary');
-    // Component uses a button to open an about modal instead of aboutUrl prop
-    expect(component).toContain('about-modal-btn');
+  it('renders the summary text from the prop', async () => {
+    const { document } = await renderCompactBio('A short bio.');
+    expect(document.querySelector('p')?.textContent).toContain('A short bio.');
   });
 
-  it('renders summary text from prop', () => {
-    expect(component).toContain('{summary}');
+  it('renders the about-modal-btn button', async () => {
+    const { document } = await renderCompactBio();
+    expect(document.querySelector('#about-modal-btn')).not.toBeNull();
   });
 
-  it('renders "Read more" button with about-modal-btn', () => {
-    expect(component).toContain('id="about-modal-btn"');
-    expect(component).toContain('Read more');
+  it('renders a "Read more" button', async () => {
+    const { document } = await renderCompactBio();
+    const btn = document.querySelector('#about-modal-btn');
+    expect(btn?.textContent).toContain('Read more');
   });
 
-  it('accepts child content via default slot', () => {
-    expect(component).toContain('<slot />');
+  it('renders child content via the default slot', async () => {
+    const { document } = await renderCompactBio();
+    expect(document.querySelector('[data-testid="child"]')).not.toBeNull();
   });
 
-  it('renders bio paragraph with text-lg font size', () => {
-    expect(component).toContain('text-lg');
-    // Ensure the old text-base was removed from the paragraph
-    expect(component).not.toContain('class="text-base leading-relaxed');
+  it('renders the bio paragraph with text-lg (and not text-base)', async () => {
+    const { document } = await renderCompactBio();
+    const bio = document.querySelector('p');
+    expect(bio).not.toBeNull();
+    expect(bio!.className).toContain('text-lg');
+    expect(bio!.className).not.toContain('text-base');
   });
 });
