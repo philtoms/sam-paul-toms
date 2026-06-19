@@ -163,20 +163,25 @@ export default function ProjectModal() {
           </button>
         </div>
 
-        {/* Project image — only shown when no video is available */}
-        {!videoId && (
-          <img
-            src={projectData.image}
-            alt={projectData.title}
-            class="w-full rounded-lg object-cover max-h-[400px] shadow-2xl"
-          />
-        )}
+        {/* Project image beside the title + summary (mirrors the AboutModal
+            bio layout). The image renders unconditionally — even when a video
+            is present — with the YouTube embed placed full-width below. */}
+        <section class="flex flex-col md:flex-row gap-8 md:gap-12">
+          <div class="md:w-2/5 shrink-0">
+            <img
+              src={projectData.image}
+              alt={projectData.title}
+              class="w-full rounded-lg object-cover max-h-[500px] shadow-2xl"
+            />
+          </div>
+          <div class="md:w-3/5">
+            {/* Title */}
+            <h2 class="text-xl md:text-3xl font-bold text-white mb-4">{projectData.title}</h2>
 
-        {/* Title */}
-        <h2 class="text-xl md:text-3xl font-bold text-white mt-4 md:mt-6">{projectData.title}</h2>
-
-        {/* Summary */}
-        <p class="text-sm md:text-base text-white/80 leading-relaxed mt-3 md:mt-4">{projectData.summary}</p>
+            {/* Summary */}
+            <p class="text-sm md:text-base text-white/80 leading-relaxed">{projectData.summary}</p>
+          </div>
+        </section>
 
         {/* YouTube video embed — only if video URL provided */}
         {videoId && (

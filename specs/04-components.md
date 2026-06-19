@@ -188,7 +188,7 @@
 | **Type** | Preact island |
 | **Directive** | `client:load` |
 | **File** | `src/components/ProjectModal.tsx` |
-| **Description** | Globally mounted modal for project detail views. Listens for `project-modal:open`/`project-modal:close` events. Features fade animation, click-outside-to-close, escape key, focus trap, body scroll lock. Optionally embeds a YouTube video. |
+| **Description** | Globally mounted modal for project detail views. Listens for `project-modal:open`/`project-modal:close` events. Features fade animation, click-outside-to-close, escape key, focus trap, body scroll lock. Displays the project image beside the title and summary in a two-column row (mirrors the AboutModal bio layout), with the optional YouTube video embedded full-width below. |
 
 **Props:** None (data received via custom event payload of type `ProjectModalData`)
 

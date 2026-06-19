@@ -157,7 +157,7 @@ describe('ProjectModal', () => {
     });
   });
 
-  it('does NOT render image when video is present', async () => {
+  it('renders image even when video is present', async () => {
     render(<ProjectModal />);
 
     document.dispatchEvent(
@@ -167,9 +167,9 @@ describe('ProjectModal', () => {
       expect(screen.getByText('Heimat')).toBeInTheDocument();
     });
 
-    // Image should not appear when a video URL is provided
-    const img = screen.queryByAltText('Heimat');
-    expect(img).not.toBeInTheDocument();
+    // The image now always renders beside the title/summary, even with a video
+    const img = screen.getByAltText('Heimat');
+    expect(img).toBeInTheDocument();
   });
 
   it('renders project image when no video is available', async () => {
@@ -200,6 +200,77 @@ describe('ProjectModal', () => {
     const iframe = document.querySelector('iframe');
     expect(iframe).not.toBeNull();
     expect(iframe!.getAttribute('src')).toContain('youtube.com/embed/dQw4w9WgXcQ');
+  });
+
+  it('renders both image and YouTube iframe when video is present', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    // The image is no longer dropped when a video is present
+    expect(screen.getByAltText('Heimat')).toBeInTheDocument();
+
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).toContain('youtube.com/embed/dQw4w9WgXcQ');
+  });
+
+  it('image is in a left column and title/summary in a right column (about-layout)', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    // The image and title/summary share a two-column <section> (AboutModal bio layout)
+    const section = document.querySelector('section');
+    expect(section).not.toBeNull();
+    expect(section!.querySelector('img')).not.toBeNull();
+
+    // Left column wraps the image
+    const imageColumn = document.querySelector('img')!.closest('div');
+    expect(imageColumn).not.toBeNull();
+    expect(imageColumn!.className).toContain('md:w-2/5');
+
+    // Right column wraps the title and summary (sibling of the image column)
+    const textColumn = document.querySelector('h2')!.closest('div');
+    expect(textColumn).not.toBeNull();
+    expect(textColumn!.className).toContain('md:w-3/5');
+    expect(textColumn!.querySelector('h2')).not.toBeNull();
+    expect(textColumn!.querySelector('p')).not.toBeNull();
+  });
+
+  it('video iframe still renders full-width below the image/summary section', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const section = document.querySelector('section');
+    const iframe = document.querySelector('iframe');
+    expect(section).not.toBeNull();
+    expect(iframe).not.toBeNull();
+
+    const iframeWrapper = iframe!.closest('div')!;
+
+    // The section is not an ancestor of the iframe — they are siblings in the panel
+    expect(section!.contains(iframe)).toBe(false);
+
+    // The iframe's container comes after the section in document order
+    const position = section!.compareDocumentPosition(iframeWrapper);
+    expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('does NOT render iframe when video is omitted', async () => {
