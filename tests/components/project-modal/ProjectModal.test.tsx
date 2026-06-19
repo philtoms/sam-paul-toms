@@ -18,6 +18,16 @@ const sampleProjectDataNoVideo = {
   publishDate: '2023-11-20T00:00:00.000Z',
 };
 
+const sampleProjectDataWithDir = {
+  ...sampleProjectData,
+  dir: 'Christopher Nolan',
+};
+
+const sampleProjectDataEmptyDir = {
+  ...sampleProjectData,
+  dir: '',
+};
+
 const sampleProjectDataWithStartTime = {
   ...sampleProjectData,
   videoStartTime: 45,
@@ -165,6 +175,47 @@ describe('ProjectModal', () => {
     await waitFor(() => {
       expect(screen.getByText('Original soundtrack for the documentary film Heimat.')).toBeInTheDocument();
     });
+  });
+
+  it('renders "Directed by …" under summary when dir is provided', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithDir }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const dirLine = screen.getByText(/Directed by Christopher Nolan/);
+    expect(dirLine).toBeInTheDocument();
+    expect(dirLine.tagName).toBe('P');
+  });
+
+  it('does NOT render "Directed by" when dir is omitted', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText(/Directed by/, { exact: false })).toBeNull();
+  });
+
+  it('does NOT render "Directed by" when dir is an empty string', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataEmptyDir }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText(/Directed by/, { exact: false })).toBeNull();
   });
 
   it('renders image even when video is present', async () => {

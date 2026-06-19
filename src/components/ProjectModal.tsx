@@ -186,6 +186,11 @@ export default function ProjectModal() {
 
             {/* Summary */}
             <p class="text-sm md:text-base text-white/80 leading-relaxed">{projectData.summary}</p>
+
+            {/* Director credit — only shown when dir is a non-empty string */}
+            {projectData.dir && (
+              <p class="text-sm text-white/60 mt-2">Directed by {projectData.dir}</p>
+            )}
           </div>
         </section>
 

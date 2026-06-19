@@ -80,6 +80,7 @@ const projects = defineCollection({
     image: z.string(),
     video: z.string().url().optional(),
     videoStartTime: z.number().int().min(0).optional(),
+    dir: z.string().optional(),
   }),
 });
 

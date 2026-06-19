@@ -13,6 +13,7 @@ const projectSchema = z.object({
   image: z.string(),
   video: z.string().url().optional(),
   videoStartTime: z.number().int().min(0).optional(),
+  dir: z.string().optional(),
 });
 
 const projectsDir = join(process.cwd(), 'src/content/projects');
@@ -61,6 +62,13 @@ describe('Project content files', () => {
     const { data } = loadProject(filename);
     if (data.video !== undefined) {
       expect(() => new URL(data.video)).not.toThrow();
+    }
+  });
+
+  it.each(projectFiles)('dir, when present, is a string for %s', (filename) => {
+    const { data } = loadProject(filename);
+    if (data.dir !== undefined) {
+      expect(typeof data.dir).toBe('string');
     }
   });
 

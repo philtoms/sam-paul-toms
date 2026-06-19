@@ -469,6 +469,7 @@ interface ProjectModalData {
   image: string;
   video?: string;
   videoStartTime?: number;
+  dir?: string;
   publishDate: string;
 }
 ```
