@@ -19,6 +19,7 @@ interface PlaylistSection {
   tracks: Array<{
     title: string;
     subtitle?: string;
+    credit?: string;
     duration: string;
     icon: string;
   }>;

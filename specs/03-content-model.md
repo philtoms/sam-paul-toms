@@ -162,6 +162,7 @@ Playlist sections for the homepage accordion. Each entry represents a category o
 | `audioFile` | `string` | ❌ | — | Relative path to MP3 in R2 |
 | `icon` | `string` | ❌ | `'music'` | Category icon key (`music`, `film`, `tv`, `trailer`) or URL to custom image |
 | `subtitle` | `string` | ❌ | — | Track subtitle (e.g., production credit) |
+| `credit` | `string` | ❌ | — | Free-text per-track credit/authorship line (e.g. `"Directed by …"`, `"Composed with …"`, `"Commissioned by …"`), rendered as a muted line below the `subtitle` in each track row. Leave unpopulated until the content owner confirms real per-track attributions. |
 
 #### Example Frontmatter
 
@@ -176,6 +177,7 @@ tracks:
     duration: '01:35'
     icon: 'images/A Life On The Farm.jpeg'
     subtitle: 'A Life On The Farm (Original Motion Picture Soundtrack)'
+    # credit: 'Directed by Jane Doe'  # content owner: confirm
     audioFile: 'works/documentary/A Life on the Farm - A Worldwide Sensation.mp3'
   - title: 'The Man'
     duration: '03:17'

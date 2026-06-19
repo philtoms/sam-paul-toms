@@ -11,6 +11,7 @@ const worksTrackSchema = z.object({
   audioFile: z.string().optional(),
   icon: z.string().default('music'),
   subtitle: z.string().optional(),
+  credit: z.string().optional(),
 });
 
 const worksSchema = z.object({
@@ -72,6 +73,15 @@ describe('Works content files', () => {
     const { data } = loadWork(filename);
     if (data.credit !== undefined) {
       expect(typeof data.credit).toBe('string');
+    }
+  });
+
+  it.each(worksFiles)('each track credit, when present, is a string for %s', (filename) => {
+    const { data } = loadWork(filename);
+    for (const track of data.tracks) {
+      if (track.credit !== undefined) {
+        expect(typeof track.credit).toBe('string');
+      }
     }
   });
 });

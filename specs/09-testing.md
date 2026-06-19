@@ -138,7 +138,7 @@ Tests that verify content collection frontmatter matches the Zod schemas:
 - **`releases/content.test.ts`** — Validates release frontmatter: title, artist, tracks, type enum
 - **`releases/artwork.test.ts`** — Validates release artwork paths
 - **`projects/content.test.ts`** — Validates project frontmatter
-- **`works/content.test.ts`** — Validates works frontmatter: title, slug, tracks; guards that `credit`, when present, is a string
+- **`works/content.test.ts`** — Validates works frontmatter: title, slug, tracks; guards that section-level `credit` and per-track `credit`, when present, are strings
 
 ### Audio Player Tests
 
@@ -159,7 +159,7 @@ Tests for Preact island components using `@testing-library/preact`:
 - **`components/contact-modal/ContactModal.test.tsx`** — Form validation, submission, Turnstile
 - **`components/project-modal/ProjectModal.test.tsx`** — Modal open/close, video embed
 - **`components/media-carousel/MediaCarousel.test.tsx`** — Carousel navigation, item rendering
-- **`components/PlaylistAccordion.test.tsx`** — Section toggle, track click handling
+- **`components/PlaylistAccordion.test.tsx`** — Section toggle, track click handling, section-credit rendering, and per-track `credit` threading through to `TrackRow`
 
 ### Front Page Integration Tests
 

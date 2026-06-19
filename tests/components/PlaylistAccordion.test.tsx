@@ -67,6 +67,13 @@ const sectionWithCredit = {
   credit: 'Directed by Test Director',
 };
 
+const sectionWithTrackCredit = {
+  ...mockSections[0],
+  tracks: [
+    { ...mockSections[0].tracks[0], credit: 'Composed by Test Composer' },
+  ],
+};
+
 describe('PlaylistAccordion — play overlay accent color regression', () => {
   it('overlay icons use accent color (text-accent) not white', () => {
     const cssContent = readFileSync(
@@ -165,5 +172,20 @@ describe('PlaylistAccordion — section credit rendering', () => {
     );
 
     expect(screen.queryByText(/credit/i)).toBeNull();
+  });
+});
+
+describe('PlaylistAccordion — per-track credit threading', () => {
+  it('renders per-track credit text through the accordion → TrackRow pipeline', () => {
+    render(
+      <PlaylistAccordion
+        sections={[sectionWithTrackCredit]}
+        playableTracksMap={mockPlayableTracksMap}
+        allTracks={mockAllTracks}
+      />,
+    );
+
+    // Verifies the field survives the sections → PlaylistSection.tracks → TrackRow threading
+    expect(screen.getByText('Composed by Test Composer')).toBeTruthy();
   });
 });

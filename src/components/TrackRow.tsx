@@ -33,6 +33,7 @@ interface TrackRowProps {
   track: {
     title: string;
     subtitle?: string;
+    credit?: string;
     duration: string;
     icon: string;
   };
@@ -277,6 +278,11 @@ export default function TrackRow({
         {track.subtitle && (
           <span class="block truncate text-xs text-text/50">
             {track.subtitle}
+          </span>
+        )}
+        {track.credit && (
+          <span class="block truncate text-xs text-text/40">
+            {track.credit}
           </span>
         )}
       </span>

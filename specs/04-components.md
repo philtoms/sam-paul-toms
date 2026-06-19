@@ -121,7 +121,7 @@
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `sections` | `PlaylistSection[]` | ✅ | Section display data (title, slug, description, optional `credit?: string` free-text credit line rendered under the section title, tracks) |
+| `sections` | `PlaylistSection[]` | ✅ | Section display data (title, slug, description, optional `credit?: string` free-text credit line rendered under the section title, tracks). Each track element also carries an optional per-track `credit?: string` free-text authorship line rendered as a muted line below the track's `subtitle` inside `TrackRow`. |
 | `playableTracksMap` | `Record<string, PlayableTrack[]>` | ✅ | Map from section slug to playable Track objects |
 | `allTracks` | `PlayableTrack[]` | ✅ | Concatenated track list across all sections |
 
@@ -140,7 +140,7 @@
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `track` | `{ title: string; subtitle?: string; duration: string; icon: string }` | ✅ | Display track data |
+| `track` | `{ title: string; subtitle?: string; credit?: string; duration: string; icon: string }` | ✅ | Display track data (optional `credit` renders as a muted line below the `subtitle`) |
 | `audioUrl` | `string` | ❌ | Resolved audio URL (for waveform) |
 | `trackId` | `string` | ❌ | Track ID (for active state detection) |
 | `onPlay` | `() => void` | ✅ | Click handler to trigger playback |

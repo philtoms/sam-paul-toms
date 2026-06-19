@@ -65,6 +65,7 @@ const works = defineCollection({
         audioFile: z.string().optional(),
         icon: z.string().default('music'),
         subtitle: z.string().optional(),
+        credit: z.string().optional(),
       }),
     ),
   }),

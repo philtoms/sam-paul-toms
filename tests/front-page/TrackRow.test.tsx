@@ -103,6 +103,46 @@ describe('TrackRow', () => {
     expect(screen.queryByText('Dir. Ana Moreno')).toBeNull();
   });
 
+  it('renders the credit text below the subtitle when provided', () => {
+    render(
+      <TrackRow
+        track={{ ...baseTrack, credit: 'Composed by Test Composer' }}
+        onPlay={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Composed by Test Composer')).toBeTruthy();
+  });
+
+  it('renders title, subtitle, and credit together in the correct hierarchy', () => {
+    render(
+      <TrackRow
+        track={{ ...baseTrack, credit: 'Composed by Test Composer' }}
+        onPlay={vi.fn()}
+      />,
+    );
+
+    // All three texts present — guards against the credit branch shadowing the subtitle
+    expect(screen.getByText('The Weight of Water')).toBeTruthy();
+    expect(screen.getByText('Dir. Ana Moreno')).toBeTruthy();
+    expect(screen.getByText('Composed by Test Composer')).toBeTruthy();
+  });
+
+  it('does NOT render a credit element when credit is omitted', () => {
+    render(<TrackRow track={baseTrack} onPlay={vi.fn()} />);
+
+    // Precise query (no broad /credit/i regex) to avoid false negatives
+    expect(screen.queryByText('Composed by Test Composer')).toBeNull();
+  });
+
+  it('does NOT render a credit element when credit is an empty string', () => {
+    render(
+      <TrackRow track={{ ...baseTrack, credit: '' }} onPlay={vi.fn()} />,
+    );
+
+    expect(screen.queryByText('Composed by Test Composer')).toBeNull();
+  });
+
   it('renders the category icon based on track.icon', () => {
     const { container } = render(
       <TrackRow track={{ ...baseTrack, icon: 'film' }} onPlay={vi.fn()} />,

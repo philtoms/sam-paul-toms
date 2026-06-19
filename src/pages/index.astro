@@ -46,6 +46,7 @@ const sections = sortedWorks.map((entry) => ({
   tracks: entry.data.tracks.map((t) => ({
     title: t.title,
     subtitle: t.subtitle,
+    credit: t.credit,
     duration: t.duration,
     icon: t.icon ?? 'music',
   })),
