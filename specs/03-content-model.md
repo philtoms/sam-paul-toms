@@ -202,6 +202,7 @@ Project entries displayed in the `ProjectGrid` on the homepage. Each project ope
 | `dateStatus` | `string` | ❌ | Flag for unverified dates |
 | `image` | `string` | ✅ | Path to project image |
 | `video` | `URL string` | ❌ | YouTube video URL |
+| `videoStartTime` | `number` | ❌ | YouTube video start time in seconds (passed as `start` param) |
 
 #### Example Frontmatter
 

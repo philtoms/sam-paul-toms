@@ -17,6 +17,7 @@ export interface ProjectModalData {
   summary: string;
   image: string;
   video?: string;
+  videoStartTime?: number;
   publishDate: string;
 }
 

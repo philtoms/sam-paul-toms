@@ -12,6 +12,7 @@ const projectSchema = z.object({
   publishDate: z.coerce.date(),
   image: z.string(),
   video: z.string().url().optional(),
+  videoStartTime: z.number().int().min(0).optional(),
 });
 
 const projectsDir = join(process.cwd(), 'src/content/projects');
@@ -61,5 +62,18 @@ describe('Project content files', () => {
     if (data.video !== undefined) {
       expect(() => new URL(data.video)).not.toThrow();
     }
+  });
+
+  it.each(projectFiles)('videoStartTime is a non-negative integer when present for %s', (filename) => {
+    const { data } = loadProject(filename);
+    if (data.videoStartTime !== undefined) {
+      expect(Number.isInteger(data.videoStartTime)).toBe(true);
+      expect(data.videoStartTime).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('solace.md has videoStartTime: 30', () => {
+    const { data } = loadProject('solace.md');
+    expect(data.videoStartTime).toBe(30);
   });
 });

@@ -16,6 +16,7 @@ interface Project {
   publishDate: Date;
   image: string;
   video?: string;
+  videoStartTime?: number;
 }
 
 interface Props {
@@ -85,6 +86,7 @@ const sorted = [...projects].sort(
       summary: project.summary,
       image: project.image,
       video: project.video,
+      videoStartTime: project.videoStartTime,
       publishDate: project.publishDate.toISOString(),
     })}
   />

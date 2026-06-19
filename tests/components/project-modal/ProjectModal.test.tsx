@@ -18,6 +18,16 @@ const sampleProjectDataNoVideo = {
   publishDate: '2023-11-20T00:00:00.000Z',
 };
 
+const sampleProjectDataWithStartTime = {
+  ...sampleProjectData,
+  videoStartTime: 45,
+};
+
+const sampleProjectDataWithZeroStartTime = {
+  ...sampleProjectData,
+  videoStartTime: 0,
+};
+
 describe('ProjectModal', () => {
   beforeEach(() => {
     document.body.classList.remove('overflow-hidden');
@@ -285,6 +295,53 @@ describe('ProjectModal', () => {
 
     const iframe = document.querySelector('iframe');
     expect(iframe).toBeNull();
+  });
+
+  it('appends &start=45 to the iframe src when videoStartTime is provided', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithStartTime }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).toBe(
+      'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&start=45',
+    );
+  });
+
+  it('does NOT append start when videoStartTime is omitted', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).not.toMatch(/start=/);
+  });
+
+  it('does NOT append start when videoStartTime is 0', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithZeroStartTime }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).not.toMatch(/start=/);
   });
 
   it('does NOT render formatted publish date', async () => {

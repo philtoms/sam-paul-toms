@@ -117,6 +117,12 @@ export default function ProjectModal() {
   if (!isOpen || !projectData) return null;
 
   const videoId = projectData.video ? extractYouTubeId(projectData.video) : '';
+  const videoStartTime = projectData.videoStartTime;
+  // Append YouTube `start` param only for a positive start time so the
+  // no-start-time case stays byte-identical to the original embed URL.
+  const embedUrl = videoStartTime
+    ? `https://www.youtube.com/embed/${videoId}?enablejsapi=1&start=${encodeURIComponent(videoStartTime)}`
+    : `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
 
   return (
     <div
@@ -191,7 +197,7 @@ export default function ProjectModal() {
               style="padding-bottom: 56.25%"
             >
               <iframe
-                src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1`}
+                src={embedUrl}
                 title={`${projectData.title} — video`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen=""
