@@ -2,7 +2,14 @@
  * YouTubeEmbed component tests.
  *
  * Validates the YouTubeEmbed component renders a direct iframe embed
- * with proper attributes and responsive 16:9 wrapper.
+ * with proper attributes and a responsive 16:9 wrapper, and that it
+ * delegates YouTube ID extraction and embed-URL construction to the
+ * shared `src/scripts/youtube.ts` helpers (`extractYouTubeId`,
+ * `buildYouTubeEmbedUrl`).
+ *
+ * The byte-identical embed-URL contract (no-`start` fallback, `&start=`
+ * appended for a truthy `startTime`, never `&start=0`) is now covered by
+ * exact-equality assertions in `tests/scripts/youtube.test.ts`.
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -20,10 +27,6 @@ describe('YouTubeEmbed component structure', () => {
     expect(component).toContain('<iframe');
   });
 
-  it('iframe src includes youtube.com/embed/', () => {
-    expect(component).toContain('youtube.com/embed/');
-  });
-
   it('iframe has a title attribute', () => {
     expect(component).toContain('title={title}');
   });
@@ -37,33 +40,26 @@ describe('YouTubeEmbed component structure', () => {
   });
 });
 
-describe('YouTubeEmbed startTime prop', () => {
+describe('YouTubeEmbed delegates YouTube logic to src/scripts/youtube', () => {
   it('includes the startTime prop on the Props interface', () => {
     expect(component).toContain('startTime?: number;');
   });
 
-  it('appends &start= via encodeURIComponent(startTime) when startTime is positive', () => {
-    // Source-level analog of ProjectModal's "appends &start=45" assertion.
-    // The truthy branch must append the start param with the exact template-literal
-    // form used by ProjectModal.tsx for parity.
-    expect(component).toContain('&start=${encodeURIComponent(startTime)}');
-  });
-
-  it('uses a truthy gate on startTime so falsy values (0/undefined) omit start', () => {
-    // Source-level analog of ProjectModal's "does NOT append start when omitted / when 0"
-    // assertions. The embed URL must be built from a conditional keyed on `startTime`
-    // so that 0, undefined, NaN, and absent all fall through to the no-`start` branch.
-    expect(component).toMatch(/startTime\s*\?/);
-    // The falsy-branch fallback URL must NOT carry `&start=`.
-    expect(component).toContain(
-      'https://www.youtube.com/embed/${videoId}?enablejsapi=1',
+  it('imports both extractYouTubeId and buildYouTubeEmbedUrl from ../scripts/youtube', () => {
+    expect(component).toMatch(
+      /import\s*\{[^}]*extractYouTubeId[^}]*buildYouTubeEmbedUrl[^}]*\}\s*from\s*['"]\.\.\/scripts\/youtube['"]/,
     );
   });
 
-  it('keeps the no-start URL byte-identical to the original embed URL', () => {
-    // The no-startTime case must render the exact original embed URL, unchanged.
-    expect(component).toContain(
-      'https://www.youtube.com/embed/${videoId}?enablejsapi=1',
-    );
+  it('builds the embed URL via buildYouTubeEmbedUrl(videoId, startTime)', () => {
+    expect(component).toMatch(/buildYouTubeEmbedUrl\(\s*videoId,\s*startTime\s*\)/);
+  });
+
+  it('does NOT keep a local duplicate of extractYouTubeId', () => {
+    expect(component).not.toMatch(/function\s+extractYouTubeId\s*\(/);
+  });
+
+  it('binds the computed embed URL to the iframe src', () => {
+    expect(component).toContain('src={embedUrl}');
   });
 });

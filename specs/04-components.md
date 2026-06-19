@@ -322,7 +322,7 @@
 | **Type** | Astro component |
 | **Directive** | N/A |
 | **File** | `src/components/YouTubeEmbed.astro` |
-| **Description** | Direct YouTube iframe embed with lazy loading. Extracts video ID from various YouTube URL formats. Uses `?enablejsapi=1` for YouTube audio-pause integration. |
+| **Description** | Direct YouTube iframe embed with lazy loading. Extracts the video ID and builds the embed URL via the shared `src/scripts/youtube.ts` helpers (`extractYouTubeId`, `buildYouTubeEmbedUrl`). Uses `?enablejsapi=1` for YouTube audio-pause integration. |
 
 **Props:**
 

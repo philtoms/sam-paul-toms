@@ -100,6 +100,7 @@
 │   │   ├── project-modal-events.ts  # Custom events: project-modal:open/close
 │   │   ├── seo-helpers.ts           # Pure TS SEO tag generation (testable helpers)
 │   │   ├── structured-data.ts       # Schema.org JSON-LD generators for music content
+│   │   ├── youtube.ts               # YouTube helpers: extractYouTubeId, buildYouTubeEmbedUrl
 │   │   └── youtube-audio-pause.ts   # Auto-fade player when YouTube video plays
 │   │
 │   ├── styles/

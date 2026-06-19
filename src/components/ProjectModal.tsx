@@ -4,6 +4,7 @@ import {
   PROJECT_MODAL_CLOSE,
   type ProjectModalData,
 } from '../scripts/project-modal-events';
+import { extractYouTubeId, buildYouTubeEmbedUrl } from '../scripts/youtube';
 
 /**
  * ProjectModal — globally mounted modal popup for project detail views.
@@ -26,20 +27,6 @@ export default function ProjectModal() {
   const [projectData, setProjectData] = useState<ProjectModalData | null>(null);
   const previousFocusRef = useRef<Element | null>(null);
   const modalPanelRef = useRef<HTMLDivElement | null>(null);
-
-  /** Extract YouTube video ID from various URL formats */
-  function extractYouTubeId(url: string): string {
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
-      /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-      /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-    ];
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match) return match[1];
-    }
-    return '';
-  }
 
   /** Open the modal with animation */
   const open = useCallback((data: ProjectModalData) => {
@@ -117,12 +104,9 @@ export default function ProjectModal() {
   if (!isOpen || !projectData) return null;
 
   const videoId = projectData.video ? extractYouTubeId(projectData.video) : '';
-  const videoStartTime = projectData.videoStartTime;
   // Append YouTube `start` param only for a positive start time so the
   // no-start-time case stays byte-identical to the original embed URL.
-  const embedUrl = videoStartTime
-    ? `https://www.youtube.com/embed/${videoId}?enablejsapi=1&start=${encodeURIComponent(videoStartTime)}`
-    : `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+  const embedUrl = buildYouTubeEmbedUrl(videoId, projectData.videoStartTime);
 
   return (
     <div

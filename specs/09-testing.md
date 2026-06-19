@@ -97,7 +97,7 @@ tests/
 │   ├── ProjectGrid.test.ts           # ProjectGrid rendering
 │   ├── SocialLinksBar.test.ts        # SocialLinksBar rendering
 │   ├── TrackRow.test.tsx             # TrackRow rendering
-│   └── YouTubeEmbed.test.ts          # YouTubeEmbed rendering & startTime prop
+│   └── YouTubeEmbed.test.ts          # YouTubeEmbed structure + delegation to src/scripts/youtube
 │
 ├── projects/                         # Project content tests
 │   └── content.test.ts               # Project frontmatter validation
@@ -115,6 +115,7 @@ tests/
 │   ├── fetch-instagram-oembed.test.ts # Instagram oEmbed fetcher
 │   ├── generate-sample-audio.test.ts # Sample audio generator
 │   ├── wav2mp3.test.ts               # WAV to MP3 converter
+│   ├── youtube.test.ts               # extractYouTubeId + buildYouTubeEmbedUrl contract
 │   └── youtube-audio-pause.test.ts   # YouTube audio-pause watcher
 │
 ├── seo/                              # SEO tests
