@@ -104,6 +104,7 @@ export function buildTrackFromContent(
     audioFile?: string;
     icon?: string;
     subtitle?: string;
+    credit?: string;
   },
   releaseSlug: string,
   trackIndex: number,
@@ -118,5 +119,6 @@ export function buildTrackFromContent(
     artworkUrl,
     icon: trackData.icon,
     subtitle: trackData.subtitle,
+    credit: trackData.credit,
   };
 }

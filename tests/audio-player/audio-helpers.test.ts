@@ -142,6 +142,44 @@ describe('audio-helpers', () => {
 
       expect(track.id).toBe('test-ep-3');
     });
+
+    it('passes credit through when provided', () => {
+      const track = buildTrackFromContent(
+        { title: 'Dusk', credit: 'Composed by Test Composer' },
+        'midnight-sessions',
+        0,
+        'Sam',
+      );
+
+      expect(track).toEqual({
+        id: 'midnight-sessions-0',
+        title: 'Dusk',
+        artist: 'Sam',
+        audioUrl: '',
+        artworkUrl: undefined,
+        credit: 'Composed by Test Composer',
+      } satisfies Track);
+    });
+
+    it('omits credit when not provided', () => {
+      const track = buildTrackFromContent(
+        { title: 'Untitled' },
+        'some-release',
+        0,
+        'Sam',
+      );
+
+      // toEqual ignores undefined own-properties, so the expected shape
+      // omitting credit confirms no stray non-undefined value is set.
+      expect(track).toEqual({
+        id: 'some-release-0',
+        title: 'Untitled',
+        artist: 'Sam',
+        audioUrl: '',
+        artworkUrl: undefined,
+      } satisfies Track);
+      expect(track.credit).toBeUndefined();
+    });
   });
 
   describe('getWaveformPeaksUrl', () => {

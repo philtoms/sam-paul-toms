@@ -330,6 +330,11 @@ export default function Player() {
           <span class="audio-player-track-info__artist">
             {track?.subtitle ?? ''}
           </span>
+          {track?.credit ? (
+            <span class="audio-player-track-info__credit">
+              {track.credit}
+            </span>
+          ) : null}
         </div>
       </div>
 

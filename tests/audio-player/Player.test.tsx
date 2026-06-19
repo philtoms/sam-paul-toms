@@ -143,6 +143,42 @@ describe('Player', () => {
     expect(screen.getByText('Test Artist')).toBeInTheDocument();
   });
 
+  it('displays the credit text when the track has credit', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = { ...mockTrack, credit: 'Composed by Test Composer' };
+
+    render(<Player />);
+
+    expect(
+      screen.getByText('Composed by Test Composer'),
+    ).toBeInTheDocument();
+    // Guard against the credit branch shadowing the title/artist lines
+    expect(screen.getByText('Test Song')).toBeInTheDocument();
+    expect(screen.getByText('Test Artist')).toBeInTheDocument();
+  });
+
+  it('does not render a credit element when credit is omitted', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = mockTrack;
+
+    render(<Player />);
+
+    expect(
+      screen.queryByText('Composed by Test Composer'),
+    ).toBeNull();
+  });
+
+  it('does not render a credit element when credit is an empty string', () => {
+    mockPlaybackState = 'paused';
+    mockCurrentTrack = { ...mockTrack, credit: '' };
+
+    render(<Player />);
+
+    expect(
+      screen.queryByText('Composed by Test Composer'),
+    ).toBeNull();
+  });
+
   it('displays track icon when a track is loaded', () => {
     mockPlaybackState = 'paused';
     mockCurrentTrack = mockTrack;

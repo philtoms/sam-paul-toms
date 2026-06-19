@@ -116,6 +116,17 @@
   font-size: 0.75rem;
 }
 
+/* Per-track credit line — subordinate to the title and artist/subtitle */
+.audio-player-track-info__credit {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.25;
+  font-size: 0.6875rem;
+  color: var(--color-text-secondary, #a3a3a3);
+  opacity: 0.7;
+}
+
 /* Transport controls (center) */
 .audio-player-transport {
   display: flex;
@@ -348,6 +359,11 @@
 
   /* Hide elements that don't fit on mobile */
   .audio-player-track-info__icon {
+    display: none;
+  }
+
+  /* Credit is a tertiary nicety; hide it in the tight mobile bar */
+  .audio-player-track-info__credit {
     display: none;
   }
 

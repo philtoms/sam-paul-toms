@@ -54,6 +54,7 @@ interface Track {
   artworkUrl?: string;  // Album artwork thumbnail URL
   icon?: string;        // Category icon key or custom image URL
   subtitle?: string;    // Track subtitle (e.g., production credit)
+  credit?: string;      // Free-text per-track credit, rendered below subtitle in now-playing
 }
 ```
 
@@ -264,7 +265,7 @@ function buildTrackFromContent(
 
 - Generates `id` as `${releaseSlug}-${trackIndex}`
 - Resolves `audioUrl` via `resolveAudioUrl()`
-- Passes through `icon` and `subtitle`
+- Passes through `icon`, `subtitle`, and `credit`
 
 ### 4. Howler receives the URL
 
@@ -329,7 +330,7 @@ The audio player is wrapped in a `transition:persist` directive in `BaseLayout.a
 
 The main player bar is a fixed-bottom Preact component with:
 
-- **Track info** (left): Category icon, title, subtitle
+- **Track info** (left): Category icon, title, subtitle, and an optional muted credit line
 - **Transport controls** (center): Previous, play/pause, next
 - **Current time** display
 - **Waveform** (flexible center): SVG waveform with seek-on-click

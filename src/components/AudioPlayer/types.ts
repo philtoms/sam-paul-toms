@@ -18,6 +18,8 @@ export interface Track {
   icon?: string;
   /** Track subtitle (e.g. production credit) */
   subtitle?: string;
+  /** Free-text per-track credit/authorship line, rendered verbatim below the subtitle in the now-playing display */
+  credit?: string;
 }
 
 /**
