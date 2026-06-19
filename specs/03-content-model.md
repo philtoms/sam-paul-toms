@@ -150,6 +150,7 @@ Playlist sections for the homepage accordion. Each entry represents a category o
 | `title` | `string` | ✅ | Section display title (e.g., `"Documentary Film"`) |
 | `slug` | `string` | ✅ | URL-safe identifier (e.g., `"documentary"`) |
 | `description` | `string` | ❌ | Section description |
+| `credit` | `string` | ❌ | Free-text credit/authorship line (e.g. `"Directed by …"`, `"Commissioned by …"`), rendered under the section title in the accordion. Leave unpopulated until the content owner confirms real attributions. |
 | `tracks` | `array` | ✅ | Array of track objects (see below) |
 
 **Track object:**
@@ -169,6 +170,7 @@ Playlist sections for the homepage accordion. Each entry represents a category o
 title: 'Documentary Film'
 slug: 'documentary'
 description: 'Original scores for documentary film and television.'
+# credit: 'Directed by Jane Doe'  # content owner: confirm
 tracks:
   - title: 'A Worldwide Sensation'
     duration: '01:35'

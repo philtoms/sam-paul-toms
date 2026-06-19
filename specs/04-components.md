@@ -121,7 +121,7 @@
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `sections` | `PlaylistSection[]` | ✅ | Section display data (title, slug, description, tracks) |
+| `sections` | `PlaylistSection[]` | ✅ | Section display data (title, slug, description, optional `credit?: string` free-text credit line rendered under the section title, tracks) |
 | `playableTracksMap` | `Record<string, PlayableTrack[]>` | ✅ | Map from section slug to playable Track objects |
 | `allTracks` | `PlayableTrack[]` | ✅ | Concatenated track list across all sections |
 

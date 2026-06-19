@@ -15,6 +15,7 @@ interface PlaylistSection {
   title: string;
   slug: string;
   description?: string;
+  credit?: string;
   tracks: Array<{
     title: string;
     subtitle?: string;
@@ -118,6 +119,11 @@ export default function PlaylistAccordion({
                 <span class="text-xs text-text/40">
                   {trackCount} {trackCount === 1 ? 'track' : 'tracks'}
                 </span>
+                {section.credit && (
+                  <span class="block text-xs text-text/50 mt-0.5">
+                    {section.credit}
+                  </span>
+                )}
               </span>
             </button>
 

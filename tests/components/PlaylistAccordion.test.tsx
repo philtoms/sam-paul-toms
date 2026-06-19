@@ -12,7 +12,7 @@
  */
 // @vitest-environment jsdom
 import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/preact';
+import { render, screen } from '@testing-library/preact';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
@@ -61,6 +61,11 @@ const mockPlayableTracksMap = {
 };
 
 const mockAllTracks = [...mockPlayableTracksMap['test-section']];
+
+const sectionWithCredit = {
+  ...mockSections[0],
+  credit: 'Directed by Test Director',
+};
 
 describe('PlaylistAccordion — play overlay accent color regression', () => {
   it('overlay icons use accent color (text-accent) not white', () => {
@@ -121,5 +126,44 @@ describe('PlaylistAccordion — header text alignment regression', () => {
     const header = container.querySelector('.accordion-header') as HTMLElement;
     expect(header).toBeTruthy();
     expect(header.tagName).toBe('BUTTON');
+  });
+});
+
+describe('PlaylistAccordion — section credit rendering', () => {
+  it('renders the credit text under the section title when provided', () => {
+    render(
+      <PlaylistAccordion
+        sections={[sectionWithCredit]}
+        playableTracksMap={mockPlayableTracksMap}
+        allTracks={mockAllTracks}
+      />,
+    );
+
+    expect(screen.getByText('Directed by Test Director')).toBeTruthy();
+  });
+
+  it('does NOT render a credit element when credit is omitted', () => {
+    render(
+      <PlaylistAccordion
+        sections={mockSections}
+        playableTracksMap={mockPlayableTracksMap}
+        allTracks={mockAllTracks}
+      />,
+    );
+
+    expect(screen.queryByText(/credit/i)).toBeNull();
+  });
+
+  it('does NOT render a credit element when credit is an empty string', () => {
+    const sectionWithEmptyCredit = { ...mockSections[0], credit: '' };
+    render(
+      <PlaylistAccordion
+        sections={[sectionWithEmptyCredit]}
+        playableTracksMap={mockPlayableTracksMap}
+        allTracks={mockAllTracks}
+      />,
+    );
+
+    expect(screen.queryByText(/credit/i)).toBeNull();
   });
 });

@@ -57,6 +57,7 @@ const works = defineCollection({
     title: z.string(),
     slug: z.string(),
     description: z.string().optional(),
+    credit: z.string().optional(),
     tracks: z.array(
       z.object({
         title: z.string(),

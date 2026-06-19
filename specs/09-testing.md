@@ -107,6 +107,9 @@ tests/
 │   ├── content.test.ts               # Release frontmatter validation
 │   └── pages.test.ts                 # Release page rendering
 │
+├── works/                            # Works content tests
+│   └── content.test.ts               # Works frontmatter validation (incl. optional `credit` field)
+│
 ├── scripts/                          # Script utility tests
 │   ├── audio-player-events.test.ts   # Custom event dispatch helpers
 │   ├── fetch-instagram-oembed.test.ts # Instagram oEmbed fetcher
@@ -134,6 +137,7 @@ Tests that verify content collection frontmatter matches the Zod schemas:
 - **`releases/content.test.ts`** — Validates release frontmatter: title, artist, tracks, type enum
 - **`releases/artwork.test.ts`** — Validates release artwork paths
 - **`projects/content.test.ts`** — Validates project frontmatter
+- **`works/content.test.ts`** — Validates works frontmatter: title, slug, tracks; guards that `credit`, when present, is a string
 
 ### Audio Player Tests
 
