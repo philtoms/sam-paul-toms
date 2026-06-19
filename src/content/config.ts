@@ -6,6 +6,7 @@ const releases = defineCollection({
   schema: z.object({
     title: z.string(),
     artist: z.string(),
+    credit: z.string().optional(),
     releaseDate: z.date(),
     dateStatus: z.string().optional(),
     type: z.enum(['album', 'ep', 'single']),

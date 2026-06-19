@@ -241,7 +241,7 @@
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `release` | `{ id: string; data: { title, artist, releaseDate, type, artwork } }` | ✅ | Release collection entry |
+| `release` | `{ id: string; data: { title, artist, credit?, releaseDate, type, artwork } }` | ✅ | Release collection entry |
 | `showType` | `boolean` | ❌ | Show type badge (default: `true`) |
 
 ---

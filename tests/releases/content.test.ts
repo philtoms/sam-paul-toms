@@ -18,6 +18,7 @@ const trackSchema = z.object({
 const releaseSchema = z.object({
   title: z.string(),
   artist: z.string(),
+  credit: z.string().optional(),
   releaseDate: z.coerce.date(),
   type: z.enum(['album', 'ep', 'single']),
   artwork: z.string(),
@@ -72,6 +73,18 @@ describe('Release content files', () => {
     expect(data).toHaveProperty('tracks');
     expect(Array.isArray(data.tracks)).toBe(true);
     expect(data.tracks.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it.each(releaseFiles)('credit is optional for %s', (filename) => {
+    const { parsed } = loadRelease(filename);
+    expect(parsed.success).toBe(true);
+  });
+
+  it.each(releaseFiles)('credit, when present, is a string for %s', (filename) => {
+    const { data } = loadRelease(filename);
+    if (data.credit !== undefined) {
+      expect(typeof data.credit).toBe('string');
+    }
   });
 
   it('slug is URL-safe for all releases', () => {

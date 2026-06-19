@@ -5,6 +5,7 @@ interface Props {
     data: {
       title: string;
       artist: string;
+      credit?: string;
       releaseDate: Date;
       type: 'album' | 'ep' | 'single';
       artwork: string;
@@ -15,7 +16,7 @@ interface Props {
 
 const { release, showType = true } = Astro.props;
 const slug = release.id;
-const { title, artist, releaseDate, type, artwork } = release.data;
+const { title, artist, releaseDate, type, artwork, credit } = release.data;
 
 const formattedDate = releaseDate.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -51,6 +52,7 @@ const typeBadge: Record<string, string> = {
       )}
     </div>
     <p class="text-xs text-text/60 mt-1">{artist}</p>
+    {credit && <p class="text-xs text-text/40 mt-0.5">{credit}</p>}
     <p class="text-xs text-text/40 mt-0.5">{formattedDate}</p>
   </div>
 </a>

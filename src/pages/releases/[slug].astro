@@ -26,6 +26,7 @@ const {
   description,
   tracks,
   streamingLinks,
+  credit,
 } = release.data;
 
 const playableTracks: Track[] = tracks.map((track, i) =>
@@ -89,6 +90,7 @@ const metaDescription = description || `Listen to ${title} by ${siteName}.`;
         {title}
       </h1>
       <p class="text-lg text-text/70 mb-1">{artist}</p>
+      {credit && <p class="text-sm text-text/50 mb-1">{credit}</p>}
       <p class="text-sm text-text/40 mb-6">{formattedDate}</p>
 
       {

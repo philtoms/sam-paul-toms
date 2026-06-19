@@ -104,7 +104,7 @@ tests/
 │
 ├── releases/                         # Release content and page tests
 │   ├── artwork.test.ts               # Release artwork validation
-│   ├── content.test.ts               # Release frontmatter validation
+│   ├── content.test.ts               # Release frontmatter validation (incl. optional `credit` field)
 │   └── pages.test.ts                 # Release page rendering
 │
 ├── works/                            # Works content tests
@@ -135,7 +135,7 @@ tests/
 Tests that verify content collection frontmatter matches the Zod schemas:
 
 - **`about/content.test.ts`** — Validates bio frontmatter: title, photo, genreTags, pressQuotes
-- **`releases/content.test.ts`** — Validates release frontmatter: title, artist, tracks, type enum
+- **`releases/content.test.ts`** — Validates release frontmatter: title, artist, tracks, type enum, and guards the optional `credit` field
 - **`releases/artwork.test.ts`** — Validates release artwork paths
 - **`projects/content.test.ts`** — Validates project frontmatter
 - **`works/content.test.ts`** — Validates works frontmatter: title, slug, tracks; guards that section-level `credit` and per-track `credit`, when present, are strings

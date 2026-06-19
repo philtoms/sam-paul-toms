@@ -29,6 +29,7 @@ Represents musical releases (albums, EPs, singles). Each release has its own det
 |-------|------|----------|-------------|
 | `title` | `string` | ✅ | Release title |
 | `artist` | `string` | ✅ | Artist name |
+| `credit` | `string` | ❌ | Free-text secondary credit line (e.g. `"Produced by …"`, `"Released on … Records"`, `"feat. …"`), rendered under the artist on the release card and detail page. Distinct from the required `artist` field. Leave unpopulated until the content owner confirms real credits. |
 | `releaseDate` | `Date` | ✅ | Release date |
 | `dateStatus` | `string` | ❌ | Flag for unverified dates (e.g., `"UNVERIFIED — likely placeholder"`) |
 | `type` | `enum('album', 'ep', 'single')` | ✅ | Release type |
@@ -64,6 +65,7 @@ Represents musical releases (albums, EPs, singles). Each release has its own det
 ---
 title: Midnight Sessions
 artist: Sam
+# credit: 'Produced by Jane Doe'  # content owner: confirm
 releaseDate: 2025-11-15
 dateStatus: "UNVERIFIED — likely placeholder"
 type: album
