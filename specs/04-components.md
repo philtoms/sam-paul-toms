@@ -330,6 +330,7 @@
 |------|------|----------|-------------|
 | `url` | `string` | ✅ | YouTube video URL |
 | `title` | `string` | ❌ | Accessible title (default: `"YouTube video"`) |
+| `startTime` | `number` | ❌ | Start position in seconds (appended as YouTube `&start=` param; only applied when positive) |
 
 ---
 

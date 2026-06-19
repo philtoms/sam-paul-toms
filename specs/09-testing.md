@@ -97,7 +97,7 @@ tests/
 │   ├── ProjectGrid.test.ts           # ProjectGrid rendering
 │   ├── SocialLinksBar.test.ts        # SocialLinksBar rendering
 │   ├── TrackRow.test.tsx             # TrackRow rendering
-│   └── YouTubeEmbed.test.ts          # YouTubeEmbed rendering
+│   └── YouTubeEmbed.test.ts          # YouTubeEmbed rendering & startTime prop
 │
 ├── projects/                         # Project content tests
 │   └── content.test.ts               # Project frontmatter validation

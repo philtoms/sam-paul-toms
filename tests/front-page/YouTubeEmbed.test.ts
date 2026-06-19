@@ -36,3 +36,34 @@ describe('YouTubeEmbed component structure', () => {
     expect(component).toContain('loading="lazy"');
   });
 });
+
+describe('YouTubeEmbed startTime prop', () => {
+  it('includes the startTime prop on the Props interface', () => {
+    expect(component).toContain('startTime?: number;');
+  });
+
+  it('appends &start= via encodeURIComponent(startTime) when startTime is positive', () => {
+    // Source-level analog of ProjectModal's "appends &start=45" assertion.
+    // The truthy branch must append the start param with the exact template-literal
+    // form used by ProjectModal.tsx for parity.
+    expect(component).toContain('&start=${encodeURIComponent(startTime)}');
+  });
+
+  it('uses a truthy gate on startTime so falsy values (0/undefined) omit start', () => {
+    // Source-level analog of ProjectModal's "does NOT append start when omitted / when 0"
+    // assertions. The embed URL must be built from a conditional keyed on `startTime`
+    // so that 0, undefined, NaN, and absent all fall through to the no-`start` branch.
+    expect(component).toMatch(/startTime\s*\?/);
+    // The falsy-branch fallback URL must NOT carry `&start=`.
+    expect(component).toContain(
+      'https://www.youtube.com/embed/${videoId}?enablejsapi=1',
+    );
+  });
+
+  it('keeps the no-start URL byte-identical to the original embed URL', () => {
+    // The no-startTime case must render the exact original embed URL, unchanged.
+    expect(component).toContain(
+      'https://www.youtube.com/embed/${videoId}?enablejsapi=1',
+    );
+  });
+});

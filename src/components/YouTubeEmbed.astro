@@ -8,14 +8,16 @@
  * Props:
  * - url: YouTube video URL (supports youtube.com/watch, youtu.be, youtube.com/embed)
  * - title: Accessible title for the iframe (default: "YouTube video")
+ * - startTime: optional start position in seconds (appended as YouTube &start= param)
  */
 
 interface Props {
   url: string;
   title?: string;
+  startTime?: number;
 }
 
-const { url, title = 'YouTube video' } = Astro.props;
+const { url, title = 'YouTube video', startTime } = Astro.props;
 
 function extractYouTubeId(url: string): string {
   const patterns = [
@@ -31,6 +33,11 @@ function extractYouTubeId(url: string): string {
 }
 
 const videoId = extractYouTubeId(url);
+// Append YouTube `start` param only for a positive start time so the
+// no-start-time case stays byte-identical to the original embed URL.
+const embedUrl = startTime
+  ? `https://www.youtube.com/embed/${videoId}?enablejsapi=1&start=${encodeURIComponent(startTime)}`
+  : `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
 ---
 
 {videoId && (
@@ -39,7 +46,7 @@ const videoId = extractYouTubeId(url);
     style="padding-bottom: 56.25%"
   >
     <iframe
-      src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1`}
+      src={embedUrl}
       title={title}
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowfullscreen=""
