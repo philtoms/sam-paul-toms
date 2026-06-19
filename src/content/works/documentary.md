@@ -1,7 +1,7 @@
 ---
 title: 'Documentary Film'
 slug: 'documentary'
-description: 'Original scores for documentary film and television.'
+description: '**Original scores** for documentary film and television.'
 tracks:
   - title: 'A Worldwide Sensation'
     duration: '01:35'

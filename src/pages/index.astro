@@ -11,6 +11,7 @@ import { getCollection, render } from 'astro:content';
 import { buildTrackFromContent } from '../scripts/audio-helpers';
 import type { Track } from '../components/AudioPlayer/types';
 import { DEFAULT_SITE_NAME } from '../scripts/seo-helpers';
+import { renderMarkdown } from '../scripts/markdown';
 
 // Fetch about content for the AboutModal
 const aboutEntries = await getCollection('about');
@@ -42,6 +43,9 @@ const sections = sortedWorks.map((entry) => ({
   title: entry.data.title,
   slug: entry.data.slug,
   description: entry.data.description,
+  descriptionHtml: entry.data.description
+    ? renderMarkdown(entry.data.description)
+    : undefined,
   credit: entry.data.credit,
   tracks: entry.data.tracks.map((t) => ({
     title: t.title,

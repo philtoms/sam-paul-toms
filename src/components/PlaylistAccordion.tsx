@@ -15,6 +15,8 @@ interface PlaylistSection {
   title: string;
   slug: string;
   description?: string;
+  /** Pre-rendered HTML from the markdown `description` field. When present, the accordion renders this via `dangerouslySetInnerHTML`. */
+  descriptionHtml?: string;
   credit?: string;
   tracks: Array<{
     title: string;
@@ -132,6 +134,16 @@ export default function PlaylistAccordion({
               class={`accordion-content ${isOpen ? 'accordion-content--open' : ''}`}
             >
               <div>
+                {section.descriptionHtml ? (
+                  <div
+                    class="text-sm text-text/60 leading-relaxed mb-4 [&_a]:text-accent [&_a]:underline [&_a:hover]:text-accent-hover"
+                    dangerouslySetInnerHTML={{ __html: section.descriptionHtml }}
+                  />
+                ) : section.description ? (
+                  <p class="text-sm text-text/60 leading-relaxed mb-4">
+                    {section.description}
+                  </p>
+                ) : null}
                 {section.tracks.map((track, i) => (
                   <TrackRow
                     key={`${section.slug}-${i}`}

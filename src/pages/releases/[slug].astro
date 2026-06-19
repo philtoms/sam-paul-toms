@@ -7,6 +7,7 @@ import { generateMusicAlbumSchema } from '../../scripts/structured-data';
 import { buildTrackFromContent } from '../../scripts/audio-helpers';
 import type { Track } from '../../components/AudioPlayer/types';
 import { DEFAULT_SITE_NAME } from '../../scripts/seo-helpers';
+import { renderMarkdown } from '../../scripts/markdown';
 
 const { slug } = Astro.params;
 
@@ -95,9 +96,10 @@ const metaDescription = description || `Listen to ${title} by ${siteName}.`;
 
       {
         description && (
-          <p class="text-text/60 leading-relaxed mb-6 max-w-lg">
-            {description}
-          </p>
+          <div
+            class="text-text/60 leading-relaxed mb-6 max-w-lg [&_a]:text-accent [&_a]:underline [&_a:hover]:text-accent-hover"
+            set:html={renderMarkdown(description)}
+          />
         )
       }
 

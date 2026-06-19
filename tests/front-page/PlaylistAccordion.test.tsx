@@ -445,4 +445,65 @@ describe('PlaylistAccordion', () => {
       dispatchSpy.mockRestore();
     });
   });
+
+  describe('description rendering', () => {
+    it('renders markdown via dangerouslySetInnerHTML (strong + link)', () => {
+      const sections = [
+        {
+          ...mockSections[0],
+          descriptionHtml:
+            '<p><strong>Bold</strong> intro with a <a href="https://example.com">link</a>.</p>',
+        },
+      ];
+      render(<PlaylistAccordion sections={sections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
+
+      // The bold word is wrapped in <strong>
+      const bold = screen.getByText('Bold');
+      expect(bold.tagName).toBe('STRONG');
+
+      // The link keeps its href and tag
+      const link = screen.getByText('link');
+      expect(link.tagName).toBe('A');
+      expect(link.getAttribute('href')).toBe('https://example.com');
+    });
+
+    it('renders plain-text descriptionHtml (visual equivalence through the <div> branch)', () => {
+      const sections = [
+        {
+          ...mockSections[0],
+          descriptionHtml: '<p>just plain text</p>',
+        },
+      ];
+      render(<PlaylistAccordion sections={sections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
+
+      expect(screen.getByText('just plain text')).toBeTruthy();
+    });
+
+    it('falls back to a plain <p> when descriptionHtml is absent', () => {
+      // The existing mockSections have `description` but no `descriptionHtml`
+      render(<PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />);
+
+      // Documentary section's plain description renders
+      expect(screen.getByText('Original scores for documentary film.')).toBeTruthy();
+    });
+
+    it('omits the description element entirely when neither is present', () => {
+      // Library section in mockSections has no description at all
+      const { container } = render(
+        <PlaylistAccordion sections={mockSections} playableTracksMap={mockPlayableTracksMap} allTracks={mockAllTracks} />,
+      );
+
+      // Scope to the Library accordion-section to assert no description node
+      const librarySection = Array.from(container.querySelectorAll('.accordion-section')).find(
+        (el) => el.querySelector('.accordion-header-text .font-semibold')?.textContent === 'Library',
+      )!;
+      expect(librarySection).toBeTruthy();
+
+      const contentDivs = librarySection.querySelectorAll('.accordion-content > div');
+      expect(contentDivs.length).toBe(1);
+      const innerContent = contentDivs[0];
+      // The inner content should hold only track rows, no leading description <p>/<div>
+      expect(innerContent.firstElementChild?.tagName).toBe('BUTTON');
+    });
+  });
 });

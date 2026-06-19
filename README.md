@@ -193,6 +193,8 @@ streamingLinks: # Optional — release-level streaming links
 
 The Markdown body (below the frontmatter) can contain an extended description or liner notes, rendered on the release detail page.
 
+> **Note on the `description` field & markdown:** The `releases` and `works` `description` fields are rendered as markdown on the front end (via the shared `renderMarkdown` utility). For `works`, this is the intended place for emphasis/links (it's display-only). For `releases`, the `description` is **dual-purpose** — its raw plain text also feeds SEO `<meta>` and JSON-LD — so keep release descriptions plain text to avoid leaking `**bold**`/`[text](url)` syntax into metadata.
+
 #### Adding a New Release
 
 1. Create a new `.md` file in `src/content/releases/` with a URL-safe slug name

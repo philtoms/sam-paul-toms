@@ -55,6 +55,9 @@ describe.skipIf(!runIntegration)('Release pages', () => {
     expect(html).toContain('Dusk');
     expect(html).toContain('Dawn');
     expect(html).toContain('Spotify');
+    // The description still renders after the `set:html` change (KB-142) —
+    // guards against the markdown swap silently dropping the description.
+    expect(html.toLowerCase()).toContain('late-night journey');
   });
 
   it('renders echoes-ep detail page', async () => {
