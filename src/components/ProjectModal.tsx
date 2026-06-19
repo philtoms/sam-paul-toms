@@ -184,8 +184,21 @@ export default function ProjectModal() {
             {/* Title */}
             <h2 class="text-xl md:text-3xl font-bold text-white mb-4">{projectData.title}</h2>
 
-            {/* Summary */}
-            <p class="text-sm md:text-base text-white/80 leading-relaxed">{projectData.summary}</p>
+            {/* Summary — rendered from pre-rendered markdown HTML when
+                `summaryHtml` is present (the production path via
+                ProjectGrid.astro), falling back to the plain `summary`
+                string in a <p>. A <div> is used for the HTML branch because
+                markdown can produce block-level elements (multiple <p>s,
+                lists) that are invalid inside a <p>. Links are styled with
+                the accent colour, matching the AboutModal convention. */}
+            {projectData.summaryHtml ? (
+              <div
+                class="text-sm md:text-base text-white/80 leading-relaxed [&_a]:text-accent [&_a]:underline [&_a:hover]:text-accent-hover"
+                dangerouslySetInnerHTML={{ __html: projectData.summaryHtml }}
+              />
+            ) : (
+              <p class="text-sm md:text-base text-white/80 leading-relaxed">{projectData.summary}</p>
+            )}
 
             {/* Director credit — only shown when dir is a non-empty string */}
             {projectData.dir && (

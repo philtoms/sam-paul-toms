@@ -9,6 +9,8 @@
  * Clicking a card dispatches `project-modal:open` with the project data.
  */
 
+import { renderMarkdown } from '../scripts/markdown';
+
 interface Project {
   title: string;
   slug: string;
@@ -85,11 +87,12 @@ const sorted = [...projects].sort(
     set:html={JSON.stringify({
       title: project.title,
       summary: project.summary,
+      summaryHtml: renderMarkdown(project.summary),
       image: project.image,
       video: project.video,
       videoStartTime: project.videoStartTime,
       dir: project.dir,
       publishDate: project.publishDate.toISOString(),
-    })}
+    }).replace(/</g, '\\u003c')}
   />
 ))}

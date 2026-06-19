@@ -38,6 +38,16 @@ const sampleProjectDataWithZeroStartTime = {
   videoStartTime: 0,
 };
 
+const sampleProjectDataWithMarkdownSummary = {
+  ...sampleProjectData,
+  summaryHtml: '<p><strong>Bold</strong> summary with a <a href="https://example.com">link</a>.</p>',
+};
+
+const sampleProjectDataWithPlainTextHtml = {
+  ...sampleProjectData,
+  summaryHtml: '<p>just plain text</p>',
+};
+
 describe('ProjectModal', () => {
   beforeEach(() => {
     document.body.classList.remove('overflow-hidden');
@@ -216,6 +226,53 @@ describe('ProjectModal', () => {
     });
 
     expect(screen.queryByText(/Directed by/, { exact: false })).toBeNull();
+  });
+
+  it('renders summary HTML via dangerouslySetInnerHTML when summaryHtml is provided', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithMarkdownSummary }),
+    );
+
+    await waitFor(() => {
+      const bold = screen.getByText('Bold');
+      expect(bold).toBeInTheDocument();
+      expect(bold.tagName).toBe('STRONG');
+    });
+
+    const link = screen.getByText('link');
+    expect(link).toBeInTheDocument();
+    expect(link.tagName).toBe('A');
+    expect(link.getAttribute('href')).toBe('https://example.com');
+  });
+
+  it('renders plain-text summaryHtml as a single paragraph in the div', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithPlainTextHtml }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('just plain text')).toBeInTheDocument();
+    });
+  });
+
+  it('falls back to plain summary text in a <p> when summaryHtml is omitted', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+
+    await waitFor(() => {
+      const summary = screen.getByText(
+        'Original soundtrack for the documentary film Heimat.',
+      );
+      expect(summary).toBeInTheDocument();
+      expect(summary.tagName).toBe('P');
+    });
   });
 
   it('renders image even when video is present', async () => {

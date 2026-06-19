@@ -15,6 +15,8 @@ export const PROJECT_MODAL_CLOSE = 'project-modal:close';
 export interface ProjectModalData {
   title: string;
   summary: string;
+  /** Pre-rendered HTML from the markdown `summary` field. When present, the modal renders this via `dangerouslySetInnerHTML`. */
+  summaryHtml?: string;
   image: string;
   video?: string;
   videoStartTime?: number;
