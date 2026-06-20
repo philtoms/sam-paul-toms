@@ -8,16 +8,16 @@
 
 ## Test Framework
 
-| Component | Package | Purpose |
-|-----------|---------|---------|
-| Test runner | Vitest 4 | Fast, Vite-native test framework |
-| Vite config bridge | `astro/config` (`getViteConfig`) | Wraps the user vitest config in Astro's vite plugin pipeline so `.astro` files compile inside vitest |
-| `.astro` rendering | `astro/container` (`experimental_AstroContainer`) | Server-renders `.astro` components to HTML strings inside tests (Container API) |
-| Rendered-HTML parsing | `jsdom` (devDependency) | Parses Container-API HTML strings into a `Document` for behavioural assertions |
-| JSX transform | `@preact/preset-vite` | Compiles TSX for Preact component tests |
-| DOM simulation | `jsdom` (devDependency) | Provides DOM API for component tests |
-| Component testing | `@testing-library/preact` | Queries and interacts with Preact components |
-| DOM matchers | `@testing-library/jest-dom` | Custom matchers like `toBeInTheDocument()` |
+| Component             | Package                                           | Purpose                                                                                              |
+| --------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Test runner           | Vitest 4                                          | Fast, Vite-native test framework                                                                     |
+| Vite config bridge    | `astro/config` (`getViteConfig`)                  | Wraps the user vitest config in Astro's vite plugin pipeline so `.astro` files compile inside vitest |
+| `.astro` rendering    | `astro/container` (`experimental_AstroContainer`) | Server-renders `.astro` components to HTML strings inside tests (Container API)                      |
+| Rendered-HTML parsing | `jsdom` (devDependency)                           | Parses Container-API HTML strings into a `Document` for behavioural assertions                       |
+| JSX transform         | `@preact/preset-vite`                             | Compiles TSX for Preact component tests                                                              |
+| DOM simulation        | `jsdom` (devDependency)                           | Provides DOM API for component tests                                                                 |
+| Component testing     | `@testing-library/preact`                         | Queries and interacts with Preact components                                                         |
+| DOM matchers          | `@testing-library/jest-dom`                       | Custom matchers like `toBeInTheDocument()`                                                           |
 
 ---
 
@@ -42,13 +42,14 @@ export default getViteConfig({
 ```
 
 Key settings:
+
 - **`getViteConfig` (from `astro/config`)** — wraps the user config in Astro's vite plugin pipeline by reading `astro.config.mjs`, so `.astro` imports compile correctly inside vitest (replacing the plain `defineConfig` from `vitest/config`). This is what unblocks the Astro Container API for behavioural `.astro` tests.
 - **No manual `preact()` plugin** — the `@astrojs/preact` integration in `astro.config.mjs` re-adds the Preact vite plugin automatically via Astro's config-setup hooks, so the explicit `plugins: [preact()]` of the old config is intentionally omitted (doubling it up risks plugin conflicts).
 - **No default `test.environment`** — left unset so per-file `// @vitest-environment` annotations drive the environment: `jsdom` for Preact `.tsx` component tests, `node` for Astro Container API render tests.
 - **`include`** — matches all test files in `tests/` with `.test.ts` or `.test.tsx` extension
 - **`setupFiles`** — runs `tests/setup.ts` before each test suite
 - **`globals: true`** — `describe`, `it`, `expect`, `vi` are available globally (no imports needed)
-- *(The `as Parameters<typeof getViteConfig>[0]` cast is a typing-only affordance: Astro types `getViteConfig` against plain Vite's `UserConfig`, which does not statically include vitest's `test` key. Vitest reads `test` at runtime regardless.)*
+- _(The `as Parameters<typeof getViteConfig>[0]` cast is a typing-only affordance: Astro types `getViteConfig` against plain Vite's `UserConfig`, which does not statically include vitest's `test` key. Vitest reads `test` at runtime regardless.)_
 
 ### `tests/setup.ts`
 
@@ -97,6 +98,9 @@ tests/
 │   ├── project-modal/                # ProjectModal component tests
 │   │   └── ProjectModal.test.tsx
 │   └── PlaylistAccordion.test.tsx    # PlaylistAccordion component tests
+│
+├── docs/                             # Documentation structural-validation tests
+│   └── main-rollback-blocker.test.ts # Locks the required structure of docs/main-rollback-blocker.md (KB-266)
 │
 ├── design-system/                    # Design token and layout tests
 │   ├── mobile-layout.test.ts         # Mobile viewport layout validation
@@ -181,15 +185,15 @@ string via the **Astro Container API** (`experimental_AstroContainer` from
 `getAttribute('src')` / `className` / element-presence style of the Preact
 component tests. The shared helper `tests/helpers/renderAstro.ts` memoises one
 container per vitest worker and parses the rendered HTML with the `jsdom`
-*package*.
+_package_.
 
 - **`front-page/YouTubeEmbed.test.ts`** — iframe `src`/`title`/`loading`/`allowfullscreen`, URL-format coverage (`watch`, `youtu.be`, `embed`), the `{videoId && …}` conditional omitting the iframe for an unrecognised URL, and the `startTime` prop (`&start=` appended only for positive values).
 - **`front-page/CompactBio.test.ts`** — `summary` prop rendering, `#about-modal-btn` "Read more" button, default slot rendering, and the `text-lg` bio paragraph.
 
 **Environment requirement:** these tests must carry a `// @vitest-environment node`
-annotation at the top. The Container API must NOT run under a jsdom *test
-environment* — that combination triggers an esbuild `TextEncoder`/`Uint8Array`
-invariant. The `jsdom` *package* is safe to `import` (it only parses the already-
+annotation at the top. The Container API must NOT run under a jsdom _test
+environment_ — that combination triggers an esbuild `TextEncoder`/`Uint8Array`
+invariant. The `jsdom` _package_ is safe to `import` (it only parses the already-
 rendered HTML string) and is not used as the test runtime. The per-file
 `@vitest-environment` annotations drive the environment because `vitest.config.ts`
 sets no default `test.environment`.
@@ -228,13 +232,17 @@ Tests for homepage components and their rendering:
 - **`scripts/generate-sample-audio.test.ts`** — Tests sample audio generator
 - **`scripts/wav2mp3.test.ts`** — Tests WAV to MP3 converter
 
+### Documentation Tests
+
+- **`docs/main-rollback-blocker.test.ts`** — Locks the required structure of `docs/main-rollback-blocker.md` (KB-266): asserts every required section heading, both decision branches (`INTENTIONAL abandon` / `UNINTENDED defect`), both rollback endpoints (KB-253 `076b0b4` / KB-145 `77002915`), the do-no-harm invariant (no commits to `main`, no ref changes), and references to KB-263 / KB-265. Pure filesystem read mirroring the `tests/scripts/*` discipline (no `// @vitest-environment` pragma).
+
 ---
 
 ## Test Commands
 
-| Command | Purpose |
-|---------|---------|
-| `npm run test` | Run all tests once (single run) |
+| Command              | Purpose                                           |
+| -------------------- | ------------------------------------------------- |
+| `npm run test`       | Run all tests once (single run)                   |
 | `npm run test:watch` | Run tests in watch mode (re-runs on file changes) |
 
 ### Running Specific Tests

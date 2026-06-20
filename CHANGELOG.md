@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Recorded the KB-263 trigger-watch (KB-177 Option-3 Markdown-preference chain) as BLOCKED by a force-reset of `main`/`origin/main` from KB-253 (`076b0b4`) back to KB-145 (`77002915`) on 2026-06-20 (GitUp `[gitup] set tip`), which rolled back the 89-commit KB-146→KB-254 lineage — including KB-158's `src/data/name-links.ts` registry and the chain's own CHANGELOG history — from `main`; no data lost (the lineage is fully recoverable via reflog, e.g. `712f8c9`/`076b0b4`/`0a9149a` are all valid commits). KB-263 stopped at its Step 0 Preflight with zero commits / zero tracked changes. Full forensic record + binary board decision (retire the chain vs. restore `main` and re-dispatch) escalated in `docs/main-rollback-blocker.md` (KB-266)
 - Replaced gallery placeholder images with real Instagram post thumbnails for sammytoms-01, -02, -04, -05; updated `instagramUrl` fields from profile root to specific post permalinks (KB-115)
 - Switched the shared `vitest.config.ts` from `defineConfig` (`vitest/config`) to `getViteConfig` (`astro/config`), booting Astro's vite plugin pipeline so `.astro` files compile inside vitest and the Astro Container API can server-render them; dropped the manual `preact()` plugin (re-added automatically by the `@astrojs/preact` integration). Per-file `// @vitest-environment` annotations continue to drive the environment (KB-138)
 
