@@ -299,7 +299,7 @@ export default function ContactModal() {
           </button>
         </div>
 
-        {/* Contact form — identical markup to ContactForm.astro */}
+        {/* Contact form */}
         <form
           aria-label="Contact form"
           onSubmit={handleSubmit}

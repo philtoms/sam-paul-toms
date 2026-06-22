@@ -17,6 +17,7 @@ interface Project {
   summary: string;
   publishDate: Date;
   image: string;
+  popupImage?: string;
   video?: string;
   videoStartTime?: number;
   dir?: string;
@@ -89,6 +90,7 @@ const sorted = [...projects].sort(
       summary: project.summary,
       summaryHtml: renderMarkdown(project.summary),
       image: project.image,
+      popupImage: project.popupImage,
       video: project.video,
       videoStartTime: project.videoStartTime,
       dir: project.dir,

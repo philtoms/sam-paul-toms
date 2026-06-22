@@ -184,7 +184,7 @@ export default function AboutModal(props: AboutModalProps) {
           </div>
         </section>
 
-        {/* Genre tags — mirrors GenreTags.astro */}
+        {/* Genre tags — mirrors GenreTags.astro
         {genreTags.length > 0 && (
           <div class="mt-8 flex flex-wrap gap-2">
             {genreTags.map((tag) => (
@@ -193,9 +193,9 @@ export default function AboutModal(props: AboutModalProps) {
               </span>
             ))}
           </div>
-        )}
+        )} */}
 
-        {/* Press quotes — mirrors PressQuotes.astro */}
+        {/* Press quotes — mirrors PressQuotes.astro
         {pressQuotes.length > 0 && (
           <section class="mt-16">
             <h2 class="text-2xl font-bold text-white mb-8">Press</h2>
@@ -232,7 +232,7 @@ export default function AboutModal(props: AboutModalProps) {
               ))}
             </div>
           </section>
-        )}
+        )}  */}
       </div>
     </div>
   );

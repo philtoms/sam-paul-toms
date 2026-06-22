@@ -206,7 +206,8 @@ Project entries displayed in the `ProjectGrid` on the homepage. Each project ope
 | `summary` | `string` | ✅ | Short project description |
 | `publishDate` | `Date` | ✅ | Publication date (used for sorting) |
 | `dateStatus` | `string` | ❌ | Flag for unverified dates |
-| `image` | `string` | ✅ | Path to project image |
+| `image` | `string` | ✅ | Path to project image (used for the grid tile and the modal popup) |
+| `popupImage` | `string` | ❌ | Optional separate image for the modal popup. When omitted, the modal falls back to `image` |
 | `video` | `URL string` | ❌ | YouTube video URL |
 | `videoStartTime` | `number` | ❌ | YouTube video start time in seconds (passed as `start` param) |
 | `dir` | `string` | ❌ | Director credit (displayed as "Directed by …" under the summary) |
@@ -221,6 +222,7 @@ summary: 'Original soundtrack for the documentary film Heimat.'
 publishDate: 2024-06-01
 dateStatus: 'UNVERIFIED — possibly placeholder'
 image: '/images/projects/heimat.jpeg'
+popupImage: '/images/projects/heimat-poster.jpeg'
 dir: 'Director Name'
 ---
 ```

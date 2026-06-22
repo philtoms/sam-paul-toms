@@ -38,6 +38,11 @@ const sampleProjectDataWithZeroStartTime = {
   videoStartTime: 0,
 };
 
+const sampleProjectDataWithPopupImage = {
+  ...sampleProjectData,
+  popupImage: '/images/projects/heimat-poster.jpeg',
+};
+
 const sampleProjectDataWithMarkdownSummary = {
   ...sampleProjectData,
   summaryHtml: '<p><strong>Bold</strong> summary with a <a href="https://example.com">link</a>.</p>',
@@ -46,6 +51,15 @@ const sampleProjectDataWithMarkdownSummary = {
 const sampleProjectDataWithPlainTextHtml = {
   ...sampleProjectData,
   summaryHtml: '<p>just plain text</p>',
+};
+
+// Two-paragraph summary — the real-world shape produced by renderMarkdown()
+// when a project's frontmatter `summary` uses a YAML `|` block scalar
+// with a blank line between paragraphs (e.g. src/content/projects/the-solent.md).
+const sampleProjectDataWithTwoParagraphs = {
+  ...sampleProjectData,
+  summaryHtml:
+    '<p><strong>Original soundtrack</strong> for the dramatic film <em>Solace</em>.</p>\n<p>A tense, atmospheric score.</p>',
 };
 
 describe('ProjectModal', () => {
@@ -303,6 +317,34 @@ describe('ProjectModal', () => {
     const img = screen.getByAltText('Solace');
     expect(img).toBeInTheDocument();
     expect(img.getAttribute('src')).toBe('/images/solace.jpeg');
+  });
+
+  it('renders popupImage in the modal when provided', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithPopupImage }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const img = screen.getByAltText('Heimat');
+    expect(img.getAttribute('src')).toBe('/images/projects/heimat-poster.jpeg');
+  });
+
+  it('falls back to image in the modal when popupImage is omitted', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const img = screen.getByAltText('Heimat');
+    expect(img.getAttribute('src')).toBe('/images/heimat.jpeg');
   });
 
   it('renders YouTube iframe when video URL is provided', async () => {

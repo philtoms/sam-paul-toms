@@ -18,6 +18,8 @@ export interface ProjectModalData {
   /** Pre-rendered HTML from the markdown `summary` field. When present, the modal renders this via `dangerouslySetInnerHTML`. */
   summaryHtml?: string;
   image: string;
+  /** Optional image shown in the modal popup. Falls back to `image` when omitted. */
+  popupImage?: string;
   video?: string;
   videoStartTime?: number;
   dir?: string;

@@ -81,6 +81,7 @@ const projects = defineCollection({
     publishDate: z.date(),
     dateStatus: z.string().optional(),
     image: z.string(),
+    popupImage: z.string().optional(),
     video: z.string().url().optional(),
     videoStartTime: z.number().int().min(0).optional(),
     dir: z.string().optional(),

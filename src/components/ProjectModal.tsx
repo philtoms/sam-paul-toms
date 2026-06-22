@@ -159,7 +159,7 @@ export default function ProjectModal() {
         <section class="flex flex-col md:flex-row gap-8 md:gap-12">
           <div class="md:w-2/5 shrink-0">
             <img
-              src={projectData.image}
+              src={projectData.popupImage ?? projectData.image}
               alt={projectData.title}
               class="w-full rounded-lg object-cover max-h-[500px] shadow-2xl"
             />
@@ -177,7 +177,7 @@ export default function ProjectModal() {
                 the accent colour, matching the AboutModal convention. */}
             {projectData.summaryHtml ? (
               <div
-                class="text-sm md:text-base text-white/80 leading-relaxed [&_a]:text-accent [&_a]:underline [&_a:hover]:text-accent-hover"
+                class="text-sm md:text-base text-white/80 leading-relaxed space-y-4 [&_a]:text-accent [&_a]:underline [&_a:hover]:text-accent-hover"
                 dangerouslySetInnerHTML={{ __html: projectData.summaryHtml }}
               />
             ) : (
