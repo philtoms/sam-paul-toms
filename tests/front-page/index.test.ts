@@ -26,6 +26,13 @@ describe('Homepage YouTubeEmbed wiring', () => {
     expect(index).toContain('<YouTubeEmbed url={youtubeUrl}');
   });
 
+  it('passes the videoThumbnails array to the embed', () => {
+    // Guards against the prop being dropped from the render, which would
+    // silently leave the thumbnail strip empty (the KB-161 regression).
+    expect(index).toContain('videoThumbnails={videoThumbnails}');
+  });
+
+
   it('keeps the showreel video constant intact', () => {
     expect(index).toContain('watch?v=xlt63O1YvSM');
   });

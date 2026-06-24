@@ -215,7 +215,7 @@ and `SocialLinksBar.test.ts` are tracked for a future behavioural migration
 Tests for homepage components and their rendering:
 
 - CompactBio, HeroBanner, PlaylistAccordion, ProjectGrid, SocialLinksBar, TrackRow, YouTubeEmbed
-- **`index.test.ts`** — Homepage wiring (source-grep): asserts `<YouTubeEmbed url={youtubeUrl}>` is rendered in the template, the showreel video ID is intact, and the import still exists. Guards the "imported but not rendered" regression.
+- **`index.test.ts`** — Homepage wiring (source-grep): asserts `<YouTubeEmbed url={youtubeUrl}>` is rendered in the template, the showreel video ID is intact, and the import still exists. As of KB-161 it also asserts `videoThumbnails={videoThumbnails}` is passed, guarding against the prop being dropped and leaving the thumbnail strip empty. Guards the "imported but not rendered" regression.
 
 ### API Tests
 
