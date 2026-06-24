@@ -1,6 +1,6 @@
 # 09 — Testing
 
-**Last updated:** 2026-06-19
+**Last updated:** 2026-06-24
 
 **Purpose:** Documents the test framework, configuration, directory structure, test categories, and commands.
 
@@ -109,6 +109,7 @@ tests/
 ├── front-page/                       # Homepage integration tests
 │   ├── CompactBio.test.ts            # CompactBio behavioural test (Astro Container API)
 │   ├── HeroBanner.test.ts            # HeroBanner rendering (source-grep — animation math)
+│   ├── index.test.ts                 # index.astro wiring: YouTubeEmbed rendered + wired to youtubeUrl (source-grep)
 │   ├── PlaylistAccordion.test.tsx    # PlaylistAccordion on homepage
 │   ├── ProjectGrid.test.ts           # ProjectGrid rendering
 │   ├── SocialLinksBar.test.ts        # SocialLinksBar rendering
@@ -201,7 +202,11 @@ sets no default `test.environment`.
 
 **Currently kept as source-grep (not migrated):** `HeroBanner.test.ts` (scroll-
 animation math that does not surface in the DOM) and `design-system/mobile-
-layout.test.ts` (CSS `@media`/`grid-template-areas` rules). `ProjectGrid.test.ts`
+layout.test.ts` (CSS `@media`/`grid-template-areas` rules). `index.test.ts` is
+intentionally a pure source-grep wiring test — it asserts the `YouTubeEmbed`
+component is rendered on the homepage bound to the `youtubeUrl` constant
+(guards the "imported but never invoked" regression), not behavioural output.
+`ProjectGrid.test.ts`
 and `SocialLinksBar.test.ts` are tracked for a future behavioural migration
 (see follow-up task KB-148).
 
@@ -210,6 +215,7 @@ and `SocialLinksBar.test.ts` are tracked for a future behavioural migration
 Tests for homepage components and their rendering:
 
 - CompactBio, HeroBanner, PlaylistAccordion, ProjectGrid, SocialLinksBar, TrackRow, YouTubeEmbed
+- **`index.test.ts`** — Homepage wiring (source-grep): asserts `<YouTubeEmbed url={youtubeUrl}>` is rendered in the template, the showreel video ID is intact, and the import still exists. Guards the "imported but not rendered" regression.
 
 ### API Tests
 

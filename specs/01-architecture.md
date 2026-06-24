@@ -1,6 +1,6 @@
 # 01 — Architecture
 
-**Last updated:** 2026-06-12
+**Last updated:** 2026-06-24
 
 **Purpose:** Describes the tech stack, project structure, rendering model, and data-flow architecture of the music portfolio template.
 
@@ -62,7 +62,7 @@
 │   │   └── ReleasesLayout.astro # Nested layout for release pages (breadcrumb nav)
 │   │
 │   ├── pages/                 # File-based routing
-│   │   ├── index.astro        # Homepage (composes all homepage sections)
+│   │   ├── index.astro        # Homepage (composes all homepage sections; incl. YouTubeEmbed showreel section)
 │   │   ├── releases/
 │   │   │   ├── index.astro    # Releases listing page
 │   │   │   └── [slug].astro   # Individual release detail page
