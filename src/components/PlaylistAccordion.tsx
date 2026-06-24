@@ -134,7 +134,7 @@ export default function PlaylistAccordion({
               class={`accordion-content ${isOpen ? 'accordion-content--open' : ''}`}
             >
               <div>
-                {/* {section.descriptionHtml ? (
+                {section.descriptionHtml ? (
                   <div
                     class="text-sm text-text/60 leading-relaxed mb-4 [&_a]:text-accent [&_a]:underline [&_a:hover]:text-accent-hover"
                     dangerouslySetInnerHTML={{ __html: section.descriptionHtml }}
@@ -143,7 +143,7 @@ export default function PlaylistAccordion({
                   <p class="text-sm text-text/60 leading-relaxed mb-4">
                     {section.description}
                   </p>
-                ) : null} */}
+                ) : null}
                 {section.tracks.map((track, i) => (
                   <TrackRow
                     key={`${section.slug}-${i}`}
