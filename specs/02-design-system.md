@@ -224,7 +224,7 @@ Elevated card container with hover transform.
 }
 ```
 
-**Used by:** `ReleaseCard.astro`, `PressQuotes.astro` quote cards, `ProjectGrid.astro` project cards
+**Used by:** `ReleaseCard.astro`, `ProjectGrid.astro` project cards
 
 ### `.artwork-container`
 
@@ -255,7 +255,7 @@ Inline badge/tag with rounded-full shape.
 }
 ```
 
-**Used by:** `GenreTags.astro`, type badges
+**Used by:** type badges
 
 ### `.section`
 

@@ -281,40 +281,6 @@
 
 ---
 
-### `GenreTags.astro`
-
-| | |
-|---|---|
-| **Type** | Astro component |
-| **Directive** | N/A |
-| **File** | `src/components/GenreTags.astro` |
-| **Description** | Renders pill-style genre tag badges. Uses `.pill`-like styling (rounded-full, semi-transparent background, accent hover). |
-
-**Props:**
-
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `tags` | `string[]` | ✅ | Genre label strings |
-
----
-
-### `PressQuotes.astro`
-
-| | |
-|---|---|
-| **Type** | Astro component |
-| **Directive** | N/A |
-| **File** | `src/components/PressQuotes.astro` |
-| **Description** | Grid of press quote cards (1/2/3 columns). Each card shows opening quote mark, text, and attribution with optional link. Uses `.card`-like styling. |
-
-**Props:**
-
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `quotes` | `{ text: string; source: string; url?: string }[]` | ✅ | Press quote objects |
-
----
-
 ### `YouTubeEmbed.astro`
 
 | | |

@@ -248,7 +248,7 @@ body {
 
 /* === Reusable Component Patterns === */
 
-/* Card base — used by ReleaseCard, PressQuotes cards, etc. */
+/* Card base — used by ReleaseCard, ProjectGrid cards, etc. */
 .card {
   background-color: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
@@ -279,7 +279,7 @@ body {
   transform: scale(1.05);
 }
 
-/* Pill/badge — used by GenreTags, type badges */
+/* Pill/badge — used by type badges */
 .pill {
   display: inline-flex;
   align-items: center;

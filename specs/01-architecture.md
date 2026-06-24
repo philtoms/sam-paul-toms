@@ -76,11 +76,9 @@
 │   │   ├── CompactBio.astro   # Astro: condensed bio with "Read more" button
 │   │   ├── ContactForm.astro  # Astro: standalone contact form (alternative to modal)
 │   │   ├── ContactModal.tsx   # Preact island: contact form modal with Turnstile
-│   │   ├── GenreTags.astro    # Astro: pill-style genre tag badges
 │   │   ├── HeroBanner.astro   # Astro: fixed hero with scroll-driven parallax
 │   │   ├── MediaCarousel.tsx  # Preact island: infinite-swipe gallery carousel
 │   │   ├── PlaylistAccordion.tsx # Preact island: collapsible playlist sections
-│   │   ├── PressQuotes.astro  # Astro: press quote card grid
 │   │   ├── ProjectGrid.astro  # Astro: responsive project card grid
 │   │   ├── ProjectModal.tsx   # Preact island: project detail modal with video
 │   │   ├── ReleaseCard.astro  # Astro: release thumbnail card (links to detail page)
@@ -158,7 +156,7 @@ Server-rendered at build or request time. No client-side JavaScript. These compo
 - `HeroBanner.astro`, `CompactBio.astro`, `BioSection.astro` — static content display
 - `ProjectGrid.astro`, `ReleaseCard.astro`, `TrackList.astro` — data-driven rendering with client-side scripts for interactivity
 - `SEOHead.astro` — meta tag generation
-- `GenreTags.astro`, `PressQuotes.astro`, `StreamingLinks.astro` — pure rendering
+- `StreamingLinks.astro` — pure rendering
 - `ContactForm.astro`, `YouTubeEmbed.astro` — embed forms/media
 
 ### Preact Islands (`.tsx`)
