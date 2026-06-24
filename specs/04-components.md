@@ -358,7 +358,7 @@ All modals follow a consistent pattern:
 2. **Custom event driven:** Open/close via custom events dispatched on `document`
 3. **Animation:** 200ms opacity fade transition (`transition-opacity duration-200`)
 4. **Accessibility:** `role="dialog"`, `aria-modal="true"`, `aria-label`, focus trap, escape key
-5. **Body scroll lock:** `document.body.classList.add/remove('overflow-hidden')` (now active in About and Contact modals; ProjectModal does not yet implement scroll lock)
+5. **Body scroll lock:** `document.body.classList.add/remove('overflow-hidden')` (active in all modals)
 6. **Layout shift prevention:** `scrollbar-gutter: stable` on `<html>` reserves scrollbar space
 
 ### Modal Event Flow

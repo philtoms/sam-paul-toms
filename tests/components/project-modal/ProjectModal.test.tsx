@@ -148,6 +148,25 @@ describe('ProjectModal', () => {
     }, { timeout: 1000 });
   });
 
+  // Body scroll lock is active: overflow-hidden is toggled on body when modal opens/closes.
+  it('locks body scroll when open and restores on close', async () => {
+    render(<ProjectModal />);
+
+    // Open the modal
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(document.body.classList.contains('overflow-hidden')).toBe(true);
+    });
+
+    // Close the modal
+    document.dispatchEvent(new CustomEvent('project-modal:close'));
+    await waitFor(() => {
+      expect(document.body.classList.contains('overflow-hidden')).toBe(false);
+    }, { timeout: 1000 });
+  });
+
   it('closes on Escape key', async () => {
     render(<ProjectModal />);
 
