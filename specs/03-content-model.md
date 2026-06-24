@@ -208,8 +208,8 @@ Project entries displayed in the `ProjectGrid` on the homepage. Each project ope
 | `dateStatus` | `string` | ❌ | Flag for unverified dates |
 | `image` | `string` | ✅ | Path to project image (used for the grid tile and the modal popup) |
 | `popupImage` | `string` | ❌ | Optional separate image for the modal popup. When omitted, the modal falls back to `image` |
-| `video` | `URL string` | ❌ | YouTube video URL |
-| `videoStartTime` | `number` | ❌ | YouTube video start time in seconds (passed as `start` param; applies to the main `video` only, never to `videoThumbnails`) |
+| `video` | `URL string` | ❌ | YouTube video URL. Must be a **single-video** URL (`watch?v=`, `youtu.be/`, or `embed/`) for the project to be thumbnail-strip compatible — `extractYouTubeId` returns an 11-char ID for these forms only; a bare playlist URL (`playlist?list=…`) is incompatible. See `tests/projects/thumbnail-compatibility.test.ts` and `docs/thumbnail-content-gap.md` |
+| `videoStartTime` | `number` | ❌ | YouTube video start time in seconds (passed as `start` param; applies to the modal/showreel embed only, never to thumbnail-strip clicks) |
 | `videoThumbnails` | `array of `{ image, youtubeUrl, startTime? }`` | ❌ | Optional clickable thumbnail strip rendered below the video embed in `ProjectModal`. Each entry pairs a poster `image` (path) with a `youtubeUrl` (validated URL string) and an optional `startTime` (deep-link offset in seconds); clicking a thumbnail loads that video into the modal's main player. When the project has no main `video`, the embed initialises from the first thumbnail. See object shape below. |
 | `dir` | `string` | ❌ | Director credit (displayed as "Directed by …" under the summary) |
 
@@ -363,7 +363,7 @@ dateStatus: "UNVERIFIED — likely placeholder (scaffold commit KB-004; all stre
 1. Create `src/content/projects/your-project-slug.md`
 2. Add frontmatter matching the projects schema
 3. Upload project image to `public/images/projects/`
-4. Optionally add a YouTube video URL
+4. Optionally add a YouTube video URL — use a **single-video** URL (`watch?v=`, `youtu.be/`, or `embed/`) so the project is thumbnail-strip compatible; a bare playlist URL is not extractable. The `tests/projects/thumbnail-compatibility.test.ts` audit will fail with a diff if a new compatible film isn't accounted for.
 5. The project will appear in the homepage `ProjectGrid`, sorted by `publishDate` (newest first)
 
 To showcase multiple related clips (e.g. trailer + featurette + behind-the-scenes), add an optional `videoThumbnails` array. Each entry is `{ image, youtubeUrl }`; clicking a thumbnail in `ProjectModal` swaps the main embed to that clip. Thumbnail poster images must exist on disk under `public/`. The field is optional — projects without it render exactly as before.
