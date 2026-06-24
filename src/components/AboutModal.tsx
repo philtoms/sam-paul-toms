@@ -53,7 +53,7 @@ export default function AboutModal(props: AboutModalProps) {
       setIsVisible(true);
     });
     // Lock body scroll
-    // document.body.classList.add('overflow-hidden');
+    document.body.classList.add('overflow-hidden');
   }, []);
 
   /** Close the modal with animation */
@@ -62,7 +62,7 @@ export default function AboutModal(props: AboutModalProps) {
     // Wait for fade-out animation to complete before unmounting
     setTimeout(() => {
       setIsOpen(false);
-      // document.body.classList.remove('overflow-hidden');
+      document.body.classList.remove('overflow-hidden');
       // Restore focus to the element that opened the modal
       if (previousFocusRef.current instanceof HTMLElement) {
         previousFocusRef.current.focus();
