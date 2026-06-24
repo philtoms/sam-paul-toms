@@ -273,6 +273,27 @@ describe('ProjectModal', () => {
     });
   });
 
+  it('renders multi-paragraph summaryHtml correctly (both <p> blocks present)', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithTwoParagraphs }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    // First paragraph: "Original soundtrack" wrapped in <strong>
+    const bold = screen.getByText('Original soundtrack');
+    expect(bold).toBeInTheDocument();
+    expect(bold.tagName).toBe('STRONG');
+
+    // Second paragraph: standalone plain text, proving the <div> wrapper
+    // preserves both block-level <p> elements (not just the first).
+    expect(screen.getByText('A tense, atmospheric score.')).toBeInTheDocument();
+  });
+
   it('falls back to plain summary text in a <p> when summaryHtml is omitted', async () => {
     render(<ProjectModal />);
 
