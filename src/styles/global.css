@@ -299,8 +299,15 @@ body {
 
 /* Section spacing — consistent vertical rhythm */
 .section {
-  padding-top: var(--space-8);
-  padding-bottom: var(--space-8);
+  padding-top: var(--space-16);
+  padding-bottom: var(--space-16);
+}
+
+@media (max-width: 430px) {
+  .section {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
 }
 
 /* Container — max-width with horizontal padding */
