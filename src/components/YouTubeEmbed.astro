@@ -8,7 +8,20 @@
  * Props:
  * - url: YouTube video URL (supports youtube.com/watch, youtu.be, youtube.com/embed)
  * - title: Accessible title for the iframe (default: "YouTube video")
- * - startTime: optional start position in seconds (appended as YouTube &start= param)
+ * - startTime: optional start position in seconds (appended as YouTube &start= param;
+ *   applies ONLY to the initial `url`, never to thumbnail videos)
+ * - videoThumbnails: optional array of clickable poster thumbnails. When provided
+ *   (and non-empty), a thumbnail strip renders below the iframe. Clicking a
+ *   thumbnail swaps the main embed to that video without a page reload, via the
+ *   inline `<script>` that calls `initYouTubeThumbnails` from
+ *   `src/scripts/youtube-thumbnails.ts`. Thumbnail videos are resolved without
+ *   `startTime` (they always play from the beginning).
+ *
+ * When `videoThumbnails` is omitted, the component renders exactly as before —
+ * only an outer `.youtube-embed-wrapper` div is added around the existing
+ * `.youtube-embed` (the inner div, iframe, classes, and attributes are
+ * unchanged). The thumbnail strip and its inline script only ship when
+ * `videoThumbnails` is a non-empty array.
  */
 
 import { extractYouTubeId, buildYouTubeEmbedUrl } from '../scripts/youtube';
@@ -17,28 +30,72 @@ interface Props {
   url: string;
   title?: string;
   startTime?: number;
+  videoThumbnails?: Array<{
+    image: string; // poster image path
+    youtubeUrl: string; // a valid YouTube watch/short/embed URL
+  }>;
 }
 
-const { url, title = 'YouTube video', startTime } = Astro.props;
+const { url, title = 'YouTube video', startTime, videoThumbnails } = Astro.props;
 
 const videoId = extractYouTubeId(url);
 // Append YouTube `start` param only for a positive start time so the
 // no-start-time case stays byte-identical to the original embed URL.
+// startTime applies ONLY to the initial `url` — never to thumbnail videos.
 const embedUrl = buildYouTubeEmbedUrl(videoId, startTime);
+
+const hasThumbnails = Array.isArray(videoThumbnails) && videoThumbnails.length > 0;
 ---
 
 {videoId && (
-  <div
-    class="youtube-embed relative w-full overflow-hidden rounded-lg shadow-xl"
-    style="padding-bottom: 56.25%"
-  >
-    <iframe
-      src={embedUrl}
-      title={title}
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen=""
-      loading="lazy"
-      class="absolute inset-0 h-full w-full"
-    />
+  <div class="youtube-embed-wrapper">
+    <div
+      class="youtube-embed relative w-full overflow-hidden rounded-lg shadow-xl"
+      style="padding-bottom: 56.25%"
+    >
+      <iframe
+        src={embedUrl}
+        title={title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen=""
+        loading="lazy"
+        class="absolute inset-0 h-full w-full"
+      />
+    </div>
+    {hasThumbnails && (
+      <div class="youtube-thumbnails flex flex-wrap gap-2 mt-2">
+        {videoThumbnails!.map((thumb) => (
+          <button
+            type="button"
+            class="youtube-thumbnail-btn rounded-md overflow-hidden ring-2 ring-transparent transition hover:ring-white/60 focus:outline-none focus-visible:ring-white/80 cursor-pointer"
+            data-youtube-url={thumb.youtubeUrl}
+            aria-pressed="false"
+            aria-label="Play video"
+          >
+            <img
+              src={thumb.image}
+              alt=""
+              loading="lazy"
+              class="w-32 aspect-video object-cover block"
+            />
+          </button>
+        ))}
+      </div>
+    )}
   </div>
 )}
+
+{/*
+  Top-level inline `<script>` (Astro-processed, NOT `is:inline`). Astro only
+  bundles/extracts `<script>` tags that are direct children of the template
+  root — a script nested inside the `{videoId && …}` or `{hasThumbnails && …}`
+  conditional is silently dropped from the production bundle, which would 404
+  at runtime. This mirrors the established pattern in ProjectGrid.astro.
+
+  `initYouTubeThumbnails` is a safe no-op when no thumbnail strip is present,
+  so it is fine to call unconditionally on every render.
+*/}
+<script>
+  import { initYouTubeThumbnails } from '../scripts/youtube-thumbnails';
+  initYouTubeThumbnails();
+</script>

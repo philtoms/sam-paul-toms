@@ -132,7 +132,8 @@ tests/
 │   ├── generate-sample-audio.test.ts # Sample audio generator
 │   ├── wav2mp3.test.ts               # WAV to MP3 converter
 │   ├── youtube.test.ts               # extractYouTubeId + buildYouTubeEmbedUrl contract
-│   └── youtube-audio-pause.test.ts   # YouTube audio-pause watcher
+│   ├── youtube-audio-pause.test.ts   # YouTube audio-pause watcher
+│   └── youtube-thumbnails.test.ts    # Thumbnail-strip click-to-swap handler (KB-150)
 │
 ├── seo/                              # SEO tests
 │   ├── SEOHead.test.ts               # generateSEOTags() helper output validation
@@ -187,7 +188,7 @@ component tests. The shared helper `tests/helpers/renderAstro.ts` memoises one
 container per vitest worker and parses the rendered HTML with the `jsdom`
 _package_.
 
-- **`front-page/YouTubeEmbed.test.ts`** — iframe `src`/`title`/`loading`/`allowfullscreen`, URL-format coverage (`watch`, `youtu.be`, `embed`), the `{videoId && …}` conditional omitting the iframe for an unrecognised URL, and the `startTime` prop (`&start=` appended only for positive values).
+- **`front-page/YouTubeEmbed.test.ts`** — iframe `src`/`title`/`loading`/`allowfullscreen`, URL-format coverage (`watch`, `youtu.be`, `embed`), the `{videoId && …}` conditional omitting the iframe for an unrecognised URL, and the `startTime` prop (`&start=` appended only for positive values). Also covers the optional `videoThumbnails` prop (KB-150): server-rendered thumbnail buttons/images, `data-youtube-url` + `aria-pressed`, strip omission when absent/empty, wrapper + backward-compat class/style preservation, and the guard rendering nothing for an unrecognised URL even with thumbnails.
 - **`front-page/CompactBio.test.ts`** — `summary` prop rendering, `#about-modal-btn` "Read more" button, default slot rendering, and the `text-lg` bio paragraph.
 
 **Environment requirement:** these tests must carry a `// @vitest-environment node`
@@ -228,6 +229,7 @@ Tests for homepage components and their rendering:
 
 - **`scripts/audio-player-events.test.ts`** — Tests custom event dispatch functions
 - **`scripts/youtube-audio-pause.test.ts`** — Tests YouTube watcher init/destroy
+- **`scripts/youtube-thumbnails.test.ts`** — Tests the YouTube thumbnail-strip click-to-swap handler (`initYouTubeThumbnails`): iframe `src` swap on click, `aria-pressed` toggling, unrecognised/missing/empty `data-youtube-url` guards, no-op safety for wrapper-less or button-less markup, and root-scoping (KB-150)
 - **`scripts/fetch-instagram-oembed.test.ts`** — Tests Instagram thumbnail fetcher
 - **`scripts/generate-sample-audio.test.ts`** — Tests sample audio generator
 - **`scripts/wav2mp3.test.ts`** — Tests WAV to MP3 converter

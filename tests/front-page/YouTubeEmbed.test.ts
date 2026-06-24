@@ -17,6 +17,17 @@ import YouTubeEmbed from '../../src/components/YouTubeEmbed.astro';
 const WATCH_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 const EMBED_BASE = 'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1';
 
+// Fixtures for the optional `videoThumbnails` prop (KB-150). The poster image
+// paths are illustrative — no real images exist on disk for the homepage yet.
+const THUMB_IMG_A = '/images/video-thumb-1.jpeg';
+const THUMB_IMG_B = '/images/video-thumb-2.jpeg';
+const THUMB_URL_A = 'https://www.youtube.com/watch?v=AAAAAAAAAAA';
+const THUMB_URL_B = 'https://youtu.be/BBBBBBBBBBB';
+const videoThumbnails = [
+  { image: THUMB_IMG_A, youtubeUrl: THUMB_URL_A },
+  { image: THUMB_IMG_B, youtubeUrl: THUMB_URL_B },
+];
+
 describe('YouTubeEmbed rendering', () => {
   it('renders a youtube-embed wrapper div', async () => {
     const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
@@ -83,12 +94,18 @@ describe('YouTubeEmbed missing video id', () => {
   it('renders nothing (no iframe) when the URL has no extractable video id', async () => {
     // This is the behavioural case source-grep could never test: the
     // `{videoId && …}` conditional omits the iframe entirely, not just a prop.
-    const { document, html } = await renderAstro(YouTubeEmbed, {
+    //
+    // NOTE (KB-150): the component now ships a top-level inline `<script>`
+    // (Astro only bundles root-level scripts), so the output is no longer
+    // literally empty — it contains the harmless no-op `<script>` reference.
+    // The meaningful invariant is that NO embed markup renders, asserted below.
+    const { document } = await renderAstro(YouTubeEmbed, {
       props: { url: 'https://example.com/no-video' },
     });
-    expect(html).toBe('');
     expect(document.querySelector('iframe')).toBeNull();
     expect(document.querySelector('div.youtube-embed')).toBeNull();
+    expect(document.querySelector('.youtube-embed-wrapper')).toBeNull();
+    expect(document.querySelector('.youtube-thumbnail-btn')).toBeNull();
   });
 });
 
@@ -116,5 +133,99 @@ describe('YouTubeEmbed startTime prop', () => {
     const src = document.querySelector('iframe')!.getAttribute('src');
     expect(src).not.toMatch(/start=/);
     expect(src).toBe(EMBED_BASE);
+  });
+});
+
+describe('YouTubeEmbed videoThumbnails prop', () => {
+  it('renders one thumbnail button per entry with its poster image when provided', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, videoThumbnails },
+    });
+    const buttons = document.querySelectorAll('.youtube-thumbnail-btn');
+    expect(buttons.length).toBe(2);
+
+    const imgs = document.querySelectorAll('.youtube-thumbnail-btn img');
+    expect(imgs[0].getAttribute('src')).toBe(THUMB_IMG_A);
+    expect(imgs[1].getAttribute('src')).toBe(THUMB_IMG_B);
+  });
+
+  it('renders each thumbnail button inside a .youtube-thumbnails strip container', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, videoThumbnails },
+    });
+    const strip = document.querySelector('.youtube-thumbnails');
+    expect(strip).not.toBeNull();
+    // All thumbnail buttons live inside the strip container.
+    expect(strip!.querySelectorAll('.youtube-thumbnail-btn').length).toBe(2);
+  });
+
+  it('carries data-youtube-url with the fixture URL and aria-pressed="false" on initial render', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, videoThumbnails },
+    });
+    const buttons = document.querySelectorAll('.youtube-thumbnail-btn');
+    expect(buttons[0].getAttribute('data-youtube-url')).toBe(THUMB_URL_A);
+    expect(buttons[1].getAttribute('data-youtube-url')).toBe(THUMB_URL_B);
+    expect(buttons[0].getAttribute('aria-pressed')).toBe('false');
+    expect(buttons[1].getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('renders no thumbnail strip when videoThumbnails is omitted', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    expect(document.querySelectorAll('.youtube-thumbnail-btn')).toHaveLength(0);
+    expect(document.querySelector('.youtube-thumbnails')).toBeNull();
+  });
+
+  it('renders no thumbnail strip when videoThumbnails is an empty array', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, videoThumbnails: [] },
+    });
+    expect(document.querySelectorAll('.youtube-thumbnail-btn')).toHaveLength(0);
+    expect(document.querySelector('.youtube-thumbnails')).toBeNull();
+  });
+
+  it('derives the initial iframe src from the main url, not a thumbnail, when videoThumbnails is present', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, videoThumbnails },
+    });
+    expect(document.querySelector('iframe')!.getAttribute('src')).toBe(EMBED_BASE);
+  });
+
+  it('wraps the embed in a .youtube-embed-wrapper and preserves the inner .youtube-embed classes/style (backward-compat)', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    const wrapper = document.querySelector('.youtube-embed-wrapper');
+    expect(wrapper).not.toBeNull();
+
+    const inner = wrapper!.querySelector('.youtube-embed');
+    expect(inner).not.toBeNull();
+    expect(inner!.className).toContain('youtube-embed');
+    expect(inner!.className).toContain('relative');
+    expect(inner!.getAttribute('style')).toBe('padding-bottom: 56.25%');
+
+    const iframe = inner!.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('loading')).toBe('lazy');
+  });
+
+  it('still applies startTime to the initial url when videoThumbnails is present', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, startTime: 45, videoThumbnails },
+    });
+    expect(document.querySelector('iframe')!.getAttribute('src')).toBe(`${EMBED_BASE}&start=45`);
+  });
+
+  it('renders nothing for an unrecognised url even when videoThumbnails is provided', async () => {
+    // The `{videoId && …}` guard wraps the entire wrapper + thumbnail strip,
+    // so an unrecognised main url renders no embed markup — thumbnails or not.
+    // (The top-level inline `<script>` reference remains, as for every render;
+    // see the "missing video id" test note above.)
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: 'https://example.com/no-video', videoThumbnails },
+    });
+    expect(document.querySelector('iframe')).toBeNull();
+    expect(document.querySelector('.youtube-embed-wrapper')).toBeNull();
+    expect(document.querySelector('.youtube-embed')).toBeNull();
+    expect(document.querySelector('.youtube-thumbnail-btn')).toBeNull();
+    expect(document.querySelector('.youtube-thumbnails')).toBeNull();
   });
 });

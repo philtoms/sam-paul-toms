@@ -286,9 +286,9 @@
 | | |
 |---|---|
 | **Type** | Astro component |
-| **Directive** | N/A |
+| **Directive** | N/A (inline `<script>`) |
 | **File** | `src/components/YouTubeEmbed.astro` |
-| **Description** | Direct YouTube iframe embed with lazy loading. Extracts the video ID and builds the embed URL via the shared `src/scripts/youtube.ts` helpers (`extractYouTubeId`, `buildYouTubeEmbedUrl`). Uses `?enablejsapi=1` for YouTube audio-pause integration. |
+| **Description** | Direct YouTube iframe embed with lazy loading. Extracts the video ID and builds the embed URL via the shared `src/scripts/youtube.ts` helpers (`extractYouTubeId`, `buildYouTubeEmbedUrl`). Uses `?enablejsapi=1` for YouTube audio-pause integration. The embed is wrapped in a `.youtube-embed-wrapper` div. When the optional `videoThumbnails` prop is provided (non-empty), a clickable thumbnail strip renders below the iframe; clicking a thumbnail swaps the main embed to that video without a page reload. The click-to-swap behaviour lives in a top-level Astro-processed inline `<script>` that calls `initYouTubeThumbnails` from `src/scripts/youtube-thumbnails.ts` (a safe no-op when no thumbnail strip is present). |
 
 **Props:**
 
@@ -296,7 +296,8 @@
 |------|------|----------|-------------|
 | `url` | `string` | ✅ | YouTube video URL |
 | `title` | `string` | ❌ | Accessible title (default: `"YouTube video"`) |
-| `startTime` | `number` | ❌ | Start position in seconds (appended as YouTube `&start=` param; only applied when positive) |
+| `startTime` | `number` | ❌ | Start position in seconds (appended as YouTube `&start=` param; only applied when positive; applies ONLY to the initial `url`, never to thumbnail videos) |
+| `videoThumbnails` | `Array<{ image: string; youtubeUrl: string }>` | ❌ | Optional clickable poster thumbnails rendered below the iframe. Clicking one swaps the main embed to that video (resolved without `startTime`) via the inline `<script>` + `initYouTubeThumbnails`. Omitted/empty = no strip (byte-identical embed). |
 
 ---
 
