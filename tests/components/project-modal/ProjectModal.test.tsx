@@ -62,6 +62,49 @@ const sampleProjectDataWithTwoParagraphs = {
     '<p><strong>Original soundtrack</strong> for the dramatic film <em>Solace</em>.</p>\n<p>A tense, atmospheric score.</p>',
 };
 
+// Clickable thumbnail strip fixtures (KB-146). The main video (dQw4w9WgXcQ)
+// stays active on open; clicking a thumbnail swaps the embed above it.
+const sampleProjectDataWithThumbnails = {
+  ...sampleProjectData,
+  videoThumbnails: [
+    { image: '/images/t1.jpeg', youtubeUrl: 'https://www.youtube.com/watch?v=AbCdEfGhIJK' },
+    { image: '/images/t2.jpeg', youtubeUrl: 'https://www.youtube.com/watch?v=ZyXwVuTsR1Q' },
+  ],
+};
+
+// Thumbnails combined with a start time — proves the start time applies to the
+// main video but is suppressed for thumbnail videos.
+const sampleProjectDataWithStartTimeAndThumbnails = {
+  ...sampleProjectDataWithThumbnails,
+  videoStartTime: 45,
+};
+
+// Thumbnails but no main video — the embed should seed from the first thumbnail.
+const sampleProjectDataThumbnailsOnly = {
+  ...sampleProjectDataNoVideo,
+  videoThumbnails: [
+    { image: '/images/t1.jpeg', youtubeUrl: 'https://www.youtube.com/watch?v=AbCdEfGhIJK' },
+  ],
+};
+
+// Per-thumbnail start time (KB-151). The first thumbnail carries its own
+// startTime (30), independent of the project-level videoStartTime; the second
+// thumbnail omits it. Proves each thumbnail start time is independent.
+const sampleProjectDataWithThumbnailStartTime = {
+  ...sampleProjectDataWithThumbnails,
+  videoThumbnails: [
+    { image: '/images/t1.jpeg', youtubeUrl: 'https://www.youtube.com/watch?v=AbCdEfGhIJK', startTime: 30 },
+    { image: '/images/t2.jpeg', youtubeUrl: 'https://www.youtube.com/watch?v=ZyXwVuTsR1Q' },
+  ],
+};
+
+// Per-thumbnail startTime AND a project-level videoStartTime — proves the two
+// are independent: the main video uses 45, the first thumbnail uses 30.
+const sampleProjectDataWithThumbnailAndMainStart = {
+  ...sampleProjectDataWithThumbnailStartTime,
+  videoStartTime: 45,
+};
+
 describe('ProjectModal', () => {
   beforeEach(() => {
     document.body.classList.remove('overflow-hidden');
@@ -553,5 +596,226 @@ describe('ProjectModal', () => {
       const dialog = screen.getByRole('dialog');
       expect(dialog.getAttribute('aria-label')).toBe('Heimat');
     });
+  });
+
+  // ---------- Thumbnail strip (KB-146) ----------
+
+  it('renders thumbnail images when videoThumbnails is provided', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithThumbnails }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const thumbButtons = screen.getAllByRole('button', { name: /Play video/ });
+    expect(thumbButtons).toHaveLength(2);
+    // The thumbnail <img> elements use alt="" (decorative); query by src.
+    const imgs = thumbButtons.map((b) => b.querySelector('img'));
+    expect(imgs[0]!.getAttribute('src')).toBe('/images/t1.jpeg');
+    expect(imgs[1]!.getAttribute('src')).toBe('/images/t2.jpeg');
+  });
+
+  it('does NOT render a thumbnail strip when videoThumbnails is omitted', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    // No thumbnail buttons — the strip query is scoped to the thumbnail label,
+    // so the close button ("Close modal") does not interfere.
+    expect(screen.queryAllByRole('button', { name: /Play video/ })).toHaveLength(0);
+    expect(screen.getByLabelText('Close modal')).toBeInTheDocument();
+  });
+
+  it('clicking a thumbnail updates the main iframe src to that thumbnail video', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithThumbnails }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    // Main video (dQw4w9WgXcQ) is shown initially.
+    const iframe = () => document.querySelector('iframe')!;
+    expect(iframe().getAttribute('src')).toContain('youtube.com/embed/dQw4w9WgXcQ');
+
+    const thumbButtons = screen.getAllByRole('button', { name: /Play video/ });
+    fireEvent.click(thumbButtons[0]);
+
+    // Embed swaps to the first thumbnail's video ID.
+    expect(iframe().getAttribute('src')).toContain('youtube.com/embed/AbCdEfGhIJK');
+  });
+
+  it('does NOT apply videoStartTime to a thumbnail video', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithStartTimeAndThumbnails }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = () => document.querySelector('iframe')!;
+    // The main video carries start=45 on open — proving the fixture is meaningful
+    // and the suppression below is a real behaviour, not a vacuous absence.
+    expect(iframe().getAttribute('src')).toContain('start=45');
+
+    const thumbButtons = screen.getAllByRole('button', { name: /Play video/ });
+    fireEvent.click(thumbButtons[0]);
+
+    // The thumbnail video omits start= entirely.
+    expect(iframe().getAttribute('src')).toContain('youtube.com/embed/AbCdEfGhIJK');
+    expect(iframe().getAttribute('src')).not.toMatch(/start=/);
+  });
+
+  it('marks the active thumbnail with aria-pressed=true and leaves others false', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithThumbnails }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const thumbButtons = () => screen.getAllByRole('button', { name: /Play video/ });
+
+    // On open the main video is active, so neither thumbnail is pressed.
+    expect(thumbButtons()[0].getAttribute('aria-pressed')).toBe('false');
+    expect(thumbButtons()[1].getAttribute('aria-pressed')).toBe('false');
+
+    fireEvent.click(thumbButtons()[0]);
+
+    // After clicking the first thumbnail, it is pressed and the other is not.
+    expect(thumbButtons()[0].getAttribute('aria-pressed')).toBe('true');
+    expect(thumbButtons()[1].getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('seeds the embed from the first thumbnail when there is no main video', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataThumbnailsOnly }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Solace')).toBeInTheDocument();
+    });
+
+    // No main video, so the embed initialises to the first thumbnail.
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).toContain('youtube.com/embed/AbCdEfGhIJK');
+
+    // The thumbnail strip still renders.
+    expect(screen.getAllByRole('button', { name: /Play video/ })).toHaveLength(1);
+  });
+
+  // ---------- Per-thumbnail startTime (KB-151) ----------
+
+  it('appends the thumbnail startTime to the iframe src when a thumbnail has startTime', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithThumbnailStartTime }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = () => document.querySelector('iframe')!;
+    // Main video has no videoStartTime, so no start on open.
+    expect(iframe().getAttribute('src')).not.toMatch(/start=/);
+
+    const thumbButtons = screen.getAllByRole('button', { name: /Play video/ });
+    fireEvent.click(thumbButtons[0]);
+
+    // The first thumbnail carries startTime: 30 → embed appends &start=30.
+    expect(iframe().getAttribute('src')).toContain('youtube.com/embed/AbCdEfGhIJK');
+    expect(iframe().getAttribute('src')).toContain('&start=30');
+  });
+
+  it('does NOT append start when clicking a thumbnail that has no startTime', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithThumbnailStartTime }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const thumbButtons = screen.getAllByRole('button', { name: /Play video/ });
+    // The second thumbnail omits startTime.
+    fireEvent.click(thumbButtons[1]);
+
+    const iframe = document.querySelector('iframe')!;
+    expect(iframe.getAttribute('src')).toContain('youtube.com/embed/ZyXwVuTsR1Q');
+    expect(iframe.getAttribute('src')).not.toMatch(/start=/);
+  });
+
+  it('main video uses the project videoStartTime, not a thumbnail startTime, on open', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithThumbnailAndMainStart }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = document.querySelector('iframe')!;
+    // The main video (dQw4w9WgXcQ) uses the project-level start (45), not the
+    // first thumbnail's start (30).
+    expect(iframe.getAttribute('src')).toContain('youtube.com/embed/dQw4w9WgXcQ');
+    expect(iframe.getAttribute('src')).toContain('&start=45');
+    expect(iframe.getAttribute('src')).not.toMatch(/start=30/);
+  });
+
+  it('restores the main video startTime after switching back from a thumbnail with its own startTime', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithThumbnailAndMainStart }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = () => document.querySelector('iframe')!;
+    // Main video uses the project-level start (45) on open.
+    expect(iframe().getAttribute('src')).toContain('&start=45');
+
+    const thumbButtons = screen.getAllByRole('button', { name: /Play video/ });
+    fireEvent.click(thumbButtons[0]);
+
+    // The thumbnail uses its own start (30).
+    expect(iframe().getAttribute('src')).toContain('&start=30');
+
+    // Re-open the modal — activeVideoUrl is re-seeded to the main video.
+    document.dispatchEvent(new CustomEvent('project-modal:close'));
+    await waitFor(() => {
+      expect(screen.queryByText('Heimat')).not.toBeInTheDocument();
+    }, { timeout: 1000 });
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithThumbnailAndMainStart }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    // The main video's start (45) is restored, not the thumbnail's (30).
+    expect(iframe().getAttribute('src')).toContain('&start=45');
+    expect(iframe().getAttribute('src')).not.toMatch(/start=30/);
   });
 });

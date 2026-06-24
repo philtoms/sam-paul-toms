@@ -20,6 +20,7 @@ interface Project {
   popupImage?: string;
   video?: string;
   videoStartTime?: number;
+  videoThumbnails?: Array<{ image: string; youtubeUrl: string; startTime?: number }>;
   dir?: string;
 }
 
@@ -93,6 +94,7 @@ const sorted = [...projects].sort(
       popupImage: project.popupImage,
       video: project.video,
       videoStartTime: project.videoStartTime,
+      videoThumbnails: project.videoThumbnails,
       dir: project.dir,
       publishDate: project.publishDate.toISOString(),
     }).replace(/</g, '\\u003c')}

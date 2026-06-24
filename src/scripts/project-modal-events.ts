@@ -22,6 +22,8 @@ export interface ProjectModalData {
   popupImage?: string;
   video?: string;
   videoStartTime?: number;
+  /** Optional clickable thumbnail strip. Each entry pairs a poster image with a YouTube URL; clicking a thumbnail loads that video into the modal's main player. An optional `startTime` deep-links that video to a specific timestamp. */
+  videoThumbnails?: Array<{ image: string; youtubeUrl: string; startTime?: number }>;
   dir?: string;
   publishDate: string;
 }

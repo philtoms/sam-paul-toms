@@ -1,6 +1,6 @@
 # 03 — Content Model
 
-**Last updated:** 2026-06-12
+**Last updated:** 2026-06-24
 
 **Purpose:** Documents all five Astro content collections, their Zod schemas, relationships, and how to add new content.
 
@@ -209,8 +209,17 @@ Project entries displayed in the `ProjectGrid` on the homepage. Each project ope
 | `image` | `string` | ✅ | Path to project image (used for the grid tile and the modal popup) |
 | `popupImage` | `string` | ❌ | Optional separate image for the modal popup. When omitted, the modal falls back to `image` |
 | `video` | `URL string` | ❌ | YouTube video URL |
-| `videoStartTime` | `number` | ❌ | YouTube video start time in seconds (passed as `start` param) |
+| `videoStartTime` | `number` | ❌ | YouTube video start time in seconds (passed as `start` param; applies to the main `video` only, never to `videoThumbnails`) |
+| `videoThumbnails` | `array of `{ image, youtubeUrl, startTime? }`` | ❌ | Optional clickable thumbnail strip rendered below the video embed in `ProjectModal`. Each entry pairs a poster `image` (path) with a `youtubeUrl` (validated URL string) and an optional `startTime` (deep-link offset in seconds); clicking a thumbnail loads that video into the modal's main player. When the project has no main `video`, the embed initialises from the first thumbnail. See object shape below. |
 | `dir` | `string` | ❌ | Director credit (displayed as "Directed by …" under the summary) |
+
+**Video thumbnail object:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `image` | `string` | ✅ | Poster image path (e.g. `/images/projects/solace-thumb-1.jpeg`) |
+| `youtubeUrl` | `URL string` | ✅ | A valid YouTube watch/short/embed URL for this thumbnail's clip |
+| `startTime` | `number` | ❌ | Optional start offset in seconds for this thumbnail's video; mirrors the project-level `videoStartTime`. Omitted thumbnails play from their beginning. |
 
 #### Example Frontmatter
 
@@ -356,6 +365,8 @@ dateStatus: "UNVERIFIED — likely placeholder (scaffold commit KB-004; all stre
 3. Upload project image to `public/images/projects/`
 4. Optionally add a YouTube video URL
 5. The project will appear in the homepage `ProjectGrid`, sorted by `publishDate` (newest first)
+
+To showcase multiple related clips (e.g. trailer + featurette + behind-the-scenes), add an optional `videoThumbnails` array. Each entry is `{ image, youtubeUrl }`; clicking a thumbnail in `ProjectModal` swaps the main embed to that clip. Thumbnail poster images must exist on disk under `public/`. The field is optional — projects without it render exactly as before.
 
 ### Adding a New Gallery Item
 

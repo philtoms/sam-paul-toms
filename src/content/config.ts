@@ -84,6 +84,15 @@ const projects = defineCollection({
     popupImage: z.string().optional(),
     video: z.string().url().optional(),
     videoStartTime: z.number().int().min(0).optional(),
+    videoThumbnails: z
+      .array(
+        z.object({
+          image: z.string(),
+          youtubeUrl: z.string().url(),
+          startTime: z.number().int().min(0).optional(),
+        }),
+      )
+      .optional(),
     dir: z.string().optional(),
   }),
 });

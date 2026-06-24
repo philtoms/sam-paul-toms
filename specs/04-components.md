@@ -1,6 +1,6 @@
 # 04 — Components
 
-**Last updated:** 2026-06-12
+**Last updated:** 2026-06-24
 
 **Purpose:** Catalogs every component in `src/components/` with type, client directive, props interface, and description. Documents the modal pattern and custom events system.
 
@@ -188,7 +188,7 @@
 | **Type** | Preact island |
 | **Directive** | `client:load` |
 | **File** | `src/components/ProjectModal.tsx` |
-| **Description** | Globally mounted modal for project detail views. Listens for `project-modal:open`/`project-modal:close` events. Features fade animation, click-outside-to-close, escape key, focus trap, body scroll lock. Displays the project image beside the title and summary in a two-column row (mirrors the AboutModal bio layout), with the optional YouTube video embedded full-width below. |
+| **Description** | Globally mounted modal for project detail views. Listens for `project-modal:open`/`project-modal:close` events. Features fade animation, click-outside-to-close, escape key, focus trap, body scroll lock. Displays the project image beside the title and summary in a two-column row (mirrors the AboutModal bio layout), with the optional YouTube video embedded full-width below. When `videoThumbnails` is provided, renders an accessible thumbnail strip beneath the embed: each thumbnail pairs a poster image with a YouTube URL and, on click, swaps the main embed to that video (`videoStartTime` applies only to the project's main video; each thumbnail may carry its own optional `startTime`). When there is no main `video`, the embed initialises from the first thumbnail. |
 
 **Props:** None (data received via custom event payload of type `ProjectModalData`)
 
@@ -437,6 +437,7 @@ interface ProjectModalData {
   image: string;
   video?: string;
   videoStartTime?: number;
+  videoThumbnails?: Array<{ image: string; youtubeUrl: string; startTime?: number }>;
   dir?: string;
   publishDate: string;
 }

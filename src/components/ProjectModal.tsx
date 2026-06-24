@@ -25,12 +25,23 @@ export default function ProjectModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [projectData, setProjectData] = useState<ProjectModalData | null>(null);
+  /** The YouTube URL currently shown in the embed. Seeded on open and swapped
+   *  when a thumbnail is clicked. `undefined` until the modal is opened. */
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | undefined>(
+    undefined,
+  );
   const previousFocusRef = useRef<Element | null>(null);
   const modalPanelRef = useRef<HTMLDivElement | null>(null);
 
   /** Open the modal with animation */
   const open = useCallback((data: ProjectModalData) => {
     setProjectData(data);
+    // Seed the active video: prefer the project's main video, otherwise fall
+    // back to the first thumbnail so a thumbnail-only project still shows a
+    // player on open.
+    setActiveVideoUrl(
+      data.video ?? data.videoThumbnails?.[0]?.youtubeUrl,
+    );
     previousFocusRef.current = document.activeElement;
     setIsOpen(true);
     // Trigger fade-in on next frame
@@ -103,10 +114,18 @@ export default function ProjectModal() {
 
   if (!isOpen || !projectData) return null;
 
-  const videoId = projectData.video ? extractYouTubeId(projectData.video) : '';
+  // Derive the embed from the active video (swappable via thumbnails),
+  // falling back to the project's main video. `videoStartTime` applies only to
+  // the project's main video; each thumbnail uses its own optional `startTime`.
+  const activeVideo = activeVideoUrl ?? projectData.video;
+  const isMainVideo = activeVideo === projectData.video;
+  const videoId = activeVideo ? extractYouTubeId(activeVideo) : '';
+  const startTime = isMainVideo
+    ? projectData.videoStartTime
+    : projectData.videoThumbnails?.find((t) => t.youtubeUrl === activeVideo)?.startTime;
   // Append YouTube `start` param only for a positive start time so the
   // no-start-time case stays byte-identical to the original embed URL.
-  const embedUrl = buildYouTubeEmbedUrl(videoId, projectData.videoStartTime);
+  const embedUrl = buildYouTubeEmbedUrl(videoId, startTime);
 
   return (
     <div
@@ -207,6 +226,37 @@ export default function ProjectModal() {
                 class="absolute inset-0 h-full w-full"
               />
             </div>
+
+            {/* Clickable thumbnail strip — only when thumbnails are present.
+                Clicking a thumbnail swaps the main embed above to that video. */}
+            {projectData.videoThumbnails &&
+              projectData.videoThumbnails.length > 0 && (
+                <div class="mt-4 flex flex-wrap gap-2">
+                  {projectData.videoThumbnails.map((thumb, i) => {
+                    const isActive = thumb.youtubeUrl === activeVideoUrl;
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => setActiveVideoUrl(thumb.youtubeUrl)}
+                        aria-label={`Play video ${i + 1}`}
+                        aria-pressed={isActive ? 'true' : 'false'}
+                        class={`shrink-0 rounded-md overflow-hidden border-2 transition-colors cursor-pointer ${
+                          isActive
+                            ? 'border-accent ring-2 ring-accent'
+                            : 'border-transparent opacity-70 hover:opacity-100'
+                        }`}
+                      >
+                        <img
+                          src={thumb.image}
+                          alt=""
+                          loading="lazy"
+                          class="w-28 h-16 object-cover block"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
           </div>
         )}
       </div>

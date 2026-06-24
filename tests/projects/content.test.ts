@@ -13,6 +13,15 @@ const projectSchema = z.object({
   image: z.string(),
   video: z.string().url().optional(),
   videoStartTime: z.number().int().min(0).optional(),
+  videoThumbnails: z
+    .array(
+      z.object({
+        image: z.string(),
+        youtubeUrl: z.string().url(),
+        startTime: z.number().int().min(0).optional(),
+      }),
+    )
+    .optional(),
   dir: z.string().optional(),
 });
 
@@ -77,6 +86,29 @@ describe('Project content files', () => {
     if (data.videoStartTime !== undefined) {
       expect(Number.isInteger(data.videoStartTime)).toBe(true);
       expect(data.videoStartTime).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it.each(projectFiles)('videoThumbnails entries have a string image and a valid-URL youtubeUrl when present for %s', (filename) => {
+    const { data } = loadProject(filename);
+    if (data.videoThumbnails !== undefined) {
+      expect(Array.isArray(data.videoThumbnails)).toBe(true);
+      for (const thumb of data.videoThumbnails as Array<{ image: unknown; youtubeUrl: unknown }>) {
+        expect(typeof thumb.image).toBe('string');
+        expect(() => new URL(thumb.youtubeUrl as string)).not.toThrow();
+      }
+    }
+  });
+
+  it.each(projectFiles)('videoThumbnails startTime is a non-negative integer when present for %s', (filename) => {
+    const { data } = loadProject(filename);
+    if (data.videoThumbnails !== undefined) {
+      for (const thumb of data.videoThumbnails as Array<{ startTime?: unknown }>) {
+        if (thumb.startTime !== undefined) {
+          expect(Number.isInteger(thumb.startTime)).toBe(true);
+          expect(thumb.startTime as number).toBeGreaterThanOrEqual(0);
+        }
+      }
     }
   });
 
