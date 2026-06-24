@@ -99,7 +99,7 @@
 │   │   ├── seo-helpers.ts           # Pure TS SEO tag generation (testable helpers)
 │   │   ├── structured-data.ts       # Schema.org JSON-LD generators for music content
 │   │   ├── youtube.ts               # YouTube helpers: extractYouTubeId, buildYouTubeEmbedUrl
-│   │   ├── youtube-audio-pause.ts   # Auto-fade player when YouTube video plays
+│   │   ├── youtube-audio-pause.ts   # Auto-fade player when YouTube video plays; re-attaches YT.Player on src swap
 │   │   └── youtube-thumbnails.ts    # YouTube thumbnail-strip click-to-swap handler (KB-150)
 │   │
 │   ├── styles/

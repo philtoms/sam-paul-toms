@@ -18,12 +18,23 @@ vi.mock('../../src/scripts/audio-player-events', () => ({
 describe('youtube-audio-pause', () => {
   let youtubeAudioPause: typeof import('../../src/scripts/youtube-audio-pause');
 
-  // Store the YT.Player mock callback so tests can trigger it
+  // Store the YT.Player mock callbacks so tests can trigger them.
+  // `onStateChangeCallbacks` keeps every callback (one per player created),
+  // so re-attachment tests can distinguish the old player's callback from the
+  // re-attached player's callback. `onStateChangeCallback` is the latest, kept
+  // for backward compatibility with the existing single-callback tests.
+  let onStateChangeCallbacks: Array<(event: PlayerEvent) => void> = [];
   let onStateChangeCallback: ((event: PlayerEvent) => void) | null = null;
 
-  // Mock YT.Player constructor — must use 'function' keyword so `new` works
+  // Mock YT.Player constructor — must use 'function' keyword so `new` works.
+  // NOTE: unlike the real YT IFrame API, this mock does NOT mutate `iframe.src`
+  // during construction. The loop-prevention path (same-video param-only change)
+  // is therefore exercised only by the explicit test below, not via natural
+  // re-entrant observer firing. See "Known testing limitations" comments.
   const mockYTPlayer = vi.fn(function (_element: HTMLElement, options?: { events?: { onStateChange?: (event: PlayerEvent) => void } }) {
-    onStateChangeCallback = options?.events?.onStateChange ?? null;
+    const cb = options?.events?.onStateChange ?? null;
+    onStateChangeCallback = cb;
+    if (cb) onStateChangeCallbacks.push(cb);
     return { destroy: vi.fn() };
   });
 
@@ -53,6 +64,7 @@ describe('youtube-audio-pause', () => {
     vi.clearAllMocks();
     vi.resetModules();
     onStateChangeCallback = null;
+    onStateChangeCallbacks = [];
 
     youtubeAudioPause = await import('../../src/scripts/youtube-audio-pause');
   });
@@ -72,10 +84,18 @@ describe('youtube-audio-pause', () => {
 
       youtubeAudioPause.init();
 
-      expect(observeSpy).toHaveBeenCalledWith(document.body, {
-        childList: true,
-        subtree: true,
-      });
+      // Widened from exact `toHaveBeenCalledWith` to `objectContaining` so the
+      // new `attributes` + `attributeFilter: ['src']` config (added for
+      // src-swap re-attachment) is verified without brittleness.
+      expect(observeSpy).toHaveBeenCalledWith(
+        document.body,
+        expect.objectContaining({
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['src'],
+        }),
+      );
     });
 
     it('scans existing YouTube iframes', () => {
@@ -179,6 +199,146 @@ describe('youtube-audio-pause', () => {
       document.body.appendChild(iframe);
 
       // MutationObserver callbacks in jsdom fire asynchronously
+      await vi.waitFor(() => {
+        expect(mockYTPlayer).toHaveBeenCalledWith(
+          iframe,
+          expect.objectContaining({
+            events: expect.objectContaining({
+              onStateChange: expect.any(Function),
+            }),
+          }),
+        );
+      });
+    });
+  });
+
+  describe('src-swap re-attachment', () => {
+    // KNOWN TESTING LIMITATION: The jsdom `mockYTPlayer` does NOT mutate
+    // `iframe.src` during construction (unlike the real YT IFrame API). The
+    // loop-prevention path is therefore exercised only by the explicit
+    // "same video, param-only" test below, not via natural re-entrant
+    // observer firing.
+    //
+    // KNOWN EDGE CASE (out of scope): A src change while the API is NOT yet
+    // ready (iframe still in `pendingIframes`) may cause a duplicate enqueue.
+    // This mirrors the existing childList-observer behaviour and is not covered
+    // by a test by design.
+
+    it('re-attaches a player when an iframe src is swapped to a different video', async () => {
+      setupYTAPI();
+
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/abc12345678?enablejsapi=1';
+      document.body.appendChild(iframe);
+
+      youtubeAudioPause.init();
+      triggerAPIReady();
+
+      // Player attached once for the original video.
+      expect(mockYTPlayer).toHaveBeenCalledTimes(1);
+
+      // Swap to a different video (different 11-char ID).
+      iframe.src = 'https://www.youtube.com/embed/xyz78901234?enablejsapi=1';
+
+      // The MutationObserver fires asynchronously.
+      await vi.waitFor(() => {
+        expect(mockYTPlayer).toHaveBeenCalledTimes(2);
+      });
+      // Both calls targeted the SAME iframe element (re-attached, not a new iframe).
+      expect(mockYTPlayer).toHaveBeenNthCalledWith(
+        2,
+        iframe,
+        expect.objectContaining({
+          events: expect.objectContaining({
+            onStateChange: expect.any(Function),
+          }),
+        }),
+      );
+    });
+
+    it('the re-attached player fires fade-pause on PLAYING', async () => {
+      setupYTAPI();
+
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/abc12345678?enablejsapi=1';
+      document.body.appendChild(iframe);
+
+      youtubeAudioPause.init();
+      triggerAPIReady();
+
+      // Swap to a different video and wait for re-attachment.
+      iframe.src = 'https://www.youtube.com/embed/xyz78901234?enablejsapi=1';
+      await vi.waitFor(() => {
+        expect(mockYTPlayer).toHaveBeenCalledTimes(2);
+      });
+
+      // Fire PLAYING via the NEW (re-attached) player's callback, not the old one.
+      const reattachedCallback = onStateChangeCallbacks[1];
+      reattachedCallback({ data: 1 } as PlayerEvent);
+
+      expect(mockFadeAndPausePlayer).toHaveBeenCalledTimes(1);
+    });
+
+    it('does NOT re-attach when src changes only in query params (same video ID)', async () => {
+      setupYTAPI();
+
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/abc12345678?enablejsapi=1';
+      document.body.appendChild(iframe);
+
+      youtubeAudioPause.init();
+      triggerAPIReady();
+      expect(mockYTPlayer).toHaveBeenCalledTimes(1);
+
+      // Change only the query params — same 11-char video ID. This mirrors the
+      // YT IFrame API adding `origin=`/`widget_referrer=` during init.
+      iframe.src =
+        'https://www.youtube.com/embed/abc12345678?enablejsapi=1&origin=test';
+
+      // Let the async observer flush; it must NOT re-attach (prevents infinite loop).
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(mockYTPlayer).toHaveBeenCalledTimes(1);
+    });
+
+    it('attaches a player when a non-YouTube iframe gains a YouTube src', async () => {
+      setupYTAPI();
+
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://example.com/embed/something';
+      document.body.appendChild(iframe);
+
+      youtubeAudioPause.init();
+      triggerAPIReady();
+      // No YouTube iframe yet — no player attached.
+      expect(mockYTPlayer).not.toHaveBeenCalled();
+
+      // Swap the non-YouTube iframe to a YouTube embed URL.
+      iframe.src = 'https://www.youtube.com/embed/abc12345678?enablejsapi=1';
+
+      await vi.waitFor(() => {
+        expect(mockYTPlayer).toHaveBeenCalledWith(
+          iframe,
+          expect.objectContaining({
+            events: expect.objectContaining({
+              onStateChange: expect.any(Function),
+            }),
+          }),
+        );
+      });
+    });
+
+    it('still detects dynamically added YouTube iframes (childList regression)', async () => {
+      setupYTAPI();
+
+      youtubeAudioPause.init();
+      triggerAPIReady();
+
+      // The API is ready, so a dynamically added iframe should get a player
+      // immediately via the childList branch (unaffected by the new attribute branch).
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/abc12345678?enablejsapi=1';
+      document.body.appendChild(iframe);
+
       await vi.waitFor(() => {
         expect(mockYTPlayer).toHaveBeenCalledWith(
           iframe,

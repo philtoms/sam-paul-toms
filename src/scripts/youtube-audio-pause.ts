@@ -5,12 +5,19 @@
  * dispatches an `audio-player:fade-pause` event so the background
  * music player fades out smoothly.
  *
+ * Watches for both dynamically added YouTube iframes (childList mutations)
+ * and `src` attribute changes on existing YouTube iframes. When an iframe's
+ * `src` is swapped to a *different* video (e.g. a thumbnail-strip swap, see
+ * `youtube-thumbnails.ts`), the watcher re-attaches a fresh `YT.Player` proxy
+ * so the new video's playback still triggers the background-audio fade-pause.
+ *
  * Usage:
  *   import { init, destroy } from './youtube-audio-pause';
  *   init();   // start watching for YouTube iframes
  *   destroy(); // clean up on unmount
  */
 
+import { extractYouTubeId } from './youtube';
 import { fadeAndPausePlayer } from './audio-player-events';
 
 /** Whether the YT IFrame API script has been loaded */
@@ -21,6 +28,8 @@ let apiReady = false;
 const pendingIframes: HTMLIFrameElement[] = [];
 /** Active YT.Player instances keyed by iframe element */
 const players: WeakMap<HTMLIFrameElement, YT.Player> = new WeakMap();
+/** Video ID each player was attached for, so src swaps to a different video can be detected */
+const playerVideoIds: WeakMap<HTMLIFrameElement, string> = new WeakMap();
 /** MutationObserver for detecting dynamically added iframes */
 let observer: MutationObserver | null = null;
 
@@ -49,9 +58,33 @@ function attachPlayer(iframe: HTMLIFrameElement): void {
       },
     });
     players.set(iframe, player);
+    // Record the video ID this player was attached for so a later src swap to
+    // a *different* video can be detected (vs. an API param-only tweak).
+    playerVideoIds.set(iframe, extractYouTubeId(iframe.getAttribute('src') ?? ''));
   } catch {
     // Silently fail — non-critical enhancement
   }
+}
+
+/**
+ * Re-attach a fresh `YT.Player` to an iframe whose `src` changed to a new video.
+ *
+ * Deletes the existing `players` / `playerVideoIds` entries (allowing the old
+ * proxy to be garbage-collected) and creates a fresh `YT.Player` over the same,
+ * still-live iframe element. We do NOT call `player.destroy()` — the YT IFrame
+ * API's `destroy()` removes the iframe from the DOM, which we must avoid since
+ * the iframe is reused across video swaps. Any stale state-change fired by the
+ * old proxy is harmless because `fadeAndPausePlayer` is idempotent.
+ *
+ * Note: `extractYouTubeId` returns `''` for playlist (`videoseries`) embeds, so
+ * playlist-to-playlist swaps are treated as "same video" and skipped. This is
+ * acceptable because thumbnail strips always use plain video URLs.
+ */
+function reattachPlayer(iframe: HTMLIFrameElement): void {
+  // Do NOT call player.destroy() — it removes the iframe from the DOM.
+  players.delete(iframe);
+  playerVideoIds.delete(iframe);
+  attachPlayer(iframe);
 }
 
 /**
@@ -108,6 +141,33 @@ function loadAPI(): void {
 function observeDynamicIframes(): void {
   observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
+      // Attribute mutation: an existing iframe's `src` changed (e.g. a
+      // thumbnail-strip swap). Detect a real video change and re-attach.
+      if (mutation.type === 'attributes') {
+        const target = mutation.target;
+        if (!(target instanceof HTMLIFrameElement) || !isYouTubeIframe(target)) {
+          continue;
+        }
+        if (players.has(target)) {
+          // Player already exists — only re-attach if the video ID actually
+          // changed. The YT IFrame API itself mutates `src` during
+          // `new YT.Player(...)` init (adding `origin=`, `widget_referrer=`,
+          // etc.), so comparing video IDs (not raw src) prevents an infinite
+          // re-attach loop.
+          const oldId = playerVideoIds.get(target);
+          const newId = extractYouTubeId(target.getAttribute('src') ?? '');
+          if (oldId !== newId) {
+            reattachPlayer(target);
+          }
+        } else {
+          // No player yet for this iframe (e.g. a non-YouTube iframe that just
+          // gained a YouTube src) — process it normally.
+          processIframe(target);
+        }
+        continue;
+      }
+
+      // childList mutation: detect iframes added to the DOM.
       for (const node of mutation.addedNodes) {
         // Check if the added node is itself an iframe
         if (
@@ -129,7 +189,12 @@ function observeDynamicIframes(): void {
     }
   });
 
-  observer.observe(document.body, { childList: true, subtree: true });
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['src'],
+  });
 }
 
 /**

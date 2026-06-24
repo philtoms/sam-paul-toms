@@ -234,7 +234,7 @@ Tests for homepage components and their rendering:
 ### Script Tests
 
 - **`scripts/audio-player-events.test.ts`** — Tests custom event dispatch functions
-- **`scripts/youtube-audio-pause.test.ts`** — Tests YouTube watcher init/destroy
+- **`scripts/youtube-audio-pause.test.ts`** — Tests YouTube watcher init/destroy, playback fade-pause, and src-swap re-attachment (different-video swap re-attaches on the same iframe; same-video param-only change does not re-attach, preventing an infinite loop; a non-YouTube iframe gaining a YouTube src gets a player)
 - **`scripts/youtube-thumbnails.test.ts`** — Tests the YouTube thumbnail-strip click-to-swap handler (`initYouTubeThumbnails`): iframe `src` swap on click, `aria-pressed` toggling, unrecognised/missing/empty `data-youtube-url` guards, no-op safety for wrapper-less or button-less markup, and root-scoping (KB-150)
 - **`scripts/fetch-instagram-oembed.test.ts`** — Tests Instagram thumbnail fetcher
 - **`scripts/generate-sample-audio.test.ts`** — Tests sample audio generator
