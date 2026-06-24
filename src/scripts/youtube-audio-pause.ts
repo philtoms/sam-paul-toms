@@ -24,8 +24,16 @@ import { fadeAndPausePlayer } from './audio-player-events';
 let apiLoaded = false;
 /** Whether the YT IFrame API is ready (callback fired) */
 let apiReady = false;
-/** Queued iframes discovered before the API was ready */
-const pendingIframes: HTMLIFrameElement[] = [];
+/**
+ * Queued iframes discovered before the API was ready. A `Set` so each iframe
+ * is enqueued at most once (a YouTube iframe whose `src` is swapped several
+ * times before the API loads, or one matched by multiple observer paths, is
+ * processed exactly once when `onYouTubeIframeAPIReady` fires). This is
+ * defence-in-depth: `attachPlayer`'s `players.has(iframe)` guard already
+ * suppresses duplicate `YT.Player` creation on drain, but the `Set` keeps the
+ * queue free of redundant entries and bounds its size under rapid swaps.
+ */
+const pendingIframes: Set<HTMLIFrameElement> = new Set();
 /** Active YT.Player instances keyed by iframe element */
 const players: WeakMap<HTMLIFrameElement, YT.Player> = new WeakMap();
 /** Video ID each player was attached for, so src swaps to a different video can be detected */
@@ -95,7 +103,7 @@ function processIframe(iframe: HTMLIFrameElement): void {
   if (apiReady) {
     attachPlayer(iframe);
   } else {
-    pendingIframes.push(iframe);
+    pendingIframes.add(iframe);
   }
 }
 
@@ -125,7 +133,7 @@ function loadAPI(): void {
     for (const iframe of pendingIframes) {
       attachPlayer(iframe);
     }
-    pendingIframes.length = 0;
+    pendingIframes.clear();
   };
 
   // Inject the script
@@ -217,6 +225,6 @@ export function destroy(): void {
     observer.disconnect();
     observer = null;
   }
-  pendingIframes.length = 0;
+  pendingIframes.clear();
   // Note: WeakMap entries are garbage-collected with their iframe elements
 }

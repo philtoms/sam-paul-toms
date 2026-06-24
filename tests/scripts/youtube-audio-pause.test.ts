@@ -219,10 +219,10 @@ describe('youtube-audio-pause', () => {
     // "same video, param-only" test below, not via natural re-entrant
     // observer firing.
     //
-    // KNOWN EDGE CASE (out of scope): A src change while the API is NOT yet
-    // ready (iframe still in `pendingIframes`) may cause a duplicate enqueue.
-    // This mirrors the existing childList-observer behaviour and is not covered
-    // by a test by design.
+    // NOTE: `pendingIframes` is a `Set` (KB-163), so a src change while the
+    // API is NOT yet ready enqueues an iframe at most once — no duplicate
+    // `attachPlayer` calls on drain. The deduplication invariant is covered
+    // by the `pending-iframe deduplication` tests below.
 
     it('re-attaches a player when an iframe src is swapped to a different video', async () => {
       setupYTAPI();
@@ -349,6 +349,126 @@ describe('youtube-audio-pause', () => {
           }),
         );
       });
+    });
+  });
+
+  describe('pending-iframe deduplication', () => {
+    // Regression guards for the at-most-one-player-per-iframe invariant.
+    // These assert that an iframe enqueued multiple times before the API is
+    // ready produces exactly one YT.Player on drain. They pass BOTH before and
+    // after the Set change (KB-163): `attachPlayer`'s `players.has(iframe)`
+    // guard already suppresses duplicate player creation at attach time. They
+    // are GUARDS, not differentiators — they lock in the invariant so that
+    // removing BOTH the Set AND the guard would be caught. Removing either one
+    // alone still leaves the other enforcing the invariant.
+
+    /** Flush pending MutationObserver callbacks (jsdom fires them async). */
+    const flushObserver = () => new Promise((resolve) => setTimeout(resolve, 50));
+
+    it('repeated pre-API-ready src swaps produce exactly one player on drain', async () => {
+      // API NOT ready yet: do not call setupYTAPI()/triggerAPIReady() first.
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/aaa11111111?enablejsapi=1';
+      document.body.appendChild(iframe);
+
+      youtubeAudioPause.init();
+      // The existing iframe is queued (apiReady is false). Now simulate rapid
+      // thumbnail-strip swaps: each src change re-enqueues via the attribute
+      // branch — players.has(target) is false because no players exist yet.
+      const urls = [
+        'https://www.youtube.com/embed/bbb22222222?enablejsapi=1',
+        'https://www.youtube.com/embed/ccc33333333?enablejsapi=1',
+        'https://www.youtube.com/embed/ddd44444444?enablejsapi=1',
+      ];
+      for (const url of urls) {
+        iframe.src = url;
+        // Flush the async observer between swaps so each is processed.
+        await flushObserver();
+      }
+
+      // The queue now contains the iframe at most once (Set dedup). Drain it.
+      setupYTAPI();
+      triggerAPIReady();
+
+      // Exactly one player for the iframe, despite multiple enqueues.
+      expect(mockYTPlayer).toHaveBeenCalledTimes(1);
+      expect(mockYTPlayer).toHaveBeenCalledWith(
+        iframe,
+        expect.objectContaining({
+          events: expect.objectContaining({
+            onStateChange: expect.any(Function),
+          }),
+        }),
+      );
+    });
+
+    it('two distinct iframes enqueued before API ready each get exactly one player', async () => {
+      // API NOT ready yet.
+      const iframe1 = document.createElement('iframe');
+      iframe1.src = 'https://www.youtube.com/embed/aaa11111111?enablejsapi=1';
+      document.body.appendChild(iframe1);
+
+      const iframe2 = document.createElement('iframe');
+      iframe2.src = 'https://www.youtube.com/embed/bbb22222222?enablejsapi=1';
+      document.body.appendChild(iframe2);
+
+      youtubeAudioPause.init();
+      // Both distinct elements are scanned and queued (apiReady is false).
+      await flushObserver();
+
+      setupYTAPI();
+      triggerAPIReady();
+
+      // Guards against an accidental over-dedup: one player per distinct iframe.
+      expect(mockYTPlayer).toHaveBeenCalledTimes(2);
+      expect(mockYTPlayer).toHaveBeenCalledWith(
+        iframe1,
+        expect.objectContaining({
+          events: expect.objectContaining({
+            onStateChange: expect.any(Function),
+          }),
+        }),
+      );
+      expect(mockYTPlayer).toHaveBeenCalledWith(
+        iframe2,
+        expect.objectContaining({
+          events: expect.objectContaining({
+            onStateChange: expect.any(Function),
+          }),
+        }),
+      );
+    });
+
+    it('childList re-add of the same iframe before API ready does not double-attach', async () => {
+      // API NOT ready yet.
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/aaa11111111?enablejsapi=1';
+      document.body.appendChild(iframe);
+
+      youtubeAudioPause.init();
+      // Scanned and queued once via scanExistingIframes.
+      await flushObserver();
+
+      // Remove and re-append the SAME element before the API is ready. The
+      // re-add fires the childList branch, which calls processIframe again.
+      document.body.removeChild(iframe);
+      await flushObserver();
+      document.body.appendChild(iframe);
+      await flushObserver();
+
+      setupYTAPI();
+      triggerAPIReady();
+
+      // Exactly one player for the re-added element.
+      expect(mockYTPlayer).toHaveBeenCalledTimes(1);
+      expect(mockYTPlayer).toHaveBeenCalledWith(
+        iframe,
+        expect.objectContaining({
+          events: expect.objectContaining({
+            onStateChange: expect.any(Function),
+          }),
+        }),
+      );
     });
   });
 
