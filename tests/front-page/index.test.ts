@@ -32,6 +32,22 @@ describe('Homepage YouTubeEmbed wiring', () => {
     expect(index).toContain('videoThumbnails={videoThumbnails}');
   });
 
+  it('uses branded project poster images (not YouTube CDN grabs)', () => {
+    // The showreel's own poster acts as a "home/reset" thumbnail (KB-164).
+    expect(index).toContain('/images/projects/ALOTF.jpg');
+    // The remaining films use their canonical branded posters from the
+    // content collection, matching the ProjectGrid/ProjectModal artwork.
+    expect(index).toContain('/images/projects/the-bonbons.jpeg');
+    expect(index).toContain('/images/projects/VoidandVista.webp');
+  });
+
+  it('no longer references the old YouTube CDN thumbnail grabs', () => {
+    // KB-164 replaced the video-thumb-{1,2,3}.jpeg CDN grabs with branded
+    // project posters; ensure they were not re-introduced.
+    expect(index).not.toContain('video-thumb-1');
+    expect(index).not.toContain('video-thumb-2');
+    expect(index).not.toContain('video-thumb-3');
+  });
 
   it('keeps the showreel video constant intact', () => {
     expect(index).toContain('watch?v=xlt63O1YvSM');

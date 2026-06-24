@@ -77,12 +77,16 @@ const youtubeUrl = 'https://www.youtube.com/watch?v=xlt63O1YvSM';
 
 // Clickable poster thumbnails below the showreel — clicking one swaps the
 // main player to that film (interactivity handled by YouTubeEmbed's inline
-// script). Source URLs are the real `video:` values from the projects
-// collection; poster images live in public/images (served at /images/...).
+// script). The first entry is the showreel itself, acting as a "home/reset"
+// thumbnail so visitors can return to the main showreel from the strip; the
+// remaining entries are the site's other single-video films. Poster images
+// are the branded project artwork already used by ProjectGrid/ProjectModal
+// (served from public/images/projects at /images/projects/...).
 const videoThumbnails = [
-  { image: '/images/video-thumb-1.jpeg', youtubeUrl: 'https://www.youtube.com/watch?v=Z7xAf045od0' }, // The Bon-Bons
-  { image: '/images/video-thumb-2.jpeg', youtubeUrl: 'https://www.youtube.com/watch?v=SdjNvMMJqoE' }, // The Solent
-  { image: '/images/video-thumb-3.jpeg', youtubeUrl: 'https://www.youtube.com/watch?v=LYPRDXxgtUY' }, // Void and Vista
+  { image: '/images/projects/ALOTF.jpg', youtubeUrl: 'https://www.youtube.com/watch?v=xlt63O1YvSM' }, // Showreel — "home/reset" thumbnail
+  { image: '/images/projects/the-bonbons.jpeg', youtubeUrl: 'https://www.youtube.com/watch?v=Z7xAf045od0' }, // The Bon-Bons
+  { image: '/images/projects/the solent.jpeg', youtubeUrl: 'https://www.youtube.com/watch?v=SdjNvMMJqoE' }, // The Solent
+  { image: '/images/projects/VoidandVista.webp', youtubeUrl: 'https://www.youtube.com/watch?v=LYPRDXxgtUY' }, // Void and Vista
 ];
 
 // Fetch projects for the project grid
