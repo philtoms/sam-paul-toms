@@ -185,7 +185,7 @@ export default function AboutModal(props: AboutModalProps) {
         </section>
 
         {/* Genre tags */}
-        {genreTags.length > 0 && (
+        {/* {genreTags.length > 0 && (
           <div class="mt-8 flex flex-wrap gap-2">
             {genreTags.map((tag) => (
               <span class="inline-block rounded-full bg-white/10 px-3 py-1 text-sm border border-white/20 transition-colors duration-200 hover:bg-accent/20 hover:border-accent/40">
@@ -193,10 +193,10 @@ export default function AboutModal(props: AboutModalProps) {
               </span>
             ))}
           </div>
-        )}
+        )} */}
 
         {/* Press quotes */}
-        {pressQuotes.length > 0 && (
+        {/* {pressQuotes.length > 0 && (
           <section class="mt-16">
             <h2 class="text-2xl font-bold text-white mb-8">Press</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -232,7 +232,7 @@ export default function AboutModal(props: AboutModalProps) {
               ))}
             </div>
           </section>
-        )}
+        )} */}
       </div>
     </div>
   );

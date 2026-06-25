@@ -22,6 +22,8 @@ const projectSchema = z.object({
       }),
     )
     .optional(),
+  loop: z.boolean().optional(),
+  autoplay: z.boolean().optional(),
   dir: z.string().optional(),
 });
 
@@ -36,8 +38,8 @@ function loadProject(filename: string) {
 const projectFiles = readdirSync(projectsDir).filter((f) => f.endsWith('.md'));
 
 describe('Project content files', () => {
-  it('has exactly 6 project files', () => {
-    expect(projectFiles).toHaveLength(6);
+  it('has exactly 7 project files', () => {
+    expect(projectFiles).toHaveLength(7);
   });
 
   it.each(projectFiles)('validates schema for %s', (filename) => {
@@ -97,6 +99,20 @@ describe('Project content files', () => {
         expect(typeof thumb.image).toBe('string');
         expect(() => new URL(thumb.youtubeUrl as string)).not.toThrow();
       }
+    }
+  });
+
+  it.each(projectFiles)('loop is a boolean when present for %s', (filename) => {
+    const { data } = loadProject(filename);
+    if (data.loop !== undefined) {
+      expect(typeof data.loop).toBe('boolean');
+    }
+  });
+
+  it.each(projectFiles)('autoplay is a boolean when present for %s', (filename) => {
+    const { data } = loadProject(filename);
+    if (data.autoplay !== undefined) {
+      expect(typeof data.autoplay).toBe('boolean');
     }
   });
 

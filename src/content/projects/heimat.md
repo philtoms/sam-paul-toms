@@ -5,5 +5,5 @@ summary: 'Original soundtrack for the documentary film Heimat. A reflective, dee
 dir: 'Dominik Platen'
 publishDate: 2024-06-01
 dateStatus: 'UNVERIFIED — possibly placeholder (first-of-month pattern). Content owner: confirm or update.'
-image: '/images/projects/heimat.jpeg'
+image: '/images/projects/heimat/heimat.jpeg'
 ---

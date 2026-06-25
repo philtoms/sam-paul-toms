@@ -8,6 +8,6 @@ summary: |
 dir: 'Oliver Cubbage'
 publishDate: 2024-09-10
 dateStatus: 'UNVERIFIED — no corroborating evidence found. Content owner: confirm or update.'
-image: '/images/projects/the solent.jpeg'
+image: '/images/projects/the-solent/the solent.jpeg'
 video: 'https://www.youtube.com/watch?v=SdjNvMMJqoE'
 ---

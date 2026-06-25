@@ -5,6 +5,6 @@ summary: "Original title music for the animated series The Bon-Bons. A playful, 
 dir: 'Garrett Honn'
 publishDate: 2024-04-22
 dateStatus: 'UNVERIFIED — no corroborating evidence found. Content owner: confirm or update.'
-image: '/images/projects/the-bonbons.jpeg'
+image: '/images/projects/the-bonbons/the-bonbons.jpeg'
 video: ' https://youtu.be/Z7xAf045od0'
 ---

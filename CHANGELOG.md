@@ -39,7 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Audited YouTube video URLs for all project content files — only "A Life On The Farm" has a verified URL; remaining 5 projects (Heimat, Solace, The Solent, The Bon-Bons, Void and Vista) have no videos available on the Sam Paul Toms Music channel (KB-088)
 - Publish date audit: all 6 project `publishDate` values flagged as unverified (invented during scaffold). Added `dateStatus` field to each file and created `docs/publish-date-audit.md` report for content owner review (KB-089)
 - Release date audit: all 4 release `releaseDate` values flagged as unverified (invented during scaffold). Added `dateStatus` field to each file and created `docs/release-date-audit.md` report for content owner review (KB-092)
-- Streaming URL audit: removed all 39 `example-` placeholder streaming URLs and 14 fake Bandcamp URLs from 4 release files. None of the releases (Gravity, Echoes EP, Midnight Sessions, Neon Lights) exist on any streaming platform. Added anti-regression test (KB-095)
 - `generate:sample-audio` script — generates duration-matching synthetic MP3 files from release frontmatter using ffmpeg, replacing the 3-second silent placeholders from `setup-dev-audio.sh`. Idempotent, per-track frequency variation, ±1s duration verification via ffprobe (KB-097)
 
 ## [1.0.0] - 2026-05-20
@@ -52,7 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Project README with documentation (KB-002)
 - About page with content collection, BioSection, PressQuotes, GenreTags, and ContactForm components (KB-005)
 - Audio player system with engine, waveform visualizer, UI controls, and Astro integration (KB-003)
-- Releases content collection with listing and detail pages (KB-004)
 - Playable audio tracks on release pages (KB-010)
 - SEO integration with structured data, sitemap, and meta tags (KB-006)
 - Design system with tokens, typography, and utility classes (KB-007)

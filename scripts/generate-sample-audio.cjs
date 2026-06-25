@@ -3,7 +3,7 @@
 /**
  * Synthetic sample audio generator.
  *
- * Reads release content files from `src/content/releases/*.md`, extracts each
+ * Reads works content files from `src/content/projects/*.md`, extracts each
  * track's `audioFile` path and `duration` string, and generates a synthetic
  * MP3 file of the correct duration using ffmpeg's sine wave source.
  *
@@ -26,7 +26,7 @@
  *   npm run generate:sample-audio
  *
  * Arguments:
- *   content-dir  — Directory containing release .md files (default: src/content/releases)
+ *   content-dir  — Directory containing release .md files (default: src/content/projects)
  *   output-dir   — Base directory for generated audio files (default: public/audio-samples)
  */
 
@@ -37,7 +37,7 @@ const matter = require('gray-matter');
 
 // --- Configuration (defaults, overridable via CLI args) ---
 
-const DEFAULT_CONTENT_DIR = 'src/content/releases';
+const DEFAULT_CONTENT_DIR = 'src/content/projects';
 const DEFAULT_OUTPUT_BASE = 'public/audio-samples';
 
 // --- Helpers ---
@@ -148,7 +148,9 @@ function generateTrack(track, outputBase) {
   if (fs.existsSync(outputPath)) {
     const actualSeconds = probeDuration(outputPath);
     if (Math.abs(actualSeconds - expectedSeconds) <= 1) {
-      console.log(`  ⏭  ${track.audioFile} (already correct: ${actualSeconds}s)`);
+      console.log(
+        `  ⏭  ${track.audioFile} (already correct: ${actualSeconds}s)`,
+      );
       return 'skipped';
     }
   }

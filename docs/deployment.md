@@ -45,11 +45,11 @@ Using Wrangler CLI:
 
 ```bash
 # Upload a single track
-npx wrangler r2 object put sam-audio/releases/midnight-sessions/01-track.mp3 \
+npx wrangler r2 object put sam-audio/works/midnight-sessions/01-track.mp3 \
   --file ./local-audio/01-track.mp3
 
 # Upload with content type (recommended)
-npx wrangler r2 object put sam-audio/releases/midnight-sessions/01-track.mp3 \
+npx wrangler r2 object put sam-audio/works/midnight-sessions/01-track.mp3 \
   --file ./local-audio/01-track.mp3 \
   --content-type audio/mpeg
 ```
@@ -60,7 +60,7 @@ Or use the **Cloudflare Dashboard** upload UI (bucket → Upload).
 
 ```
 sam-audio/
-  releases/
+  works/
     midnight-sessions/
       01-intro.mp3
       02-pulse.mp3
@@ -70,16 +70,16 @@ sam-audio/
       02-reflection.mp3
 ```
 
-- Path pattern: `releases/{release-slug}/{track-number}-{track-slug}.mp3`
+- Path pattern: `works/{work-slug}/{track-number}-{track-slug}.mp3`
 - Supported formats: **MP3** (primary), **OGG** (fallback for howler.js cross-browser support)
-- The `audioFile` field in release frontmatter should match the path relative to the bucket root (e.g., `releases/midnight-sessions/01-intro.mp3`)
+- The `audioFile` field in work frontmatter should match the path relative to the bucket root (e.g., `works/midnight-sessions/01-intro.mp3`)
 
 ### Verify
 
 Open the public URL + file path in a browser:
 
 ```
-https://pub-<hash>.r2.dev/releases/midnight-sessions/01-intro.mp3
+https://pub-<hash>.r2.dev/works/midnight-sessions/01-intro.mp3
 ```
 
 Confirm the audio file loads and plays.
@@ -195,7 +195,7 @@ npx wrangler r2 bucket create sam-audio --local
 ### Upload test audio locally
 
 ```bash
-npx wrangler r2 object put sam-audio/releases/test/01-demo.mp3 \
+npx wrangler r2 object put sam-audio/works/test/01-demo.mp3 \
   --file ./test-audio.mp3 --local
 ```
 
@@ -222,7 +222,7 @@ The site will work, but the audio player will show errors for missing files sinc
 Before going live, verify:
 
 - [ ] R2 bucket created with public access enabled
-- [ ] Audio files uploaded to R2 in the expected folder structure (`releases/{slug}/{filename}.mp3`)
+- [ ] Audio files uploaded to R2 in the expected folder structure (`works/{slug}/{filename}.mp3`)
 - [ ] Pages project created and linked to git repository (or direct upload configured)
 - [ ] Environment variables set in Pages dashboard: `R2_PUBLIC_URL`, `SITE_URL`, `NODE_VERSION`
 - [ ] Resend API key (`RESEND_API_KEY`) configured and contact form sends email successfully
@@ -242,25 +242,25 @@ Before going live, verify:
 
 ## 7. Ongoing: Adding New Audio Files
 
-To add new releases to the site:
+To add new works to the site:
 
 ### 1. Upload audio to R2
 
 ```bash
 # MP3 (required)
-npx wrangler r2 object put sam-audio/releases/{slug}/{filename}.mp3 \
+npx wrangler r2 object put sam-audio/works/{slug}/{filename}.mp3 \
   --file ./local-file.mp3 \
   --content-type audio/mpeg
 
 # OGG fallback (optional but recommended)
-npx wrangler r2 object put sam-audio/releases/{slug}/{filename}.ogg \
+npx wrangler r2 object put sam-audio/works/{slug}/{filename}.ogg \
   --file ./local-file.ogg \
   --content-type audio/ogg
 ```
 
 ### 2. Add release content
 
-Create `src/content/releases/{slug}.md` with the release metadata:
+Create `src/content/works/{slug}.md` with the release metadata:
 
 ```yaml
 ---
@@ -268,11 +268,11 @@ title: 'Release Title'
 artist: 'Sam'
 releaseDate: 2025-11-15
 type: album
-artwork: /images/releases/{slug}.svg
+artwork: /images/works/{slug}.svg
 tracks:
   - title: 'Track Name'
     duration: '3:42'
-    audioFile: 'releases/{slug}/01-track.mp3'
+    audioFile: 'works/{slug}/01-track.mp3'
 ---
 Extended description or liner notes here.
 ```

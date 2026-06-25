@@ -89,4 +89,50 @@ describe('buildYouTubeEmbedUrl', () => {
       'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&start=3600',
     );
   });
+
+  it('does NOT append loop when options is omitted (backward compatible)', () => {
+    expect(buildYouTubeEmbedUrl('dQw4w9WgXcQ')).toBe(NO_START);
+  });
+
+  it('does NOT append loop when options.loop is falsy', () => {
+    expect(buildYouTubeEmbedUrl('dQw4w9WgXcQ', undefined, { loop: false })).toBe(NO_START);
+    expect(buildYouTubeEmbedUrl('dQw4w9WgXcQ', undefined, {})).toBe(NO_START);
+  });
+
+  it('appends &loop=1&playlist=<videoId> when options.loop is true', () => {
+    expect(buildYouTubeEmbedUrl('dQw4w9WgXcQ', undefined, { loop: true })).toBe(
+      'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&loop=1&playlist=dQw4w9WgXcQ',
+    );
+  });
+
+  it('emits start before loop when both startTime and loop are set', () => {
+    expect(buildYouTubeEmbedUrl('dQw4w9WgXcQ', 45, { loop: true })).toBe(
+      'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&start=45&loop=1&playlist=dQw4w9WgXcQ',
+    );
+  });
+
+  it('repeats the videoId in the playlist param (required for single-video loop)', () => {
+    const url = buildYouTubeEmbedUrl('_-AbCdEfGh1', undefined, { loop: true });
+    expect(url).toBe(
+      'https://www.youtube.com/embed/_-AbCdEfGh1?enablejsapi=1&loop=1&playlist=_-AbCdEfGh1',
+    );
+  });
+
+  it('does NOT append autoplay when options.autoplay is falsy', () => {
+    expect(buildYouTubeEmbedUrl('dQw4w9WgXcQ', undefined, { autoplay: false })).toBe(NO_START);
+  });
+
+  it('appends &autoplay=1&mute=1 when options.autoplay is true', () => {
+    expect(buildYouTubeEmbedUrl('dQw4w9WgXcQ', undefined, { autoplay: true })).toBe(
+      'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&autoplay=1&mute=1',
+    );
+  });
+
+  it('emits start, loop, then autoplay in fixed order when all set', () => {
+    expect(
+      buildYouTubeEmbedUrl('dQw4w9WgXcQ', 45, { loop: true, autoplay: true }),
+    ).toBe(
+      'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&start=45&loop=1&playlist=dQw4w9WgXcQ&autoplay=1&mute=1',
+    );
+  });
 });

@@ -53,11 +53,12 @@ const compatible = projectFiles.filter(isThumbnailCompatible);
 const incompatible = projectFiles.filter((f) => !isThumbnailCompatible(f));
 
 describe('Project film pool — thumbnail compatibility audit', () => {
-  it('classifies exactly the five single-video films as thumbnail-compatible', () => {
+  it('classifies exactly the six single-video films as thumbnail-compatible', () => {
     // Sorted alphabetically by filename. If a new compatible film is added, this
     // assertion fails with a clear diff — add it to the homepage thumbnail strip.
     expect(compatible).toEqual([
       'a-life-on-the-farm.md',
+      'garrett-honn-sam-paul-toms.md',
       'solace.md',
       'the-bonbons.md',
       'the-solent.md',

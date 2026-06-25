@@ -93,6 +93,8 @@ const projects = defineCollection({
         }),
       )
       .optional(),
+    loop: z.boolean().optional(),
+    autoplay: z.boolean().optional(),
     dir: z.string().optional(),
   }),
 });

@@ -11,14 +11,14 @@ All 6 `publishDate` values in project frontmatter were invented during the initi
 
 ## Summary Table
 
-| # | Project | File | Current publishDate | Status | Evidence | Recommended Action |
-|---|---------|------|-------------------|--------|----------|-------------------|
-| 1 | Void and Vista | `void-and-vista.md` | 2024-01-08 | UNVERIFIED | No evidence. Date from scaffold commit. | Verify with content owner |
-| 2 | Solace | `solace.md` | 2023-11-20 | UNVERIFIED | No evidence. Date from scaffold commit. | Verify with content owner |
-| 3 | A Life On The Farm | `a-life-on-the-farm.md` | 2024-03-15 | UNVERIFIED | No evidence. Date from scaffold commit. YouTube video exists but publish date not checked. | Verify with content owner; check YouTube video upload date |
-| 4 | The Bon-Bons | `the-bonbons.md` | 2024-04-22 | UNVERIFIED | No evidence. Date from scaffold commit. | Verify with content owner |
-| 5 | Heimat | `heimat.md` | 2024-06-01 | SUSPECT | First-of-month pattern — classic placeholder indicator. No evidence. | **High priority** — likely placeholder. Verify with content owner |
-| 6 | The Solent | `the-solent.md` | 2024-09-10 | UNVERIFIED | No evidence. Date from scaffold commit. | Verify with content owner |
+| #   | Project            | File                    | Current publishDate | Status     | Evidence                                                                                   | Recommended Action                                                |
+| --- | ------------------ | ----------------------- | ------------------- | ---------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| 1   | Void and Vista     | `void-and-vista.md`     | 2024-01-08          | UNVERIFIED | No evidence. Date from scaffold commit.                                                    | Verify with content owner                                         |
+| 2   | Solace             | `solace.md`             | 2023-11-20          | UNVERIFIED | No evidence. Date from scaffold commit.                                                    | Verify with content owner                                         |
+| 3   | A Life On The Farm | `a-life-on-the-farm.md` | 2024-03-15          | UNVERIFIED | No evidence. Date from scaffold commit. YouTube video exists but publish date not checked. | Verify with content owner; check YouTube video upload date        |
+| 4   | The Bon-Bons       | `the-bonbons.md`        | 2024-04-22          | UNVERIFIED | No evidence. Date from scaffold commit.                                                    | Verify with content owner                                         |
+| 5   | Heimat             | `heimat.md`             | 2024-06-01          | SUSPECT    | First-of-month pattern — classic placeholder indicator. No evidence.                       | **High priority** — likely placeholder. Verify with content owner |
+| 6   | The Solent         | `the-solent.md`         | 2024-09-10          | UNVERIFIED | No evidence. Date from scaffold commit.                                                    | Verify with content owner                                         |
 
 ## Detailed Findings
 
@@ -32,7 +32,7 @@ All 6 `publishDate` values in project frontmatter were invented during the initi
 
 4. **Works catalogue:** The `src/content/works/` files list tracks for each project but contain no date information — only titles, durations, and file paths.
 
-5. **Releases:** Release dates span 2025–2026 (Echoes EP: 2025-08-03, Midnight Sessions: 2025-11-15, Neon Lights: 2026-01-20, Gravity: 2026-04-10). Project dates (2023–2024) being earlier than release dates is chronologically plausible but provides no corroboration.
+5. **works:** Release dates span 2025–2026 (Echoes EP: 2025-08-03, Midnight Sessions: 2025-11-15, Neon Lights: 2026-01-20, Gravity: 2026-04-10). Project dates (2023–2024) being earlier than release dates is chronologically plausible but provides no corroboration.
 
 6. **README / CHANGELOG:** No references to specific project dates.
 
@@ -41,21 +41,27 @@ All 6 `publishDate` values in project frontmatter were invented during the initi
 ### Individual Assessments
 
 #### Void and Vista — 2024-01-08
+
 Early January date. Could be real (start of year release) or arbitrary. No evidence for or against.
 
 #### Solace — 2023-11-20
+
 Mid-month, plausible. No evidence. This is the only date in 2023; the other 5 are in 2024.
 
 #### A Life On The Farm — 2024-03-15
+
 Mid-month, plausible. Has a YouTube video which could provide date evidence if checked externally.
 
 #### The Bon-Bons — 2024-04-22
+
 Mid-month, plausible. No evidence.
 
 #### Heimat — 2024-06-01 ⚠️
+
 **First-of-month date — strong placeholder indicator.** This pattern (round dates like the 1st, 15th, or last day of month) commonly appears when dates are invented rather than recorded. Highest suspicion of all 6 dates.
 
 #### The Solent — 2024-09-10
+
 Mid-month, plausible. No evidence.
 
 ### Patterns Observed

@@ -12,16 +12,16 @@ Developers need a way to work on the audio player UI and logic without setting u
 
 ## How Audio URLs Work (Current Flow)
 
-1. **Frontmatter** defines relative paths: `audioFile: releases/echoes-ep/01-reverberations.mp3`
+1. **Frontmatter** defines relative paths: `audioFile: works/echoes-ep/01-reverberations.mp3`
 2. **`resolveAudioUrl()`** (`src/scripts/audio-helpers.ts`) prepends `R2_PUBLIC_URL`:
    ```
-   http://localhost:4321/r2/releases/echoes-ep/01-reverberations.mp3
+   http://localhost:4321/r2/works/echoes-ep/01-reverberations.mp3
    ```
 3. **`buildSources()`** (`src/components/AudioPlayer/audioEngine.ts`) generates OGG + MP3 fallback:
    ```
    [
-     "http://localhost:4321/r2/releases/echoes-ep/01-reverberations.ogg",
-     "http://localhost:4321/r2/releases/echoes-ep/01-reverberations.mp3"
+     "http://localhost:4321/r2/works/echoes-ep/01-reverberations.ogg",
+     "http://localhost:4321/r2/works/echoes-ep/01-reverberations.mp3"
    ]
    ```
 4. **Howler.js** tries OGG first, falls back to MP3
@@ -42,7 +42,7 @@ Developers need a way to work on the audio player UI and logic without setting u
 Astro serves everything in `public/` at the root path during `astro dev`. If you place audio files in `public/audio-samples/`, they become available at:
 
 ```
-http://localhost:4321/audio-samples/releases/echoes-ep/01-reverberations.mp3
+http://localhost:4321/audio-samples/works/echoes-ep/01-reverberations.mp3
 ```
 
 ### Setup
@@ -50,16 +50,16 @@ http://localhost:4321/audio-samples/releases/echoes-ep/01-reverberations.mp3
 1. **Create directory structure:**
 
    ```bash
-   mkdir -p public/audio-samples/releases/echoes-ep
+   mkdir -p public/audio-samples/works/echoes-ep
    ```
 
 2. **Add sample MP3 files** (small clips, ~30 seconds each, ~500KB each):
 
    ```
-   public/audio-samples/releases/echoes-ep/01-reverberations.mp3
-   public/audio-samples/releases/echoes-ep/02-hollow.mp3
-   public/audio-samples/releases/echoes-ep/03-reflections.mp3
-   public/audio-samples/releases/echoes-ep/04-resonance.mp3
+   public/audio-samples/works/echoes-ep/01-reverberations.mp3
+   public/audio-samples/works/echoes-ep/02-hollow.mp3
+   public/audio-samples/works/echoes-ep/03-reflections.mp3
+   public/audio-samples/works/echoes-ep/04-resonance.mp3
    ```
 
 3. **Set `.env`:**
@@ -69,16 +69,16 @@ http://localhost:4321/audio-samples/releases/echoes-ep/01-reverberations.mp3
 
 ### Example Dev Audio URL
 
-For a track with `audioFile: releases/echoes-ep/01-reverberations.mp3`:
+For a track with `audioFile: works/echoes-ep/01-reverberations.mp3`:
 
 ```
-http://localhost:4321/audio-samples/releases/echoes-ep/01-reverberations.mp3
+http://localhost:4321/audio-samples/works/echoes-ep/01-reverberations.mp3
 ```
 
 OGG fallback URL (will 404, Howler falls back to MP3):
 
 ```
-http://localhost:4321/audio-samples/releases/echoes-ep/01-reverberations.ogg
+http://localhost:4321/audio-samples/works/echoes-ep/01-reverberations.ogg
 ```
 
 ### Pros
@@ -110,7 +110,7 @@ Free sources for short sample MP3 files:
 - **[ffmpeg](https://ffmpeg.org/)** — Generate test audio programmatically:
   ```bash
   # Generate a 30-second 440Hz sine wave test tone
-  ffmpeg -f lavfi -i "sine=frequency=440:duration=30" -b:a 128k public/audio-samples/releases/echoes-ep/01-reverberations.mp3
+  ffmpeg -f lavfi -i "sine=frequency=440:duration=30" -b:a 128k public/audio-samples/works/echoes-ep/01-reverberations.mp3
   ```
 
 ---
@@ -126,7 +126,7 @@ Run a lightweight HTTP server serving a directory of sample audio files on a cho
 1. **Create audio directory:**
 
    ```bash
-   mkdir -p ~/dev-audio/releases/echoes-ep
+   mkdir -p ~/dev-audio/works/echoes-ep
    # Copy sample MP3 files into this directory
    ```
 
@@ -145,7 +145,7 @@ Run a lightweight HTTP server serving a directory of sample audio files on a cho
 ### Example Dev Audio URL
 
 ```
-http://localhost:8888/releases/echoes-ep/01-reverberations.mp3
+http://localhost:8888/works/echoes-ep/01-reverberations.mp3
 ```
 
 ### Pros
@@ -194,16 +194,16 @@ Host sample audio files on a free external service and point `R2_PUBLIC_URL` at 
 
 ### Viable Services
 
-#### 3a. GitHub Releases (via raw.githubusercontent.com)
+#### 3a. GitHub works (via raw.githubusercontent.com)
 
-1. Create a separate repo (e.g., `sam-dev-audio`) or use GitHub Releases
+1. Create a separate repo (e.g., `sam-dev-audio`) or use GitHub works
 2. Upload sample MP3 files as release assets
 3. Use the raw/download URL as `R2_PUBLIC_URL`
 
 **URL pattern:**
 
 ```
-https://raw.githubusercontent.com/<user>/sam-dev-audio/main/audio/releases/echoes-ep/01-reverberations.mp3
+https://raw.githubusercontent.com/<user>/sam-dev-audio/main/audio/works/echoes-ep/01-reverberations.mp3
 ```
 
 | Factor                  | Assessment                                                               |
@@ -225,7 +225,7 @@ https://raw.githubusercontent.com/<user>/sam-dev-audio/main/audio/releases/echoe
 **URL pattern:**
 
 ```
-https://pub-<dev-bucket-id>.r2.dev/releases/echoes-ep/01-reverberations.mp3
+https://pub-<dev-bucket-id>.r2.dev/works/echoes-ep/01-reverberations.mp3
 ```
 
 | Factor                  | Assessment                          |
@@ -245,7 +245,7 @@ https://pub-<dev-bucket-id>.r2.dev/releases/echoes-ep/01-reverberations.mp3
 **URL pattern:**
 
 ```
-https://archive.org/download/sam-dev-audio/releases/echoes-ep/01-reverberations.mp3
+https://archive.org/download/sam-dev-audio/works/echoes-ep/01-reverberations.mp3
 ```
 
 | Factor                  | Assessment                                           |
@@ -285,7 +285,7 @@ tracks:
 
 - Modifies content files (frontmatter), which is messy and easy to accidentally commit
 - Depends on external URL availability
-- Not a scalable approach for multiple tracks/releases
+- Not a scalable approach for multiple tracks/works
 - **Not recommended as primary approach** — better as a quick one-off debugging tool
 
 ---
@@ -327,15 +327,15 @@ tracks:
    # scripts/setup-dev-audio.sh
    # Generates placeholder audio files for local development
 
-   mkdir -p public/audio-samples/releases/echoes-ep
+   mkdir -p public/audio-samples/works/echoes-ep
 
    tracks=("01-reverberations" "02-hollow" "03-reflections" "04-resonance")
 
    for track in "${tracks[@]}"; do
-     if [ ! -f "public/audio-samples/releases/echoes-ep/${track}.mp3" ]; then
+     if [ ! -f "public/audio-samples/works/echoes-ep/${track}.mp3" ]; then
        echo "Generating ${track}.mp3..."
        ffmpeg -f lavfi -i "sine=frequency=$((400 + RANDOM % 400)):duration=30" \
-         -b:a 128k "public/audio-samples/releases/echoes-ep/${track}.mp3" \
+         -b:a 128k "public/audio-samples/works/echoes-ep/${track}.mp3" \
          -y 2>/dev/null
      fi
    done
@@ -413,7 +413,7 @@ npm run generate:waveforms
 
 # This creates files like:
 # public/waveforms/works/documentary/01-the-weight-of-water.json
-# public/waveforms/releases/midnight-sessions/01-dusk.json
+# public/waveforms/works/midnight-sessions/01-dusk.json
 ```
 
 ### Output Format
@@ -431,7 +431,7 @@ The script skips files that already have a corresponding JSON file in `public/wa
 
 ### Path Convention
 
-The build script uses the raw `audioFile` path from content frontmatter (e.g., `works/documentary/01-the-weight-of-water.mp3`) to create `public/waveforms/works/documentary/01-the-weight-of-water.json`. The runtime helper `getWaveformPeaksUrl()` (in `src/scripts/audio-helpers.ts`) derives the same path from the full audio URL by finding the content directory segment (`works/` or `releases/`) in the URL.
+The build script uses the raw `audioFile` path from content frontmatter (e.g., `works/documentary/01-the-weight-of-water.mp3`) to create `public/waveforms/works/documentary/01-the-weight-of-water.json`. The runtime helper `getWaveformPeaksUrl()` (in `src/scripts/audio-helpers.ts`) derives the same path from the full audio URL by finding the content directory segment (`works/` or `works/`) in the URL.
 
 ### Architecture Decision
 

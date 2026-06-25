@@ -2,7 +2,7 @@
 /**
  * Build-time waveform peak generator.
  *
- * Reads content files from `src/content/works/*.md` and `src/content/releases/*.md`,
+ * Reads content files from `src/content/works/*.md` and `src/content/projects/*.md`,
  * extracts audioFile paths, fetches the audio (from R2_PUBLIC_URL or local dev files),
  * decodes it via ffmpeg, and writes normalized peak data as JSON to `public/waveforms/`.
  *
@@ -20,7 +20,7 @@ const matter = require('gray-matter');
 
 // --- Configuration ---
 
-const CONTENT_DIRS = ['src/content/works', 'src/content/releases'];
+const CONTENT_DIRS = ['src/content/works', 'src/content/projects'];
 const OUTPUT_DIR = 'public/waveforms';
 const NUM_PEAKS = 200; // Number of peak values per track
 

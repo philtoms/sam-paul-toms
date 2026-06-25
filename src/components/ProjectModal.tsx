@@ -39,9 +39,7 @@ export default function ProjectModal() {
     // Seed the active video: prefer the project's main video, otherwise fall
     // back to the first thumbnail so a thumbnail-only project still shows a
     // player on open.
-    setActiveVideoUrl(
-      data.video ?? data.videoThumbnails?.[0]?.youtubeUrl,
-    );
+    setActiveVideoUrl(data.video ?? data.videoThumbnails?.[0]?.youtubeUrl);
     previousFocusRef.current = document.activeElement;
     setIsOpen(true);
     // Trigger fade-in on next frame
@@ -125,10 +123,14 @@ export default function ProjectModal() {
   const videoId = activeVideo ? extractYouTubeId(activeVideo) : '';
   const startTime = isMainVideo
     ? projectData.videoStartTime
-    : projectData.videoThumbnails?.find((t) => t.youtubeUrl === activeVideo)?.startTime;
+    : projectData.videoThumbnails?.find((t) => t.youtubeUrl === activeVideo)
+        ?.startTime;
   // Append YouTube `start` param only for a positive start time so the
   // no-start-time case stays byte-identical to the original embed URL.
-  const embedUrl = buildYouTubeEmbedUrl(videoId, startTime);
+  const embedUrl = buildYouTubeEmbedUrl(videoId, startTime, {
+    loop: projectData.loop,
+    autoplay: projectData.autoplay,
+  });
 
   return (
     <div
@@ -188,7 +190,9 @@ export default function ProjectModal() {
           </div>
           <div class="md:w-3/5">
             {/* Title */}
-            <h2 class="text-xl md:text-3xl font-bold text-white mb-4">{projectData.title}</h2>
+            <h2 class="text-xl md:text-3xl font-bold text-white mb-4">
+              {projectData.title}
+            </h2>
 
             {/* Summary — rendered from pre-rendered markdown HTML when
                 `summaryHtml` is present (the production path via
@@ -203,12 +207,16 @@ export default function ProjectModal() {
                 dangerouslySetInnerHTML={{ __html: projectData.summaryHtml }}
               />
             ) : (
-              <p class="text-sm md:text-base text-white/80 leading-relaxed">{projectData.summary}</p>
+              <p class="text-sm md:text-base text-white/80 leading-relaxed">
+                {projectData.summary}
+              </p>
             )}
 
             {/* Director credit — only shown when dir is a non-empty string */}
             {projectData.dir && (
-              <p class="text-sm text-white/60 mt-2">Directed by {projectData.dir}</p>
+              <p class="text-sm text-white/60 mt-2">
+                Directed by {projectData.dir}
+              </p>
             )}
           </div>
         </section>
@@ -234,7 +242,7 @@ export default function ProjectModal() {
                 Clicking a thumbnail swaps the main embed above to that video. */}
             {projectData.videoThumbnails &&
               projectData.videoThumbnails.length > 0 && (
-                <div class="mt-4 flex flex-wrap gap-2">
+                <div class="mt-4 flex flex-wrap gap-2 justify-center">
                   {projectData.videoThumbnails.map((thumb, i) => {
                     const isActive = thumb.youtubeUrl === activeVideoUrl;
                     return (
@@ -253,7 +261,7 @@ export default function ProjectModal() {
                           src={thumb.image}
                           alt=""
                           loading="lazy"
-                          class="w-28 h-16 object-cover block"
+                          class="w-18 h-18 object-cover block"
                         />
                       </button>
                     );

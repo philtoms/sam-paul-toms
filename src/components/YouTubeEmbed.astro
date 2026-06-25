@@ -10,6 +10,12 @@
  * - title: Accessible title for the iframe (default: "YouTube video")
  * - startTime: optional start position in seconds (appended as YouTube &start= param;
  *   applies ONLY to the initial `url`, never to thumbnail videos)
+ * - loop: optional boolean; when true the embed loops the initial video
+ *   indefinitely (emits `loop=1&playlist=<videoId>`). Applies ONLY to the
+ *   initial `url`, never to thumbnail videos.
+ * - autoplay: optional boolean; when true the embed autoplays on load (emits
+ *   `autoplay=1&mute=1` — browsers block unmuted autoplay, so it starts muted).
+ *   Applies ONLY to the initial `url`, never to thumbnail videos.
  * - videoThumbnails: optional array of clickable poster thumbnails. When provided
  *   (and non-empty), a thumbnail strip renders below the iframe. Clicking a
  *   thumbnail swaps the main embed to that video without a page reload, via the
@@ -30,19 +36,23 @@ interface Props {
   url: string;
   title?: string;
   startTime?: number;
+  loop?: boolean;
+  autoplay?: boolean;
   videoThumbnails?: Array<{
     image: string; // poster image path
     youtubeUrl: string; // a valid YouTube watch/short/embed URL
   }>;
 }
 
-const { url, title = 'YouTube video', startTime, videoThumbnails } = Astro.props;
+const { url, title = 'YouTube video', startTime, loop, autoplay, videoThumbnails } = Astro.props;
 
 const videoId = extractYouTubeId(url);
 // Append YouTube `start` param only for a positive start time so the
 // no-start-time case stays byte-identical to the original embed URL.
 // startTime applies ONLY to the initial `url` — never to thumbnail videos.
-const embedUrl = buildYouTubeEmbedUrl(videoId, startTime);
+// `loop` emits `loop=1&playlist=<videoId>` so the embed repeats indefinitely.
+// `autoplay` emits `autoplay=1&mute=1` (browsers block unmuted autoplay).
+const embedUrl = buildYouTubeEmbedUrl(videoId, startTime, { loop, autoplay });
 
 const hasThumbnails = Array.isArray(videoThumbnails) && videoThumbnails.length > 0;
 ---
@@ -63,7 +73,7 @@ const hasThumbnails = Array.isArray(videoThumbnails) && videoThumbnails.length >
       />
     </div>
     {hasThumbnails && (
-      <div class="youtube-thumbnails flex flex-wrap gap-2 mt-2">
+      <div class="youtube-thumbnails flex flex-wrap gap-2 mt-2 justify-center">
         {videoThumbnails!.map((thumb) => (
           <button
             type="button"

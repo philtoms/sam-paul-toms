@@ -27,7 +27,6 @@ if ! command -v ffmpeg &>/dev/null; then
 fi
 
 # --- Parse audioFile entries from release frontmatter ---
-RELEASES_DIR="${PROJECT_ROOT}/src/content/releases"
 RELEASES_DIR="${PROJECT_ROOT}/src/content/works"
 OUTPUT_DIR="${PROJECT_ROOT}/public/audio-samples"
 
@@ -37,7 +36,7 @@ if [ ! -d "${RELEASES_DIR}" ]; then
 fi
 
 # Extract all audioFile values from YAML frontmatter.
-# Lines look like:      audioFile: releases/echoes-ep/01-reverberations.mp3
+# Lines look like:      audioFile: works/echoes-ep/01-reverberations.mp3
 audio_files=()
 while IFS= read -r line; do
   # Trim leading whitespace, strip the key, keep the value

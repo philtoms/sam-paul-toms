@@ -22,6 +22,10 @@ export interface ProjectModalData {
   popupImage?: string;
   video?: string;
   videoStartTime?: number;
+  /** When true, the modal's YouTube embed loops the active video indefinitely (emits `loop=1&playlist=<videoId>`). Applies to whichever video is currently active — main or thumbnail-swapped. */
+  loop?: boolean;
+  /** When true, the embed autoplays on load (emits `autoplay=1&mute=1` — browsers block unmuted autoplay, so the video starts muted). Applies to whichever video is currently active. */
+  autoplay?: boolean;
   /** Optional clickable thumbnail strip. Each entry pairs a poster image with a YouTube URL; clicking a thumbnail loads that video into the modal's main player. An optional `startTime` deep-links that video to a specific timestamp. */
   videoThumbnails?: Array<{ image: string; youtubeUrl: string; startTime?: number }>;
   dir?: string;

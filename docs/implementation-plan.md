@@ -51,7 +51,7 @@ This plan translates the research report's recommendations into 8 concrete, orde
               ▼                ▼                    ▼               ▼
         ┌──────────┐   ┌──────────┐         ┌──────────┐   ┌──────────┐
         │  KB-003  │   │  KB-004  │         │  KB-005  │   │  KB-007  │
-        │  Audio   │   │ Releases │         │   Bio    │   │  Design  │
+        │  Audio   │   │ Works    │         │   Bio    │   │  Design  │
         └────┬─────┘   └────┬─────┘         └──────────┘   └──────────┘
              │              │
              │              ▼

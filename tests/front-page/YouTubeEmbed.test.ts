@@ -136,6 +136,60 @@ describe('YouTubeEmbed startTime prop', () => {
   });
 });
 
+describe('YouTubeEmbed loop prop', () => {
+  it('appends &loop=1&playlist=<videoId> when loop is true (exact equality)', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, loop: true },
+    });
+    expect(document.querySelector('iframe')!.getAttribute('src')).toBe(
+      `${EMBED_BASE}&loop=1&playlist=dQw4w9WgXcQ`,
+    );
+  });
+
+  it('emits start before loop when both startTime and loop are set', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, startTime: 45, loop: true },
+    });
+    expect(document.querySelector('iframe')!.getAttribute('src')).toBe(
+      `${EMBED_BASE}&start=45&loop=1&playlist=dQw4w9WgXcQ`,
+    );
+  });
+
+  it('does NOT append loop when loop is omitted', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    const src = document.querySelector('iframe')!.getAttribute('src');
+    expect(src).not.toMatch(/loop=/);
+    expect(src).toBe(EMBED_BASE);
+  });
+});
+
+describe('YouTubeEmbed autoplay prop', () => {
+  it('appends &autoplay=1&mute=1 when autoplay is true (exact equality)', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, autoplay: true },
+    });
+    expect(document.querySelector('iframe')!.getAttribute('src')).toBe(
+      `${EMBED_BASE}&autoplay=1&mute=1`,
+    );
+  });
+
+  it('emits start, loop, then autoplay in fixed order when all set', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, {
+      props: { url: WATCH_URL, startTime: 45, loop: true, autoplay: true },
+    });
+    expect(document.querySelector('iframe')!.getAttribute('src')).toBe(
+      `${EMBED_BASE}&start=45&loop=1&playlist=dQw4w9WgXcQ&autoplay=1&mute=1`,
+    );
+  });
+
+  it('does NOT append autoplay when autoplay is omitted', async () => {
+    const { document } = await renderAstro(YouTubeEmbed, { props: { url: WATCH_URL } });
+    const src = document.querySelector('iframe')!.getAttribute('src');
+    expect(src).not.toMatch(/autoplay=|mute=/);
+    expect(src).toBe(EMBED_BASE);
+  });
+});
+
 describe('YouTubeEmbed videoThumbnails prop', () => {
   it('renders one thumbnail button per entry with its poster image when provided', async () => {
     const { document } = await renderAstro(YouTubeEmbed, {

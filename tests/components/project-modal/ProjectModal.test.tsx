@@ -38,6 +38,29 @@ const sampleProjectDataWithZeroStartTime = {
   videoStartTime: 0,
 };
 
+const sampleProjectDataWithLoop = {
+  ...sampleProjectData,
+  loop: true,
+};
+
+const sampleProjectDataWithLoopAndStartTime = {
+  ...sampleProjectData,
+  videoStartTime: 45,
+  loop: true,
+};
+
+const sampleProjectDataWithAutoplay = {
+  ...sampleProjectData,
+  autoplay: true,
+};
+
+const sampleProjectDataWithAllVideoOptions = {
+  ...sampleProjectData,
+  videoStartTime: 45,
+  loop: true,
+  autoplay: true,
+};
+
 const sampleProjectDataWithPopupImage = {
   ...sampleProjectData,
   popupImage: '/images/projects/heimat-poster.jpeg',
@@ -575,6 +598,104 @@ describe('ProjectModal', () => {
     const iframe = document.querySelector('iframe');
     expect(iframe).not.toBeNull();
     expect(iframe!.getAttribute('src')).not.toMatch(/start=/);
+  });
+
+  it('appends &loop=1&playlist=<videoId> when loop is true (exact equality)', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithLoop }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).toBe(
+      'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&loop=1&playlist=dQw4w9WgXcQ',
+    );
+  });
+
+  it('emits start before loop when both videoStartTime and loop are set', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithLoopAndStartTime }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).toBe(
+      'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&start=45&loop=1&playlist=dQw4w9WgXcQ',
+    );
+  });
+
+  it('does NOT append loop when loop is omitted', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).not.toMatch(/loop=/);
+  });
+
+  it('appends &autoplay=1&mute=1 when autoplay is true (exact equality)', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithAutoplay }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).toBe(
+      'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&autoplay=1&mute=1',
+    );
+  });
+
+  it('emits start, loop, then autoplay in fixed order when all set', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectDataWithAllVideoOptions }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).toBe(
+      'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&start=45&loop=1&playlist=dQw4w9WgXcQ&autoplay=1&mute=1',
+    );
+  });
+
+  it('does NOT append autoplay when autoplay is omitted', async () => {
+    render(<ProjectModal />);
+
+    document.dispatchEvent(
+      new CustomEvent('project-modal:open', { detail: sampleProjectData }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Heimat')).toBeInTheDocument();
+    });
+
+    const iframe = document.querySelector('iframe');
+    expect(iframe).not.toBeNull();
+    expect(iframe!.getAttribute('src')).not.toMatch(/autoplay=|mute=/);
   });
 
   it('does NOT render formatted publish date', async () => {
